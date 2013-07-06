@@ -3,6 +3,9 @@ source 'https://rubygems.org'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.0.rc2'
 
+# Because Heroku ask us to do so
+ruby "1.9.3"
+
 # Use sqlite3 as the database for Active Record in developement 
 # and test, pg for production
 group :production, :staging do
