@@ -6,6 +6,9 @@ gem 'rails', '4.0.0.rc2'
 # Because Heroku ask us to do so
 ruby "1.9.3"
 
+# Heroku asks us to add this gem to configure my application to be visible
+gem 'rails_12factor'
+
 # Use sqlite3 as the database for Active Record in developement 
 # and test, pg for production
 group :production, :staging do
