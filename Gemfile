@@ -5,10 +5,10 @@ gem 'rails', '4.0.0.rc2'
 
 # Use sqlite3 as the database for Active Record in developement 
 # and test, pg for production
-group :production do
+group :production, :staging do
 	gem 'pg'
 end
-group :developement, :test do
+group :development, :test do
 	gem 'sqlite3'
 end
 
