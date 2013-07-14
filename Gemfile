@@ -32,6 +32,7 @@ gem 'coffee-rails', '~> 3.2.2'
 # gem 'therubyracer', platforms: :ruby
 
 gem 'devise'
+gem 'simple_form'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
