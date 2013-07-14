@@ -9,4 +9,4 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Hikers::Application.config.secret_key_base = 'e654b6d2cb8d9c9bfc05fd5a36496201e27313ba59e8fdecb6caebe848de2b4f7d753426a91da17437baef3230f8d67b4da5ba75144cf1d0aee817c9aeea0422'
+Hikers::Application.config.secret_token = 'e654b6d2cb8d9c9bfc05fd5a36496201e27313ba59e8fdecb6caebe848de2b4f7d753426a91da17437baef3230f8d67b4da5ba75144cf1d0aee817c9aeea0422'
