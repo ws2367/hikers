@@ -133,7 +133,7 @@ PLATFORMS
 DEPENDENCIES
   bootstrap-sass (~> 2.2.2.0)
   coffee-rails (~> 3.2.2)
-  devise
+  devise (~> 3.0.0)
   jbuilder (~> 1.2)
   jquery-rails
   pg (= 0.15.1)

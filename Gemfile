@@ -31,7 +31,7 @@ gem 'coffee-rails', '~> 3.2.2'
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
-gem 'devise'
+gem 'devise', "~> 3.0.0"
 gem 'simple_form'
 
 # Use jquery as the JavaScript library
