@@ -6,7 +6,7 @@ Hikers::Application.routes.draw do
 
   get 'about' => 'pages#about'
 
-  root :to => "pages#home"
+  root :to => "pins#index"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

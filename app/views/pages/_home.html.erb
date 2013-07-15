@@ -1,0 +1,17 @@
+<% unless user_signed_in? %>
+         
+	<div class="hero-unit">
+
+		<h1>Welcome to HIKERS!</h1>
+		<p>
+			You've found the home page for the 
+			<a href = "http://onemonthrails.com">HIKERS</a>
+			application.
+		</p>
+
+		<%= link_to "Sign Up Now!", new_user_registration_path, class:"btn btn-primary btn-large" %>
+
+</div>
+
+
+<% end %>
