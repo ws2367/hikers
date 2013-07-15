@@ -33,6 +33,7 @@ gem 'coffee-rails', '~> 3.2.2'
 
 gem 'devise', "~> 3.0.0"
 gem 'simple_form'
+gem 'paperclip', '~> 3.0'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
