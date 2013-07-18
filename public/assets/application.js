@@ -12394,23 +12394,23 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 }).call(this);
 (function() {
   jQuery(function() {
-    return $('#pins').imagesLoaded(function() {
+    $('#pins').imagesLoaded(function() {
       return $('#pins').masonry({
         itemSelector: ".box"
       });
     });
+    if ($('.pagination').length) {
+      return $(window).scroll(function() {
+        var url;
+        url = $('.pagination .next_page a').attr('href');
+        if (url && $(window).scrollTop() > $(document).height() - $(window).height() - 50) {
+          $('.pagination').text("Fetching more pins...");
+          $.getScript(url);
+        }
+        return $(window).scroll();
+      });
+    }
   });
-
-  if ($('.pagination').length) {
-    $(window).scroll(function() {
-      var url;
-      url = $('.pagination .next_page a').attr('href');
-      if (url && $(window).scrollTop() > $(document).height() - $(window).height() - 50) {
-        alert("you made it!");
-      }
-      return $(window).scroll();
-    });
-  }
 
 }).call(this);
 (function() {
