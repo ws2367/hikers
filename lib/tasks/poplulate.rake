@@ -2,7 +2,7 @@ namespace :db do
 
 	desc "Fill database with sample data"
 	task populate: :environment do
-=begin	
+
 		10.times do |n|
 			puts "[DEBUG} creating user #{n+1} of 10"
 			name = Faker::Name.name
@@ -14,7 +14,6 @@ namespace :db do
 						 	password_confirmation: password )
 
 		end
-=end
 
 		User.all.each do |user|
 			puts "[DEBUG] uploading images for user #{user.id} of #{User.last.id}"
