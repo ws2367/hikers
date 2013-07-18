@@ -36,6 +36,8 @@ gem 'simple_form'
 gem 'paperclip', '~> 3.0'
 gem 'aws-sdk'
 
+gem 'thin'
+
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 
