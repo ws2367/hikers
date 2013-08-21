@@ -1,0 +1,14 @@
+class Comment < ActiveRecord::Base
+  attr_accessible :content
+
+  belongs_to :post
+  belongs_to :user
+
+  has_many :likes,  as: :likee
+  has_many :likers, through: :likes, 
+  					source: :user                      
+
+  has_many :hates,  as: :hatee
+  has_many :haters, through: :hates, 
+                    source: :user         
+end
