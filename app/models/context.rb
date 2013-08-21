@@ -1,5 +1,5 @@
 class Context < ActiveRecord::Base
-  attr_accessible :name
+  attr_accessible :name, :user_id, :institution_id
   
   belongs_to :institution
   belongs_to :user

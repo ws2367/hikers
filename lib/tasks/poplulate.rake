@@ -32,39 +32,54 @@ namespace :db do
 				@cxt = user.contexts.create!(name: name,
 					                 institution_id: @inst.id)
 
+
 				title   = Faker::Lorem.sentence
 				content = Faker::Lorem.paragraph
 				@post = @cxt.posts.create!(title: title,
 						                   content: content,
-						                   user_id: user.id)
+						                   :user_id => user.id)
+
 				
+
 				@comment = @post.comments.create!(content: content,
 												  user_id: user.id)
 
 			end
 			
-			@lastUser = User.end
-			User.all.each do |user|
-				user.likedContexts.create!(likee_id: @lastUser.contexts.first.id,
-					                       likee_type: "Context")
-				user.likedPosts.create!(likee_id: @lastUser.posts.first.id,
-					                       likee_type: "Post")
-				user.likedComments.create!(likee_id: @lastUser.comments.first.id,
-					                       likee_type: "Comment")
-				user.followedContexts.create!(followee_id: @lastUser.contexts.first.id,
-					                       followee_type: "Context")
-				user.followedPosts.create!(followee_id: @lastUser.posts.first.id,
-					                       followee_type: "Post")
-				user.viewContexts.create!(viewee_id: @lastUser.contexts.first.id,
-					                       viewee_type: "Context")
-				user.viewPosts.create!(viewee_id: @lastUser.posts.first.id,
-					                       viewee_type: "Post")
-				@lastUser = user
-			end
+			
 		end
 	end
 
+	puts "Now we gonna add likes, views and follows!"
 
+@lastUser = User.last
+			User.all.each do |user|
+
+				user.likes.create!(likee_id: @lastUser.contexts.first.id,
+					                       likee_type: "Context")
+				user.likes.create!(likee_id: @lastUser.posts.first.id,
+					                       likee_type: "Post")
+				user.likes.create!(likee_id: @lastUser.comments.first.id,
+					                       likee_type: "Comment")
+				
+				user.hates.create!(hatee_id: @lastUser.contexts.first.id,
+					                       hatee_type: "Context")
+				user.hates.create!(hatee_id: @lastUser.posts.first.id,
+					                       hatee_type: "Post")
+				user.hates.create!(hatee_id: @lastUser.comments.first.id,
+					                       hatee_type: "Comment")
+
+				user.follows.create!(followee_id: @lastUser.contexts.first.id,
+					                       followee_type: "Context")
+				user.follows.create!(followee_id: @lastUser.posts.first.id,
+					                       followee_type: "Post")
+
+				user.views.create!(viewee_id: @lastUser.contexts.first.id,
+					                       viewee_type: "Context")
+				user.views.create!(viewee_id: @lastUser.posts.first.id,
+					                       viewee_type: "Post")
+				@lastUser = user
+			end
 
 =begin
 		10.times do |n|
