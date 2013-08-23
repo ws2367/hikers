@@ -1,4 +1,4 @@
-class Context < ActiveRecord::Base
+class Entity < ActiveRecord::Base
   attr_accessible :name, :user_id, :institution_id
   
   belongs_to :institution

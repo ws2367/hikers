@@ -1,5 +1,10 @@
 source 'https://rubygems.org'
 
+
+gem 'sinatra'
+gem 'unicorn'
+gem 'json'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '3.2.13'
 

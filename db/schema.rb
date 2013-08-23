@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130821052000) do
+ActiveRecord::Schema.define(:version => 20130823024836) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(:version => 20130821052000) do
   add_index "comments", ["post_id"], :name => "index_comments_on_post_id"
   add_index "comments", ["user_id"], :name => "index_comments_on_user_id"
 
-  create_table "contexts", :force => true do |t|
+  create_table "entities", :force => true do |t|
     t.string   "name"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
@@ -32,8 +32,8 @@ ActiveRecord::Schema.define(:version => 20130821052000) do
     t.integer  "user_id"
   end
 
-  add_index "contexts", ["institution_id"], :name => "index_contexts_on_institution_id"
-  add_index "contexts", ["user_id"], :name => "index_contexts_on_user_id"
+  add_index "entities", ["institution_id"], :name => "index_contexts_on_institution_id"
+  add_index "entities", ["user_id"], :name => "index_contexts_on_user_id"
 
   create_table "follows", :force => true do |t|
     t.integer  "user_id"
@@ -110,11 +110,11 @@ ActiveRecord::Schema.define(:version => 20130821052000) do
     t.text     "content"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
-    t.integer  "context_id"
+    t.integer  "entity_id"
     t.integer  "user_id"
   end
 
-  add_index "posts", ["context_id"], :name => "index_posts_on_context_id"
+  add_index "posts", ["entity_id"], :name => "index_posts_on_context_id"
   add_index "posts", ["user_id"], :name => "index_posts_on_user_id"
 
   create_table "users", :force => true do |t|

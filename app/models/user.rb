@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
 
 has_many :pins, :dependent => :destroy
 
-has_many :contexts
+has_many :entities
 has_many :posts
 has_many :comments
 
@@ -19,16 +19,16 @@ has_many :likes
 has_many :hates
 has_many :views
 
-has_many :followedContexts, through: :follows, 
+has_many :followedEntities, through: :follows, 
                             source: "followee",
-                            source_type: "Context"
+                            source_type: "Entity"
 has_many :followedPosts,    through: :follows, 
                             source: "followee",
                             source_type: "Post"
 
-has_many :likedContexts,    through: :likes, 
+has_many :likedEntities,    through: :likes, 
                             source: "likee",
-                            source_type: "Context"
+                            source_type: "Entity"
 has_many :likedPosts,       through: :likes, 
                             source: "likee",
                             source_type: "Post"
@@ -36,9 +36,9 @@ has_many :likedComments,    through: :likes,
                             source: "likee",
                             source_type: "Comment"
 
-has_many :hatedContexts,    through: :hates, 
+has_many :hatedEntities,    through: :hates, 
                             source: "hatee",
-                            source_type: "Context"
+                            source_type: "Entity"
 has_many :hatedPosts,       through: :hates, 
                             source: "hatee",
                             source_type: "Post"
@@ -47,9 +47,9 @@ has_many :hatedComments,    through: :hates,
                             source_type: "Comment"
 
 
-has_many :viewedContexts,   through: :views, 
+has_many :viewedEntities,   through: :views, 
                             source: "viewee",
-                            source_type: "Context"
+                            source_type: "Entity"
 has_many :viewedPosts,      through: :views, 
                             source: "viewee",
                             source_type: "Post"
