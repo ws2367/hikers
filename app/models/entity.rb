@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: entities
+#
+#  id             :integer          not null, primary key
+#  name           :string(255)
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  institution_id :integer
+#  user_id        :integer
+#
+
 class Entity < ActiveRecord::Base
   attr_accessible :name, :user_id, :institution_id
   
