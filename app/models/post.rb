@@ -9,6 +9,7 @@
 #  updated_at :datetime         not null
 #  entity_id  :integer
 #  user_id    :integer
+#  status     :boolean
 #
 
 class Post < ActiveRecord::Base

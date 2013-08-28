@@ -8,7 +8,7 @@ gem 'json'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '3.2.13'
 
-# 
+# Annotate models, fixtures and tests
 gem 'annotate', ">=2.5.0"
 
 # Because Heroku ask us to do so
