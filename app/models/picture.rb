@@ -11,4 +11,6 @@
 class Picture < ActiveRecord::Base
   belongs_to :post
   # attr_accessible :title, :body
+  
+  #TODO: add paperclip functions
 end

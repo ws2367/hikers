@@ -12,9 +12,17 @@
 class Institution < ActiveRecord::Base
   attr_accessible :name
 
-  has_many :entities
+  belongs_to :user
   belongs_to :location
-  has_many :posts, through: :entities
-  has_many :comments, through: :posts
-  
+  has_many   :entities, inverse_of: :institution
+  has_many   :posts, through: :entities
+  has_many   :comments, through: :posts
+
+  validates :name, format: {with: /\A[a-zA-Z',.\-\s]+\z/, 
+    message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
+
+  #For now, the presence of user_id is not required.
+  validates :name, :location, presence: true
+
+  validates_associated :location, :user
 end

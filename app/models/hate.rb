@@ -8,6 +8,7 @@
 #  hatee_type :string(255)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  hatersNum  :integer
 #
 
 class Hate < ActiveRecord::Base
@@ -16,4 +17,11 @@ class Hate < ActiveRecord::Base
   belongs_to :user
   belongs_to :hatee, polymorphic: true
   # attr_accessible :title, :body
+
+  validates_associated :hatee, :user
+
+  validates :hatee_type, inclusion: {in: %w(Entity Post Comment), 
+  	message: "%{value} is not a valid hatee type"}
+
+  validates :user_id, :hatee_id, :hatee_type, presence: true
 end

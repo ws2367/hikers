@@ -12,11 +12,11 @@
 
 class Entity < ActiveRecord::Base
   attr_accessible :name, :user_id, :institution_id
-  
+
   belongs_to :institution
   belongs_to :user
 
-  has_many :posts
+  has_many :posts,     inverse_of: :entity
   has_many :comments,  through: :posts
 
   has_many :follows,   as: :followee
@@ -34,4 +34,11 @@ class Entity < ActiveRecord::Base
   has_many :views,   as: :viewee
   has_many :viewers, through: :views, 
   					         source: :user
+
+  validates :name, format: {with: /\A[a-zA-Z,.'\s\-]+\z/, 
+    message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
+
+  validates :name, :institution, :user, presence: true
+
+  validates_associated :institution, :user
 end

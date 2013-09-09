@@ -2,8 +2,6 @@ namespace :db do
 
 	desc "Fill database with sample data"
 	task populate: :environment do
-	
-
 
 		10.times do |n|
 			puts "[DEBUG} creating user #{n+1} of 10"
@@ -16,6 +14,8 @@ namespace :db do
 						 	password_confirmation: password )
 
 		end
+
+	puts "Now we gonna add locations, institutions, entities, posts and comments!"
 
 	10.times do |n|
 		name = Faker::Address.state
@@ -33,16 +33,14 @@ namespace :db do
 					                 institution_id: @inst.id)
 
 
-				title   = Faker::Lorem.sentence
 				content = Faker::Lorem.paragraph
-				@post = @ent.posts.create!(title: title,
-						                   content: content,
-						                   :user_id => user.id)
-
-				
+				@post = @ent.posts.create!(content: content,
+						                   user_id: user.id)
+						                   #:status => true)
 
 				@comment = @post.comments.create!(content: content,
 												  user_id: user.id)
+												  #:status =>  true)
 
 			end
 			
@@ -50,7 +48,7 @@ namespace :db do
 		end
 	end
 
-	puts "Now we gonna add likes, views and follows!"
+	puts "Now we gonna add likes, hates, views and follows!"
 
 @lastUser = User.last
 			User.all.each do |user|

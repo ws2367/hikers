@@ -19,6 +19,9 @@
 #
 
 class User < ActiveRecord::Base
+  #TODO: clean up attributes that are created by devise
+
+
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable,
@@ -28,16 +31,17 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me
 
-has_many :pins, :dependent => :destroy
+# has_many :pins, :dependent => :destroy
 
-has_many :entities
-has_many :posts
-has_many :comments
+has_many :institution, inverse_of: :user
+has_many :entities,    inverse_of: :user
+has_many :posts,       inverse_of: :user
+has_many :comments,    inverse_of: :user
 
-has_many :follows
-has_many :likes
-has_many :hates
-has_many :views
+has_many :follows, inverse_of: :user
+has_many :likes,   inverse_of: :user
+has_many :hates,   inverse_of: :user
+has_many :views,   inverse_of: :user
 
 has_many :followedEntities, through: :follows, 
                             source: "followee",
