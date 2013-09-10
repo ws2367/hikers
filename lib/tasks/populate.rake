@@ -43,6 +43,7 @@ namespace :db do
         end
     end
 
+
     puts "[DEBUG] Now we gonna add likes, hates, views, follows and shares!"
 
 @lastUser = User.last
