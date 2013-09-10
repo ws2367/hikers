@@ -9,6 +9,8 @@
 #  post_id    :integer
 #  user_id    :integer
 #  status     :boolean
+#  hatersNum  :integer
+#  likersNum  :integer
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html

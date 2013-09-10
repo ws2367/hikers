@@ -9,6 +9,8 @@
 #  post_id    :integer
 #  user_id    :integer
 #  status     :boolean
+#  hatersNum  :integer
+#  likersNum  :integer
 #
 
 class Comment < ActiveRecord::Base

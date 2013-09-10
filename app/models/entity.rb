@@ -8,6 +8,10 @@
 #  updated_at     :datetime         not null
 #  institution_id :integer
 #  user_id        :integer
+#  followersNum   :integer
+#  hatersNum      :integer
+#  likersNum      :integer
+#  viewersNum     :integer
 #
 
 class Entity < ActiveRecord::Base

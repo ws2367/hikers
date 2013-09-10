@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130910045818) do
+ActiveRecord::Schema.define(:version => 20130910195536) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -20,6 +20,8 @@ ActiveRecord::Schema.define(:version => 20130910045818) do
     t.integer  "post_id"
     t.integer  "user_id"
     t.boolean  "status"
+    t.integer  "hatersNum"
+    t.integer  "likersNum"
   end
 
   add_index "comments", ["post_id"], :name => "index_comments_on_post_id"
@@ -31,6 +33,10 @@ ActiveRecord::Schema.define(:version => 20130910045818) do
     t.datetime "updated_at",     :null => false
     t.integer  "institution_id"
     t.integer  "user_id"
+    t.integer  "followersNum"
+    t.integer  "hatersNum"
+    t.integer  "likersNum"
+    t.integer  "viewersNum"
   end
 
   add_index "entities", ["institution_id"], :name => "index_contexts_on_institution_id"
@@ -42,7 +48,6 @@ ActiveRecord::Schema.define(:version => 20130910045818) do
     t.string   "followee_type"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
-    t.integer  "followersNum"
   end
 
   add_index "follows", ["followee_id"], :name => "index_follows_on_followee_id"
@@ -54,7 +59,6 @@ ActiveRecord::Schema.define(:version => 20130910045818) do
     t.string   "hatee_type"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
-    t.integer  "hatersNum"
   end
 
   add_index "hates", ["hatee_id"], :name => "index_hates_on_hatee_id"
@@ -75,7 +79,6 @@ ActiveRecord::Schema.define(:version => 20130910045818) do
     t.string   "likee_type"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
-    t.integer  "likersNum"
   end
 
   add_index "likes", ["likee_id"], :name => "index_likes_on_likee_id"
@@ -111,11 +114,15 @@ ActiveRecord::Schema.define(:version => 20130910045818) do
 
   create_table "posts", :force => true do |t|
     t.text     "content"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
     t.integer  "entity_id"
     t.integer  "user_id"
     t.boolean  "status"
+    t.integer  "followersNum"
+    t.integer  "hatersNum"
+    t.integer  "likersNum"
+    t.integer  "viewersNum"
   end
 
   add_index "posts", ["entity_id"], :name => "index_posts_on_context_id"

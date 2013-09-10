@@ -8,7 +8,6 @@
 #  hatee_type :string(255)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  hatersNum  :integer
 #
 
 class Hate < ActiveRecord::Base
