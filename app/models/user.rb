@@ -42,6 +42,7 @@ has_many :follows, inverse_of: :user
 has_many :likes,   inverse_of: :user
 has_many :hates,   inverse_of: :user
 has_many :views,   inverse_of: :user
+has_many :shares,  inverse_of: :user
 
 has_many :followedEntities, through: :follows, 
                             source: "followee",
@@ -70,12 +71,18 @@ has_many :hatedComments,    through: :hates,
                             source: "hatee",
                             source_type: "Comment"
 
-
 has_many :viewedEntities,   through: :views, 
                             source: "viewee",
                             source_type: "Entity"
 has_many :viewedPosts,      through: :views, 
                             source: "viewee",
+                            source_type: "Post"
+
+has_many :sharedEntities,   through: :shares, 
+                            source: "sharee",
+                            source_type: "Entity"
+has_many :sharedPosts,      through: :shares, 
+                            source: "sharee",
                             source_type: "Post"
 
 end

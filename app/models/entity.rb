@@ -35,6 +35,10 @@ class Entity < ActiveRecord::Base
   has_many :viewers, through: :views, 
   					         source: :user
 
+  has_many :shares,  as: :sharee
+  has_many :sharers, through: :shares, 
+                     source: :user
+
   validates :name, format: {with: /\A[a-zA-Z,.'\s\-]+\z/, 
     message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
 

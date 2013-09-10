@@ -35,6 +35,10 @@ class Post < ActiveRecord::Base
   has_many :views,   as: :viewee
   has_many :viewers, through: :views, 
   					 source: :user
+ 
+  has_many :shares,  as: :sharee
+  has_many :sharers, through: :shares, 
+                     source: :user
 
   #TODO: remember to add 'read more'
   validates :content, length: {
