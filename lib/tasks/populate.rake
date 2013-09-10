@@ -20,7 +20,8 @@ namespace :db do
     10.times do |n|
         name = Faker::Address.state
         @loc = Location.create!(name: name)
-        
+        puts "[DEBUG] creating location #{n+1} of 10"
+
         10.times do |m|
             name = Faker::Company.name
             @inst = @loc.institutions.create!(name: name)
@@ -49,7 +50,7 @@ namespace :db do
 @lastUser = User.last
             User.all.each do |user|
 			
-				puts "[DEBUG] user #{user.id+1} of 10 is creating..."
+				puts "[DEBUG] User #{user.id} of 10 is creating"
 
                 user.likes.create!(likee_id: @lastUser.entities.first.id,
                                    likee_type: "Entity")
