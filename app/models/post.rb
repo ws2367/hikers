@@ -1,11 +1,28 @@
+# == Schema Information
+#
+# Table name: posts
+#
+#  id           :integer          not null, primary key
+#  content      :text
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  entity_id    :integer
+#  user_id      :integer
+#  status       :boolean
+#  followersNum :integer
+#  hatersNum    :integer
+#  likersNum    :integer
+#  viewersNum   :integer
+#
+
 class Post < ActiveRecord::Base
-  attr_accessible :content, :title, :user_id
+  attr_accessible :content, :user_id
 
   belongs_to :entity
   belongs_to :user
 
-  has_many :comments
-  has_many :pictures
+  has_many :comments, inverse_of: :post
+  has_many :pictures, inverse_of: :post
   
   has_many :follows, as: :followee
   has_many :followers, through: :follows, 
@@ -22,4 +39,24 @@ class Post < ActiveRecord::Base
   has_many :views,   as: :viewee
   has_many :viewers, through: :views, 
   					 source: :user
+ 
+  has_many :shares,  as: :sharee
+  has_many :sharers, through: :shares, 
+                     source: :user
+
+  #TODO: remember to add 'read more'
+  validates :content, length: {
+    minimum: 1,
+    maximum: 400,
+    tokenizer: lambda { |str| str.scan(/\w+/) },
+    too_short: "must have at least %{count} words",
+    too_long: "must have at most %{count} words"
+  }
+  
+  validates :content, :entity, :user, presence: true
+
+  # boolean validation cannot use presence since false.blank? is true
+  # validates :status, inclusion: { in: [true, false] }
+
+  validates_associated :entity, :user
 end

@@ -1,11 +1,11 @@
-require 'home_app.rb'
+#require 'home_app.rb'
 
 Hikers::Application.routes.draw do
   get "users/show"
 
   resources :pins
 
-    match "/sinatra" => HomeApp, :anchor => false
+#    match "/sinatra" => HomeApp, :anchor => false
 
   devise_for :users
 

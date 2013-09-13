@@ -1,10 +1,26 @@
+# == Schema Information
+#
+# Table name: entities
+#
+#  id             :integer          not null, primary key
+#  name           :string(255)
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  institution_id :integer
+#  user_id        :integer
+#  followersNum   :integer
+#  hatersNum      :integer
+#  likersNum      :integer
+#  viewersNum     :integer
+#
+
 class Entity < ActiveRecord::Base
   attr_accessible :name, :user_id, :institution_id
-  
+
   belongs_to :institution
   belongs_to :user
 
-  has_many :posts
+  has_many :posts,     inverse_of: :entity
   has_many :comments,  through: :posts
 
   has_many :follows,   as: :followee
@@ -22,4 +38,15 @@ class Entity < ActiveRecord::Base
   has_many :views,   as: :viewee
   has_many :viewers, through: :views, 
   					         source: :user
+
+  has_many :shares,  as: :sharee
+  has_many :sharers, through: :shares, 
+                     source: :user
+
+  validates :name, format: {with: /\A[a-zA-Z,.'\s\-]+\z/, 
+    message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
+
+  validates :name, :institution, :user, presence: true
+
+  validates_associated :institution, :user
 end
