@@ -21,4 +21,7 @@ class Like < ActiveRecord::Base
   	message: "%{value} is not a valid likee type"}
 
   validates :likee_id, :likee_type, :user_id, presence: true
+
+  after_create  {self.likee.increment!(:likersNum)}
+  after_destroy {self.likee.decrement!(:likersNum)}
 end

@@ -8,11 +8,11 @@
 #  updated_at   :datetime         not null
 #  entity_id    :integer
 #  user_id      :integer
-#  status       :boolean
-#  followersNum :integer
-#  hatersNum    :integer
-#  likersNum    :integer
-#  viewersNum   :integer
+#  status       :boolean          default(TRUE)
+#  followersNum :integer          default(0)
+#  hatersNum    :integer          default(0)
+#  likersNum    :integer          default(0)
+#  viewersNum   :integer          default(0)
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html

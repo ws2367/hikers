@@ -8,10 +8,10 @@
 #  updated_at     :datetime         not null
 #  institution_id :integer
 #  user_id        :integer
-#  followersNum   :integer
-#  hatersNum      :integer
-#  likersNum      :integer
-#  viewersNum     :integer
+#  followersNum   :integer          default(0)
+#  hatersNum      :integer          default(0)
+#  likersNum      :integer          default(0)
+#  viewersNum     :integer          default(0)
 #
 
 class Entity < ActiveRecord::Base
@@ -37,7 +37,7 @@ class Entity < ActiveRecord::Base
 
   has_many :views,   as: :viewee
   has_many :viewers, through: :views, 
-  					         source: :user
+                     source: :user
 
   has_many :shares,  as: :sharee
   has_many :sharers, through: :shares, 

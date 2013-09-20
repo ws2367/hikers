@@ -37,7 +37,7 @@ class Share < ActiveRecord::Base
   validates_associated :sharee, :user
 
   validates :sharee_type, inclusion: {in: %w(Entity Post), 
-  	message: "%{value} is not a valid sharee type"}
+             message: "%{value} is not a valid sharee type"}
 
   validates :user_id, :sharee_id, :sharee_type, presence: true
 end

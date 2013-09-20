@@ -54,6 +54,7 @@ namespace :db do
 
                 user.likes.create!(likee_id: @lastUser.entities.first.id,
                                    likee_type: "Entity")
+                @lastUser.entities.first.likersNum = 
                 user.likes.create!(likee_id: @lastUser.posts.first.id,
                                    likee_type: "Post")
                 user.likes.create!(likee_id: @lastUser.comments.first.id,

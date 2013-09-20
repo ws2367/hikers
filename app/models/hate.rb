@@ -23,4 +23,8 @@ class Hate < ActiveRecord::Base
   	message: "%{value} is not a valid hatee type"}
 
   validates :user_id, :hatee_id, :hatee_type, presence: true
+
+  after_create  {self.hatee.increment!(:hatersNum)}
+  after_destroy {self.hatee.decrement!(:hatersNum)}
+
 end

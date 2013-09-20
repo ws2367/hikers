@@ -8,11 +8,11 @@
 #  updated_at   :datetime         not null
 #  entity_id    :integer
 #  user_id      :integer
-#  status       :boolean
-#  followersNum :integer
-#  hatersNum    :integer
-#  likersNum    :integer
-#  viewersNum   :integer
+#  status       :boolean          default(TRUE)
+#  followersNum :integer          default(0)
+#  hatersNum    :integer          default(0)
+#  likersNum    :integer          default(0)
+#  viewersNum   :integer          default(0)
 #
 
 class Post < ActiveRecord::Base
@@ -24,13 +24,13 @@ class Post < ActiveRecord::Base
   has_many :comments, inverse_of: :post
   has_many :pictures, inverse_of: :post
   
-  has_many :follows, as: :followee
+  has_many :follows,   as: :followee
   has_many :followers, through: :follows, 
-  					   source: :user
+                       source: :user
 
   has_many :likes,  as: :likee
   has_many :likers, through: :likes, 
-  					source: :user                      
+                    source: :user                      
   
   has_many :hates,  as: :hatee
   has_many :haters, through: :hates, 
@@ -38,7 +38,7 @@ class Post < ActiveRecord::Base
 
   has_many :views,   as: :viewee
   has_many :viewers, through: :views, 
-  					 source: :user
+                     source: :user
  
   has_many :shares,  as: :sharee
   has_many :sharers, through: :shares, 
@@ -59,4 +59,5 @@ class Post < ActiveRecord::Base
   # validates :status, inclusion: { in: [true, false] }
 
   validates_associated :entity, :user
+
 end

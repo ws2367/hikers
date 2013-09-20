@@ -25,4 +25,9 @@ class Follow < ActiveRecord::Base
   	message: "%{value} is not a valid followee type"}
 
   validates :user_id, :followee_id, :followee_type, presence: true
+
+  after_create  {self.followee.increment!(:followersNum)}
+  after_destroy {self.followee.decrement!(:followersNum)}
+  #after_destroy { |record| Person.destroy_all "firm_id = #{record.id}"   }
+
 end

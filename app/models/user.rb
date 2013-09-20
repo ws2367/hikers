@@ -16,6 +16,7 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  name                   :string(255)
+#  status                 :boolean          default(TRUE)
 #
 
 class User < ActiveRecord::Base
