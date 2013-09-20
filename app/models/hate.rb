@@ -9,7 +9,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-
+ 
 class Hate < ActiveRecord::Base
   attr_accessible :user_id, :hatee_id, :hatee_type
 

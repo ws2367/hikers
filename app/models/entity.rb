@@ -12,7 +12,7 @@
 #  hatersNum      :integer          default(0)
 #  likersNum      :integer          default(0)
 #  viewersNum     :integer          default(0)
-#
+# 
 
 class Entity < ActiveRecord::Base
   attr_accessible :name, :user_id, :institution_id

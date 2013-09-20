@@ -12,7 +12,7 @@
 #  hatersNum  :integer          default(0)
 #  likersNum  :integer          default(0)
 #
-
+ 
 class Comment < ActiveRecord::Base
   attr_accessible :content, :user_id
 

@@ -27,7 +27,7 @@ class Post < ActiveRecord::Base
   has_many :follows,   as: :followee
   has_many :followers, through: :follows, 
                        source: :user
-
+ 
   has_many :likes,  as: :likee
   has_many :likers, through: :likes, 
                     source: :user                      
