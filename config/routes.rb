@@ -1,19 +1,30 @@
 #require 'home_app.rb'
 
 Hikers::Application.routes.draw do
-  get "users/show"
 
-  resources :pins
+  resources :users
+  resources :entities
+  resources :posts
+  resources :comments
+  resources :follows
+  resources :likes
+  resources :views
+  resources :shares
+  resources :hates
+
+  #get "users/show"
+
+  #resources :pins
 
 #    match "/sinatra" => HomeApp, :anchor => false
 
-  devise_for :users
+  #devise_for :users
 
-  match 'users/:id' => 'users#show', as: :user
+  #match 'users/:id' => 'users#show', as: :user
 
-  get 'about' => 'pages#about'
+  get 'searchposts' => 'post#search'
 
-  root :to => "pins#index"
+  #root :to => "pins#index"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
