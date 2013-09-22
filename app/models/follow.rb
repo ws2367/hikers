@@ -20,7 +20,6 @@ class Follow < ActiveRecord::Base
   # is because follows are created after followees are created
   validates_associated :followee, :user
 
-
   validates :followee_type, inclusion: {in: %w(Entity Post), 
   	message: "%{value} is not a valid followee type"}
 
