@@ -12,10 +12,12 @@
 #  hatersNum      :integer          default(0)
 #  likersNum      :integer          default(0)
 #  viewersNum     :integer          default(0)
-# 
+#  positions      :text
+#
 
 class Entity < ActiveRecord::Base
-  attr_accessible :name, :user_id, :institution_id
+  attr_accessible :name, :user_id, :institution_id, :positions
+  serialize :positions
 
   belongs_to :institution
   belongs_to :user
@@ -49,4 +51,18 @@ class Entity < ActiveRecord::Base
   validates :name, :institution, :user, presence: true
 
   validates_associated :institution, :user
+
+  def addPosition position
+    positions.push(position)
+    update_attribute(:positions, positions)
+  end
+
+  def removePosition position
+    if positions.delete(position) != nil
+      update_attribute(:positions, positions)
+      return true
+    else
+      return false
+    end
+  end
 end
