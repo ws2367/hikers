@@ -44,6 +44,20 @@ class Post < ActiveRecord::Base
   has_many :sharers, through: :shares, 
                      source: :user
 
+
+  #def get_picture index
+  #  send_file pictures[index].img.path, :type => pictures[index].img_content_type
+  #end
+
+  # img is a File object
+  #def create_picture img
+  #  @pic = pictures.new
+  #  @pic.img = img
+  #  @pic.save
+    # pictures.first.img = fp
+    # pictures.first.save
+  #end
+
   #TODO: remember to add 'read more'
   validates :content, length: {
     minimum: 1,

@@ -2,6 +2,9 @@
 
 Hikers::Application.routes.draw do
 
+  match "pictures/:post_id", to: 'pictures#create', via: [:post]
+  get "pictures/:post_id/:index", to: 'pictures#show'
+
   resources :users
   resources :entities
   resources :posts
@@ -11,10 +14,6 @@ Hikers::Application.routes.draw do
   resources :views
   resources :shares
   resources :hates
-
-  #get "users/show"
-
-  #resources :pins
 
 #    match "/sinatra" => HomeApp, :anchor => false
 

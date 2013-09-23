@@ -23,7 +23,8 @@ Hikers::Application.configure do
   config.serve_static_assets = true
 
   # config.assets.compress = false
-
+  # 
+  Paperclip.options[:command_path] = "/usr/local/bin"
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = :uglifier
   # config.assets.css_compressor = :sass
