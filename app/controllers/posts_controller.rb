@@ -1,7 +1,6 @@
 class PostsController < ApplicationController
 
   respond_to :json
-  
 
   POST /posts
   def create

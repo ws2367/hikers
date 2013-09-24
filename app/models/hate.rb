@@ -10,6 +10,18 @@
 #  updated_at :datetime         not null
 #
 
+# == Schema Information
+#
+# Table name: hates
+#
+#  id         :integer          not null, primary key
+#  user_id    :integer
+#  hatee_id   :integer
+#  hatee_type :string(255)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+ 
 class Hate < ActiveRecord::Base
   attr_accessible :user_id, :hatee_id, :hatee_type
 
@@ -23,4 +35,8 @@ class Hate < ActiveRecord::Base
   	message: "%{value} is not a valid hatee type"}
 
   validates :user_id, :hatee_id, :hatee_type, presence: true
+
+  after_create  {self.hatee.increment!(:hatersNum)}
+  after_destroy {self.hatee.decrement!(:hatersNum)}
+
 end

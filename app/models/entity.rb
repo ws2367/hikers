@@ -8,14 +8,16 @@
 #  updated_at     :datetime         not null
 #  institution_id :integer
 #  user_id        :integer
-#  followersNum   :integer
-#  hatersNum      :integer
-#  likersNum      :integer
-#  viewersNum     :integer
+#  followersNum   :integer          default(0)
+#  hatersNum      :integer          default(0)
+#  likersNum      :integer          default(0)
+#  viewersNum     :integer          default(0)
+#  positions      :text
 #
 
 class Entity < ActiveRecord::Base
-  attr_accessible :name, :user_id, :institution_id
+  attr_accessible :name, :user_id, :institution_id, :positions
+  serialize :positions
 
   belongs_to :institution
   belongs_to :user
@@ -37,7 +39,7 @@ class Entity < ActiveRecord::Base
 
   has_many :views,   as: :viewee
   has_many :viewers, through: :views, 
-  					         source: :user
+                     source: :user
 
   has_many :shares,  as: :sharee
   has_many :sharers, through: :shares, 
@@ -49,4 +51,18 @@ class Entity < ActiveRecord::Base
   validates :name, :institution, :user, presence: true
 
   validates_associated :institution, :user
+
+  def addPosition position
+    positions.push(position)
+    update_attribute(:positions, positions)
+  end
+
+  def removePosition position
+    if positions.delete(position) != nil
+      update_attribute(:positions, positions)
+      return true
+    else
+      return false
+    end
+  end
 end

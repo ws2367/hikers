@@ -8,6 +8,7 @@ gem 'json'
 gem 'rails-api'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+# Official API doc: http://api.rubyonrails.org/v3.2.13/
 gem 'rails', '3.2.13'
 
 # Annotate models, fixtures and tests
@@ -43,7 +44,8 @@ gem 'coffee-rails', '~> 3.2.2'
 
 gem 'devise', "~> 3.0.0"
 gem 'simple_form'
-gem 'paperclip', '~> 3.0'
+gem 'paperclip', '3.4.2'
+gem 'cocaine'
 gem 'aws-sdk'
 
 gem 'thin'

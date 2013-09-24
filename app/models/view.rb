@@ -17,4 +17,7 @@ class View < ActiveRecord::Base
   # attr_accessible :title, :body
   
   validates_associated :viewee, :user
+
+  after_create  {self.viewee.increment!(:viewersNum)}
+  after_destroy {self.viewee.decrement!(:viewersNum)}
 end
