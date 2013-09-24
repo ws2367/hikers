@@ -3,7 +3,7 @@ class PostsController < ApplicationController
   respond_to :json
   
 
-  # POST /posts
+  POST /posts
   def create
     @entity = Entity.find(params[:entity_id])
     @post = @entity.posts.new(params[:post])
@@ -11,6 +11,23 @@ class PostsController < ApplicationController
     	if @post.save
       		format.json { render json: @post }
       end
+    end
+    respond_to do |format|
+       format.json { render json: @post }
+    end
+  end
+
+  def create
+    num = params[:num]
+    sortby = params[:sortby]
+    if sortby == "popularity"
+      @posts = Post.find(:all, :order => "followersNum DESC", :limit => num)
+    elsif sortby == "recent"
+      @posts = Post.find(:all, :order => "created_at DESC", :limit => num)
+    elsif sortby == "nearby"
+    end
+    respond_to do |format|
+       format.json { render json: @posts }
     end
   end
 
@@ -22,8 +39,8 @@ class PostsController < ApplicationController
     end
   end
 
-  # GET /posts
-  def index
+  # POST /orderposts
+  def order
     num = params[:num]
     sortby = params[:sortby]
     if sortby == "popularity"
