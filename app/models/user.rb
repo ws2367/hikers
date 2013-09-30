@@ -25,11 +25,8 @@ class User < ActiveRecord::Base
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, :recoverable, :token_authenticatable,
+  devise :database_authenticatable, :registerable, :recoverable,
          :rememberable, :trackable, :validatable, :authentication_keys => [:login]
-
-  before_save :ensure_authentication_token # whenever a user is saved i,e created or updated it
-  # will see that a unique authentication token get created if not already exist
 
   # Seems like we don't need to do it in Rails 4 since it's all strong params
   # Setup accessible (or protected) attributes for your model
@@ -39,7 +36,15 @@ class User < ActiveRecord::Base
 # This is in addition to a real persisted field like 'user_name'
 attr_accessor :login
 
-
+#authentication key can be either user_name or device_token
+def self.find_first_by_auth_conditions(warden_conditions)
+  conditions = warden_conditions.dup
+  if login = conditions.delete(:login)
+    where(conditions).where(["lower(user_name) = :value OR lower(device_token) = :value", { :value => login.downcase }]).first
+  else
+    where(conditions).first
+  end
+end
 
 #rewrite the method so we don't need email
 def email_required? 
