@@ -2,6 +2,16 @@ class UsersController < ApplicationController
 
   respond_to :json
   
+#authentication key can be either user_name or device_token
+protected
+def self.find_first_by_auth_conditions(warden_conditions)
+  conditions = warden_conditions.dup
+  if login = conditions.delete(:login)
+    where(conditions).where(["lower(user_name) = :value OR lower(device_token) = :value", { :value => login.downcase }]).first
+  else
+    where(conditions).first
+  end
+end
 
   # POST /users
   def create

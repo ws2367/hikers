@@ -15,6 +15,10 @@ Hikers::Application.routes.draw do
   resources :shares
   resources :hates
 
+  devise_for :users, :token_authentication_key => 'authentication_key'
+  
+  devise_for :users, :controllers => { :sessions => :sessions }
+
 #    match "/sinatra" => HomeApp, :anchor => false
 
   #devise_for :users

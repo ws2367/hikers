@@ -10,9 +10,9 @@ class PicturesController < ApplicationController
   		                  img: request.body, img_content_type: request.content_type)
   	
   	# Picture model validates whether the assoicated post exists
-	respond_to do |format|
-		format.json { render json: { "status" => @pic.id? ? "success" : "fail"} }
-	end
+  	respond_to do |format|
+  		format.json { render json: { "status" => @pic.id? ? "success" : "fail"} }
+  	end
   end
 
   #GET /pictures/:post_id/:index

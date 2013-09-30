@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130922155402) do
+ActiveRecord::Schema.define(:version => 20130929141548) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -144,8 +144,10 @@ ActiveRecord::Schema.define(:version => 20130922155402) do
     t.datetime "updated_at",                               :null => false
     t.boolean  "status",                 :default => true
     t.string   "device_token"
+    t.string   "authentication_token"
   end
 
+  add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["user_name"], :name => "index_users_on_user_name", :unique => true
 
