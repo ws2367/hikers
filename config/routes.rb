@@ -24,8 +24,9 @@ Hikers::Application.routes.draw do
   #devise_for :users
 
   #match 'users/:id' => 'users#show', as: :user
+  post 'orderposts' => 'posts#order'
 
-  get 'searchposts' => 'post#search'
+  post 'searchposts' => 'posts#search'
 
   #root :to => "pins#index"
   # The priority is based upon order of creation: first created -> highest priority.

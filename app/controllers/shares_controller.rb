@@ -15,7 +15,7 @@ class SharesController < ApplicationController
     end
   end
 
-  # GET /posts/1
+  # GET /shares/1
   def show
   	@post = Post.find(params[:id])
   	respond_to do |format|
@@ -23,7 +23,7 @@ class SharesController < ApplicationController
     end
   end
 
-  # DELETE /posts/1
+  # DELETE /shares/1
   def destroy
   	@user = User.first
   	#@user = User.find(params[:id])
@@ -33,4 +33,9 @@ class SharesController < ApplicationController
       	format.json { render json:  @user}
     end
   end
+
+  # PUT /shares/1
+  def update
+    @post = Post.find(params[:id])
+    @share = @post.Shares.create
 end
