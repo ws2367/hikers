@@ -1,8 +1,9 @@
 class PostsController < ApplicationController
-
+  
+  before_filter :authenticate_user! #, :except => [:show, :index]  
   respond_to :json
 
-  POST /posts
+  # POST /posts
   def create
     @entity = Entity.find(params[:entity_id])
     @post = @entity.posts.new(params[:post])

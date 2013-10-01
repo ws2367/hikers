@@ -24,9 +24,9 @@ class User < ActiveRecord::Base
   #before_filter :authenticate_user! 
 
   # Include default devise modules. Others available are:
-  # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, :recoverable,
-         :rememberable, :trackable, :validatable, :authentication_keys => [:login]
+  # :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
+  devise :database_authenticatable, :registerable, :recoverable, :token_authenticatable, 
+         :rememberable, :trackable, :validatable, :authentication_keys => [:user_name]
 
   # Seems like we don't need to do it in Rails 4 since it's all strong params
   # Setup accessible (or protected) attributes for your model
@@ -37,14 +37,14 @@ class User < ActiveRecord::Base
 attr_accessor :login
 
 #authentication key can be either user_name or device_token
-def self.find_first_by_auth_conditions(warden_conditions)
-  conditions = warden_conditions.dup
-  if login = conditions.delete(:login)
-    where(conditions).where(["lower(user_name) = :value OR lower(device_token) = :value", { :value => login.downcase }]).first
-  else
-    where(conditions).first
-  end
-end
+#def self.find_first_by_auth_conditions(warden_conditions)
+#  conditions = warden_conditions.dup
+#  if login = conditions.delete(:login)
+#    where(conditions).where(["lower(user_name) = :value OR lower(device_token) = :value", { :value => login.downcase }]).first
+#  else
+#    where(conditions).first
+#  end
+#end
 
 #rewrite the method so we don't need email
 def email_required? 

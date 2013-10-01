@@ -2,9 +2,16 @@
 
 Hikers::Application.routes.draw do
 
-  match "pictures/:post_id", to: 'pictures#create', via: [:post]
-  get "pictures/:post_id/:index", to: 'pictures#show'
+  post "pictures/:post_id" => 'pictures#create'
+  get "pictures/:post_id/:index" => 'pictures#show'
 
+#namespace :api do
+#  namespace :v1  do
+#    resources :tokens,:only => [:create, :destroy]
+#  end
+#end
+
+  resources :tokens, :only => [:create, :destroy]
   resources :users
   resources :entities
   resources :posts
@@ -17,7 +24,7 @@ Hikers::Application.routes.draw do
 
 #    match "/sinatra" => HomeApp, :anchor => false
 
-  #devise_for :users
+  devise_for :users
 
   #match 'users/:id' => 'users#show', as: :user
   post 'orderposts' => 'posts#order'
