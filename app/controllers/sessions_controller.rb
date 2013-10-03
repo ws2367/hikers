@@ -1,15 +1,16 @@
-class TokensController < ApplicationController
+class SessionsController < ApplicationController
 
-  skip_before_filter :verify_authenticity_token
+  skip_before_filter :authenticate_user!, :only => :create
+  #skip_before_filter :verify_authenticity_token
   respond_to :json
 
   def create
     user_name = params[:user_name]
     password = params[:password]
-    if request.format != :json
-      render :status=>406, :json=>{:message=>"The request must be json"}
-     return
-    end
+    #if request.format != :json
+    #  render :status=>406, :json=>{:message=>"The request must be json"}
+    # return
+    #end
  
     if user_name.nil? or password.nil?
        render :status=>400,
@@ -37,14 +38,14 @@ class TokensController < ApplicationController
   end
  
   def destroy
-    @user=User.find_by_authentication_token(params[:id])
+    @user=User.find_by_authentication_token(params[:authentication_token])
     if @user.nil?
       logger.info("Token not found.")
       render :status=>404, :json=>{:message=>"Invalid token."}
     else
       @user.reset_authentication_token!
-      render :status=>200, :json=>{:token=>params[:id]}
+      render :status=>200, :json=>{:token=>params[:authentication_token]}
     end
   end
- 
+
 end
