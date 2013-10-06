@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131005145904) do
+ActiveRecord::Schema.define(:version => 20131006002148) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -124,6 +124,7 @@ ActiveRecord::Schema.define(:version => 20131005145904) do
     t.integer  "hatersNum",    :default => 0
     t.integer  "likersNum",    :default => 0
     t.integer  "viewersNum",   :default => 0
+    t.integer  "entityNum",    :default => 0
   end
 
   add_index "posts", ["entity_id"], :name => "index_posts_on_context_id"

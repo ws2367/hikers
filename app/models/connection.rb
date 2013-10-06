@@ -17,4 +17,7 @@ class Connection < ActiveRecord::Base
 
   validates :post_id, :entity_id, presence: true
   validates_associated :post, :entity
+
+  after_create  {self.post.increment!(:entityNum)}
+  after_destroy {self.post.decrement!(:entityNum)}
 end
