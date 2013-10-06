@@ -1,0 +1,20 @@
+# == Schema Information
+#
+# Table name: connections
+#
+#  id         :integer          not null, primary key
+#  entity_id  :integer
+#  post_id    :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  entity_id: 1
+  post_id: 1
+
+two:
+  entity_id: 1
+  post_id: 1

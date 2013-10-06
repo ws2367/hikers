@@ -22,12 +22,14 @@ class Entity < ActiveRecord::Base
   belongs_to :institution
   belongs_to :user
 
-  has_many :posts,     inverse_of: :entity
+  has_many :connections
+  has_many :posts,     through: :connections
+
   has_many :comments,  through: :posts
 
   has_many :follows,   as: :followee
   has_many :followers, through: :follows, 
-                       source:    :user
+                       source:  :user
 
   has_many :likes,  as: :likee
   has_many :likers, through: :likes, 
@@ -63,6 +65,24 @@ class Entity < ActiveRecord::Base
       return true
     else
       return false
+    end
+  end
+
+  def next
+    @ent = Entity.where("id > ?", id).order("id ASC").first
+    if @ent
+      return @ent
+    else
+      return Entity.first
+    end
+  end
+
+  def prev
+    @ent = Entity.where("id < ?", id).order("id DESC").first
+    if @ent
+      return @ent
+    else
+      return Entity.last
     end
   end
 end
