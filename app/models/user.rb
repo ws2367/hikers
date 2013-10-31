@@ -17,6 +17,7 @@
 #  updated_at             :datetime         not null
 #  status                 :boolean          default(TRUE)
 #  device_token           :string(255)
+#  authentication_token   :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -55,6 +56,15 @@ end
 def email_changed?
   false
 end
+
+def next
+  User.where("id > ?", id).order("id ASC").first
+end
+
+def prev
+  User.where("id < ?", id).order("id DESC").first
+end
+
 
 validates :user_name,
   :uniqueness => {

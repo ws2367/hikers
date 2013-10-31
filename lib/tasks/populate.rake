@@ -37,9 +37,9 @@ namespace :db do
 
 
                 content = Faker::Lorem.paragraph
-                @post = @ent.posts.create!(content: content,
-                                           user_id: user.id)
-                                           #:status => true)
+
+                @post = @ent.posts.create!(content: content, user_id: user.id)
+                Connection.create!(post_id: @post.id, entity_id: @ent.prev.id)
 
                 @comment = @post.comments.create!(content: content,
                                                   user_id: user.id)

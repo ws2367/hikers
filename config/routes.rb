@@ -11,8 +11,6 @@ Hikers::Application.routes.draw do
 #  end
 #end
 
-  resources :tokens, :only => [:create, :destroy]
-  
   resources :entities
   resources :posts
   resources :comments
@@ -25,6 +23,7 @@ Hikers::Application.routes.draw do
 #    match "/sinatra" => HomeApp, :anchor => false
 
   devise_for :users, :controllers => {sessions:'sessions'} # Custom controller for API token access
+
   resources :users
   #match 'users/:id' => 'users#show', as: :user
   post 'orderposts' => 'posts#order'

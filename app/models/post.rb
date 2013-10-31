@@ -13,14 +13,17 @@
 #  hatersNum    :integer          default(0)
 #  likersNum    :integer          default(0)
 #  viewersNum   :integer          default(0)
+#  entityNum    :integer          default(0)
 #
 
 class Post < ActiveRecord::Base
-  attr_accessible :content, :user_id
+  attr_accessible :content, :user_id, :entityNum
 
-  belongs_to :entity
   belongs_to :user
 
+  has_many :connections
+  has_many :entities, through: :connections
+  
   has_many :comments, inverse_of: :post
   has_many :pictures, inverse_of: :post
   
@@ -67,11 +70,11 @@ class Post < ActiveRecord::Base
     too_long: "must have at most %{count} words"
   }
   
-  validates :content, :entity, :user, presence: true
+  validates :content, :connection, :user, presence: true
 
   # boolean validation cannot use presence since false.blank? is true
   # validates :status, inclusion: { in: [true, false] }
 
-  validates_associated :entity, :user
+  validates_associated :user
 
 end

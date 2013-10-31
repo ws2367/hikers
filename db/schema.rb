@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130922155402) do
+ActiveRecord::Schema.define(:version => 20131006002148) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -26,6 +26,16 @@ ActiveRecord::Schema.define(:version => 20130922155402) do
 
   add_index "comments", ["post_id"], :name => "index_comments_on_post_id"
   add_index "comments", ["user_id"], :name => "index_comments_on_user_id"
+
+  create_table "connections", :force => true do |t|
+    t.integer  "entity_id"
+    t.integer  "post_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "connections", ["entity_id"], :name => "index_connections_on_entity_id"
+  add_index "connections", ["post_id"], :name => "index_connections_on_post_id"
 
   create_table "entities", :force => true do |t|
     t.string   "name"
@@ -114,6 +124,7 @@ ActiveRecord::Schema.define(:version => 20130922155402) do
     t.integer  "hatersNum",    :default => 0
     t.integer  "likersNum",    :default => 0
     t.integer  "viewersNum",   :default => 0
+    t.integer  "entityNum",    :default => 0
   end
 
   add_index "posts", ["entity_id"], :name => "index_posts_on_context_id"
@@ -144,8 +155,10 @@ ActiveRecord::Schema.define(:version => 20130922155402) do
     t.datetime "updated_at",                               :null => false
     t.boolean  "status",                 :default => true
     t.string   "device_token"
+    t.string   "authentication_token"
   end
 
+  add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["user_name"], :name => "index_users_on_user_name", :unique => true
 

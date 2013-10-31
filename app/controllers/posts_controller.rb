@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
   
-  before_filter :authenticate_user! #, :except => [:show, :index]  
+  #before_filter :authenticate_user! #, :except => [:show, :index]  
   respond_to :json
 
   #POST /posts
@@ -30,10 +30,26 @@ class PostsController < ApplicationController
       @posts = Post.find(:all, :order => "followersNum DESC", :limit => num)
     elsif sortby == "recent"
       @posts = Post.find(:all, :order => "created_at DESC", :limit => num)
+      @results = Array.new(num.to_i)
+      @posts.each_with_index {|post, i|
+        @results[i] = Hash.new
+        @results[i]["content"] = post.content
+        @results[i]["entities"] = post.entities.first.name + ", " + 
+                                  post.entities.first.institution.name + ", " + 
+                                  post.entities.first.institution.location.name
+        #@results[i]["entities"] = Array.new
+        #post.entities.each { |entity|
+        #  @results[i]["entities"] << entity.name + ", " + 
+        #                             entity.institution.name + ", " + 
+        #                             entity.institution.location.name
+        #}
+        @results[i]["pic"] = "pic1";
+      }
+      
     elsif sortby == "nearby"
     end
     respond_to do |format|
-       format.json { render json: @posts }
+       format.json { render json: @results }
     end
   end
 

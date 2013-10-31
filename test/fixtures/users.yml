@@ -17,6 +17,7 @@
 #  updated_at             :datetime         not null
 #  status                 :boolean          default(TRUE)
 #  device_token           :string(255)
+#  authentication_token   :string(255)
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
