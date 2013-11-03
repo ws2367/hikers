@@ -30,6 +30,8 @@ Hikers::Application.routes.draw do
 
   post 'searchposts' => 'posts#search'
 
+  post 'addnumshares' => 'shares#addnum'
+
   #root :to => "pins#index"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

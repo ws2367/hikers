@@ -7,11 +7,13 @@ class SharesController < ApplicationController
   def create
     @user = User.find(params[:user_id])
     #@share = @user.shares.new(params[:share])
-    @share = @user.shares.new(params[:share])
+    #@share = @user.shares.new(params[:share])
+    #@share.numbers = params[:tel]
+    #@share.numbers.push(params[:tel])
     respond_to do |format|
-    	if @share.save
-      		format.json { render json: @share }
-      end
+    	#if @share.save
+      		format.json { render json: @user}
+      #end
     end
   end
 
@@ -34,8 +36,14 @@ class SharesController < ApplicationController
     end
   end
 
-  # PUT /shares/1
+  # POST /addnumshares
   def update
-    @post = Post.find(params[:id])
-    @share = @post.Shares.create
+    @share = Shares.where(sharee_id: params[:sharee_id])
+    @share.push(params[:tel])
+    respond_to do |format|
+      if @share.save
+          format.json { render json: @share }
+      end
+    end
+  end
 end
