@@ -51,7 +51,7 @@ class PostsController < ApplicationController
       @posts.each_with_index {|post, i|
         @results[i] = Hash.new
         @results[i]["content"] = post.content
-        @results[i]["entities"] = post.entities.first.name + ", " + 
+        @results[i]["entity"] = post.entities.first.name + ", " + 
                                   post.entities.first.institution.name + ", " + 
                                   post.entities.first.institution.location.name
         #@results[i]["entities"] = Array.new
