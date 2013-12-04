@@ -32,6 +32,8 @@ Hikers::Application.routes.draw do
 
   post 'addnumshares' => 'shares#addnum'
 
+  get 'S3Credentials' => 'credentials#get'
+
   #root :to => "pins#index"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

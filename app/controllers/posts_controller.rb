@@ -43,7 +43,11 @@ class PostsController < ApplicationController
         #                             entity.institution.name + ", " + 
         #                             entity.institution.location.name
         #}
-        @results[i]["pic"] = "pic1";
+        
+        #@pic  = post.pictures[0]
+        #logger.info("Picture id=#{@pic.id} is found.")
+        #redirect_to @pic.img.url
+        @results[i]["pic"] = "pic1"
       }
       
     elsif sortby == "nearby"
