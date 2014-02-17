@@ -28,15 +28,62 @@ class PostsController < ApplicationController
     sortby = params[:sortby]
     if sortby == "popularity"
       @posts = Post.find(:all, :order => "followersNum DESC", :limit => num)
+      @results = Array.new(num.to_i)
+      @posts.each_with_index {|post, i|
+        @results[i] = Hash.new
+        @results[i]["content"] = post.content
+        @results[i]["pic"] = "pic2";
+
+        @test = Array.new(3)
+        @test[0] = Hash.new
+        @test[1] = Hash.new
+        @test[2] = Hash.new
+
+        @test[0]["yes"] = "1"
+        @test[1]["yes"] = "no"
+        @test[2]["yes"] = "why"
+        
+
+        # the following lines are replaced by multiple entities in the next line 
+        #@results[i]["entity"] = post.entities.first.name + ", " + 
+        #                          post.entities.first.institution.name + ", " + 
+        #                          post.entities.first.institution.location.name
+
+        #@results[i]["entities"] = Hash.new(3)
+        #@results[i]["entities"][0]["yes"]="1"
+        #@results[i]["entities"][1]["no"]="2"
+
+        @results[i]["entities"] = post.entities.collect { |en| {:name => en.name, :location => en.institution.location.name, :institution => en.institution.name} }
+
+        #@results[i]["entities"] = post.entities
+
+        #@results[i]["entities"] = Array.new
+        #post.entities.each { |entity|
+        #  @results[i]["entities"] << entity.name + ", " + 
+        #                             entity.institution.name + ", " + 
+        #                             entity.institution.location.name
+        #}
+
+      }
     elsif sortby == "recent"
       @posts = Post.find(:all, :order => "created_at DESC", :limit => num)
       @results = Array.new(num.to_i)
       @posts.each_with_index {|post, i|
         @results[i] = Hash.new
         @results[i]["content"] = post.content
-        @results[i]["entity"] = post.entities.first.name + ", " + 
-                                  post.entities.first.institution.name + ", " + 
-                                  post.entities.first.institution.location.name
+        @results[i]["pic"] = "pic1";
+
+        
+        #@entitiesOfPost = post.entities
+
+        
+        # the following lines are replaced by multiple entities in the next line
+        #@results[i]["entity"] = post.entities.first.name + ", " + 
+        #                          post.entities.first.institution.name + ", " + 
+        #                          post.entities.first.institution.location.name
+
+        @results[i]["entities"] = post.entities.collect { |en| {:name => en.name, :location => en.institution.location.name, :institution => en.institution.name} }
+
         #@results[i]["entities"] = Array.new
         #post.entities.each { |entity|
         #  @results[i]["entities"] << entity.name + ", " + 
@@ -51,6 +98,8 @@ class PostsController < ApplicationController
       }
       
     elsif sortby == "nearby"
+    elsif sortby == "related"
+
     end
     respond_to do |format|
        format.json { render json: @results }
