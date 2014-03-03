@@ -11,14 +11,16 @@ Hikers::Application.routes.draw do
 #  end
 #end
 
+
   resources :entities
   resources :posts
   resources :comments
+
   resources :follows
-  resources :likes
   resources :views
   resources :shares
   resources :hates
+  resources :likes
 
 #    match "/sinatra" => HomeApp, :anchor => false
 

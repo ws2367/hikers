@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
   #skip_before_filter :verify_authenticity_token
   respond_to :json
 
-  def create
+  def create #mapped to POST users/sign_in
     user_name = params[:user_name]
     password = params[:password]
     #if request.format != :json
@@ -37,7 +37,7 @@ class SessionsController < ApplicationController
     end
   end
  
-  def destroy
+  def destroy #mapped to DELETE users/sign_out 
     @user=User.find_by_authentication_token(params[:authentication_token])
     if @user.nil?
       logger.info("Token not found.")

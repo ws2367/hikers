@@ -19,6 +19,10 @@ Hikers::Application.configure do
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
+  # For mass assignment issue, refer to http://code.tutsplus.com/tutorials/mass-assignment-rails-and-you--net-31695
+  # This is required because RestKit sends 'id' and 'created_at' across in the requests
+  config.active_record.mass_assignment_sanitizer = :strict
+
   # Raise an error on page load if there are pending migrations
   # config.active_record.migration_error = :page_load
 

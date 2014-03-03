@@ -22,6 +22,66 @@ class PostsController < ApplicationController
     end
   end
 
+  # GET /posts
+  def index
+    last_modified = params[:timestamp]
+
+    num = params[:num] # TODO: depreciated
+    sortby = params[:sortby] # TODO: depreciated
+
+    #@posts = Post.find(:all, :order => "updated_at DESC", :limit => num)
+    @posts = Post.where("updated_at > ?", Time.at(last_modified.to_i).utc)
+    
+    @results = Array.new
+
+    @posts.each_with_index {|post, i|
+      @results[i] = Hash.new
+      @results[i]["id"] = post.id
+      @results[i]["content"] = post.content
+      @results[i]["updated_at"] = post.updated_at.to_f #TODO: limit to 3-digit precision
+      @results[i]["isYours"] = 0 #TODO: compare current user and this user id
+      @results[i]["uuid"] = 234 #TODO: add uuid field to database
+      @results[i]["entities"] = post.entities.collect { |ent| 
+        {
+          :id => ent.id,
+          :name => ent.name, 
+          :updated_at => ent.updated_at.to_f,
+          :institution => {
+            "id" => ent.institution.id, 
+            "name" => ent.institution.name, 
+            "updated_at" => ent.institution.updated_at.to_f
+          },
+          :location => {
+            "id" => ent.institution.location.id, 
+            "name" => ent.institution.location.name,
+            "updated_at" => ent.institution.location.updated_at.to_f
+          }
+        } 
+      }
+
+      salt = rand(100000)
+      @results[i]["comments"] = 
+        post.comments.collect { |comment|
+          {
+            :id => comment.id,
+            :user_anonymozed_id => comment.user.id + salt,
+            :content => comment.content,
+            :uuid => 234, #TODO: add uuid field to database
+            :updated_at => comment.updated_at.to_f
+          }
+        }
+
+      #logger.info("Picture id=#{@pic.id} is found.")
+      
+      # TODO: set up image url derived from S3 
+    }
+
+    #respond_with @results
+    respond_to do |format|
+       format.json { render json: @results }
+    end
+  end
+
   # POST /orderposts
   def order
     num = params[:num]
@@ -33,15 +93,6 @@ class PostsController < ApplicationController
         @results[i] = Hash.new
         @results[i]["content"] = post.content
         @results[i]["pic"] = "pic2";
-
-        @test = Array.new(3)
-        @test[0] = Hash.new
-        @test[1] = Hash.new
-        @test[2] = Hash.new
-
-        @test[0]["yes"] = "1"
-        @test[1]["yes"] = "no"
-        @test[2]["yes"] = "why"
         
 
         # the following lines are replaced by multiple entities in the next line 
