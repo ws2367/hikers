@@ -1,5 +1,22 @@
 namespace :db do
 
+
+    desc "Fill UUIDs for each fake data"
+    task uuid: :environment do
+        Institution.all.each do |institution|
+            institution.update_attribute("uuid", UUIDTools::UUID.random_create.to_s) unless institution.uuid
+        end
+        Entity.all.each do |entity|
+            entity.update_attribute("uuid", UUIDTools::UUID.random_create.to_s) unless entity.uuid
+        end
+        Post.all.each do |post|
+            post.update_attribute("uuid", UUIDTools::UUID.random_create.to_s) unless post.uuid
+        end
+        Comment.all.each do |comment|
+            comment.update_attribute("uuid", UUIDTools::UUID.random_create.to_s) unless comment.uuid
+        end
+    end
+
     desc "Fill database with sample data"
     task populate: :environment do
 
