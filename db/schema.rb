@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131006002148) do
+ActiveRecord::Schema.define(:version => 20140303212638) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -22,6 +22,8 @@ ActiveRecord::Schema.define(:version => 20131006002148) do
     t.boolean  "status",     :default => true
     t.integer  "hatersNum",  :default => 0
     t.integer  "likersNum",  :default => 0
+    t.string   "deleted"
+    t.string   "uuid"
   end
 
   add_index "comments", ["post_id"], :name => "index_comments_on_post_id"
@@ -48,6 +50,7 @@ ActiveRecord::Schema.define(:version => 20131006002148) do
     t.integer  "likersNum",      :default => 0
     t.integer  "viewersNum",     :default => 0
     t.text     "positions"
+    t.string   "uuid"
   end
 
   add_index "entities", ["institution_id"], :name => "index_contexts_on_institution_id"
@@ -80,6 +83,8 @@ ActiveRecord::Schema.define(:version => 20131006002148) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
     t.integer  "location_id"
+    t.boolean  "deleted"
+    t.string   "uuid"
   end
 
   add_index "institutions", ["location_id"], :name => "index_institutions_on_location_id"
@@ -125,6 +130,8 @@ ActiveRecord::Schema.define(:version => 20131006002148) do
     t.integer  "likersNum",    :default => 0
     t.integer  "viewersNum",   :default => 0
     t.integer  "entityNum",    :default => 0
+    t.boolean  "deleted"
+    t.string   "uuid"
   end
 
   add_index "posts", ["entity_id"], :name => "index_posts_on_context_id"

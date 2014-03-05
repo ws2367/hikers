@@ -11,6 +11,8 @@
 #  status     :boolean          default(TRUE)
 #  hatersNum  :integer          default(0)
 #  likersNum  :integer          default(0)
+#  deleted    :string(255)
+#  uuid       :string(255)
 #
 
 require 'test_helper'

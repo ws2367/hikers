@@ -26,4 +26,4 @@ doc/
 /public/system
 
 #Ignore AWS credentials
-/script/setenv.h
+script/setenv.sh

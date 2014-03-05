@@ -5,6 +5,9 @@ gem 'sinatra'
 gem 'unicorn'
 gem 'json'
 
+# for a rake task
+gem 'uuidtools'
+
 gem 'rails-api'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'

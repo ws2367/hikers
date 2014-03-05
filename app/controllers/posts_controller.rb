@@ -5,12 +5,58 @@ class PostsController < ApplicationController
 
   #POST /posts
   def create
-    @entity = Entity.find(params[:entity_id])
-    @post = @entity.posts.new(params[:post])
-    respond_to do |format|
-    	if @post.save
-      		format.json { render json: @post }
+    new_post = Post.where( "uuid = ?", params["uuid"])[0]
+    if new_post
+      # do nothing
+    else
+      new_post = Post.new("content"=>params["content"], 
+                          "uuid"=>params["uuid"])
+    end
+
+    if params["entities"].count > 0
+      entities = params["entities"]
+      entities.each do |entity|
+
+        institution = entity["institution"]
+        location = institution["location"]
+
+        new_location = Location.where("name = ?", location["name"])[0]
+        if new_location
+          # do nothing
+        else
+          new_location = Location.new("name"=>location["name"])
+          new_location.save! # so we have the id ready
+        end
+        new_institution = Institution.where("uuid = ?", institution["uuid"])[0]
+        if new_institution
+          # do nothing
+        else
+          new_institution = Institution.new(
+            "name"=>institution["name"], 
+            "uuid"=>institution["uuid"]
+          )
+          new_institution.location = new_location
+          new_institution.save! # so we have the id ready
+        end
+
+        new_entity = Entity.where(" uuid = ?", entity['uuid'])
+        if new_entity
+          # update relationship with posts
+        else 
+          new_entity = Entity.new(
+            "name" => entity["name"],
+            "uuid" => entity["uuid"])
+          new_entity.institution = new_institution
+          new_post.entities << new_entity
+          new_entity.save!
+        end
       end
+    end
+
+    new_post.save!
+    
+    respond_to do |format|
+      format.json { render status: :ok}
     end
   end
 
@@ -26,35 +72,51 @@ class PostsController < ApplicationController
   def index
     last_modified = params[:timestamp]
 
-    num = params[:num] # TODO: depreciated
-    sortby = params[:sortby] # TODO: depreciated
+    #num = params[:num] # TODO: depreciated
+    #sortby = params[:sortby] # TODO: depreciated
 
     #@posts = Post.find(:all, :order => "updated_at DESC", :limit => num)
     @posts = Post.where("updated_at > ?", Time.at(last_modified.to_i).utc)
     
     @results = Array.new
-
+    # TODO: Query in batch
+    # this is bad because it queries the DB as many times as the number of posts
     @posts.each_with_index {|post, i|
       @results[i] = Hash.new
       @results[i]["id"] = post.id
       @results[i]["content"] = post.content
       @results[i]["updated_at"] = post.updated_at.to_f #TODO: limit to 3-digit precision
       @results[i]["isYours"] = 0 #TODO: compare current user and this user id
-      @results[i]["uuid"] = 234 #TODO: add uuid field to database
-      @results[i]["entities"] = post.entities.collect { |ent| 
+      @results[i]["deleted"] = post.deleted
+      @results[i]["uuid"] = post.uuid
+      @results[i]["entities_ids"] = post.entities.collect { |ent| ent.id}
+    }
+
+=begin
+    @posts.each_with_index {|post, i|
+      @results[i] = Hash.new
+      @results[i]["id"] = post.id
+      @results[i]["content"] = post.content
+      @results[i]["updated_at"] = post.updated_at.to_f #TODO: limit to 3-digit precision
+      @results[i]["isYours"] = 0 #TODO: compare current user and this user id
+      @results[i]["deleted"] = post.deleted
+      @results[i]["uuid"] = post.uuid
+      @results[i]["entities_ids"] = post.entities.collect { |ent| 
         {
           :id => ent.id,
           :name => ent.name, 
+          :uuid => 234, #TODO: add uuid to db
           :updated_at => ent.updated_at.to_f,
           :institution => {
             "id" => ent.institution.id, 
             "name" => ent.institution.name, 
-            "updated_at" => ent.institution.updated_at.to_f
-          },
-          :location => {
-            "id" => ent.institution.location.id, 
-            "name" => ent.institution.location.name,
-            "updated_at" => ent.institution.location.updated_at.to_f
+            "uuid" => 234, #TODO: add uuid to db
+            "deleted" => false,
+            "updated_at" => ent.institution.updated_at.to_f,
+            :location => {
+              "id" => ent.institution.location.id, 
+              "name" => ent.institution.location.name
+            }
           }
         } 
       }
@@ -64,8 +126,9 @@ class PostsController < ApplicationController
         post.comments.collect { |comment|
           {
             :id => comment.id,
-            :user_anonymozed_id => comment.user.id + salt,
+            :anonymized_user_id => comment.user.id + salt, # TODO: set user_id differently if it's the poster
             :content => comment.content,
+            :deleted => false, #TODO: add deleted to db
             :uuid => 234, #TODO: add uuid field to database
             :updated_at => comment.updated_at.to_f
           }
@@ -75,6 +138,7 @@ class PostsController < ApplicationController
       
       # TODO: set up image url derived from S3 
     }
+=end
 
     #respond_with @results
     respond_to do |format|

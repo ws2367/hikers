@@ -30,11 +30,24 @@ class EntitiesController < ApplicationController
 
   # GET /entities
   def index
-  	name = params[:name]
-  	@entities = Entity.where(name: name).limit(params[:num])
-  	respond_to do |format|
-       format.json { render json: @entities }
-    end
+    last_modified = params[:timestamp]
+
+    @entities = Entity.where("updated_at > ?", Time.at(last_modified.to_i).utc)
+    
+    @results = Array.new
+    @entities.each_with_index {|entity, i|
+      @results[i] = Hash.new
+      @results[i]["id"] = entity.id
+      @results[i]["name"] = entity.name
+      @results[i]["updated_at"] = entity.updated_at.to_f #TODO: limit to 3-digit precision
+      #@results[i]["deleted"] = entity.deleted #TODO: probably add deleted field to DB??
+      @results[i]["uuid"] = entity.uuid
+      @results[i]["institution_id"] = entity.institution.id
+    }
+
+    respond_to do |format|
+       format.json { render json: @results }
+     end
   end
 
   # PUT /entities/1

@@ -14,10 +14,12 @@
 #  likersNum    :integer          default(0)
 #  viewersNum   :integer          default(0)
 #  entityNum    :integer          default(0)
+#  deleted      :boolean
+#  uuid         :string(255)
 #
 
 class Post < ActiveRecord::Base
-  attr_accessible :content, :user_id, :entityNum
+  attr_accessible :content, :user_id, :uuid, :deleted
 
   belongs_to :user
 

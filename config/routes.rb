@@ -2,6 +2,8 @@
 
 Hikers::Application.routes.draw do
 
+  get "institutions/index"
+
   post "pictures/:post_id" => 'pictures#create'
   get "pictures/:post_id/:index" => 'pictures#show'
 
@@ -11,11 +13,12 @@ Hikers::Application.routes.draw do
 #  end
 #end
 
-
+  resources :locations
+  resources :institutions
   resources :entities
   resources :posts
   resources :comments
-
+  
   resources :follows
   resources :views
   resources :shares

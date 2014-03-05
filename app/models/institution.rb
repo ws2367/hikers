@@ -7,10 +7,12 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  location_id :integer
+#  deleted     :boolean
+#  uuid        :string(255)
 #
 
 class Institution < ActiveRecord::Base
-  attr_accessible :name
+  attr_accessible :name, :deleted, :uuid
 
   belongs_to :user
   belongs_to :location

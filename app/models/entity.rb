@@ -13,10 +13,11 @@
 #  likersNum      :integer          default(0)
 #  viewersNum     :integer          default(0)
 #  positions      :text
+#  uuid           :string(255)
 #
 
 class Entity < ActiveRecord::Base
-  attr_accessible :name, :user_id, :institution_id, :positions
+  attr_accessible :name, :user_id, :institution_id, :positions, :uuid
   serialize :positions
 
   belongs_to :institution
