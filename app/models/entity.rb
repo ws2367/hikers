@@ -17,7 +17,7 @@
 #
 
 class Entity < ActiveRecord::Base
-  attr_accessible :name, :user_id, :institution_id, :positions, :uuid
+  attr_accessible :name, :user_id, :institution_id, :positions, :uuid, :deleted
   serialize :positions
 
   belongs_to :institution
@@ -52,6 +52,8 @@ class Entity < ActiveRecord::Base
     message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
 
   validates :name, :institution, :user, presence: true
+
+  validates :uuid, uniqueness: true
 
   validates_associated :institution, :user
 

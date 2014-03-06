@@ -25,6 +25,7 @@ class Institution < ActiveRecord::Base
 
   #For now, the presence of user_id is not required.
   validates :name, :location, presence: true
+  validates :uuid, uniqueness: true
 
   validates_associated :location, :user
 end

@@ -2,21 +2,34 @@ class EntitiesController < ApplicationController
 
   respond_to :json
 
+  def create_entity_and_response entity_hash
+    institution = Institution.find(entity_hash[:institution_id])
+    #TODO: check if @institution is deleted. If yes, send this info back to client or do nothing
+    
+    entity = institution.entities.new(:name => entity_hash["name"],
+                                       :uuid => entity_hash["uuid"])
+    subresponse = Hash.new
+    if entity.save
+      subresponse["id"] = entity.id
+      subresponse["uuid"] = entity.uuid
+      subresponse["updated_at"] = entity.updated_at.to_f 
+    end
+
+    return subresponse
+  end
+
   # POST /entities
   def create
-	#@entity = Entity.create!(    name: params[:name])
-	#name = params[:name]
-	#puts name
-	@entity = Entity.new(params[:entity])
-	@entity.likersNum = 0
-	@entity.followersNum = 0
-	@entity.hatersNum = 0
-	@entity.viewersNum = 0
-	#@entity.save!
+    if params["Entity"].class == Array
+      @response = Array.new
+      @response = params["Entity"].collect { |ent| create_entity_and_response ent}
+    else # if it is a single object
+      @response = create_entity_and_response params["Entity"]
+    end
+
+    puts @response
     respond_to do |format|
-    	if @entity.save
-      		format.json { render json: @entity }
-      	end
+      format.json {render json: @response}
     end
   end
 
@@ -32,7 +45,7 @@ class EntitiesController < ApplicationController
   def index
     last_modified = params[:timestamp]
 
-    @entities = Entity.where("updated_at > ?", Time.at(last_modified.to_i).utc)
+    @entities = Entity.where("updated_at > ?", Time.at(last_modified.to_f).utc)
     
     @results = Array.new
     @entities.each_with_index {|entity, i|
