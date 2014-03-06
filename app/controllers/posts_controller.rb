@@ -3,8 +3,47 @@ class PostsController < ApplicationController
   #before_filter :authenticate_user! #, :except => [:show, :index]  
   respond_to :json
 
+  def map_post_and_create_response hash
+
+    post = Post.new(:content=>hash["content"], 
+                        :uuid=>hash["uuid"],
+                        :deleted => false)
+
+    response = Hash.new
+    if post.save
+      response["id"] = post.id
+      response["uuid"] = post.uuid
+      response["updated_at"] = post.updated_at.to_f 
+      puts "did saved"
+    end
+
+    hash["entities_ids"].each { |entity_id|
+      puts entity_id
+      Connection.create(post_id: post.id, entity_id: entity_id)
+    }
+
+    return response
+  end
+
   #POST /posts
   def create
+    keypath = params["Post"]
+    if keypath.class == Array
+      @response = Array.new
+      @response = keypath.collect { |inst| create_institution_and_response inst}
+    else # if it is a single object
+      puts "Not array!"
+      @response = map_post_and_create_response keypath      
+    end
+
+    puts @response
+    respond_to do |format|
+      format.json {render json: @response}
+    end
+
+
+  # let's not do the nested way
+=begin
     new_post = Post.where( "uuid = ?", params["uuid"])[0]
     if new_post
       # do nothing
@@ -58,6 +97,8 @@ class PostsController < ApplicationController
     respond_to do |format|
       format.json { render status: :ok}
     end
+
+=end
   end
 
   # GET /posts/1
@@ -76,7 +117,7 @@ class PostsController < ApplicationController
     #sortby = params[:sortby] # TODO: depreciated
 
     #@posts = Post.find(:all, :order => "updated_at DESC", :limit => num)
-    @posts = Post.where("updated_at > ?", Time.at(last_modified.to_i).utc)
+    @posts = Post.where("updated_at > ?", Time.at(last_modified.to_f).utc)
     
     @results = Array.new
     # TODO: Query in batch
