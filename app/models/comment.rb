@@ -39,6 +39,8 @@ class Comment < ActiveRecord::Base
     too_long: "must have at most %{count} words"
   }
 
+  validates :uuid, uniqueness: true
+  
   # boolean validation cannot use presence since false.blank? is true
   # validates :status, inclusion: { in: [true, false] }
 

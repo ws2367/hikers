@@ -19,6 +19,10 @@ Hikers::Application.routes.draw do
   resources :posts
   resources :comments
   
+  resources :posts do
+    resources :comments, only: [:index]
+  end
+
   resources :follows
   resources :views
   resources :shares
