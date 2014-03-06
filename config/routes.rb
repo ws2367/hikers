@@ -7,12 +7,7 @@ Hikers::Application.routes.draw do
   post "pictures/:post_id" => 'pictures#create'
   get "pictures/:post_id/:index" => 'pictures#show'
 
-#namespace :api do
-#  namespace :v1  do
-#    resources :tokens,:only => [:create, :destroy]
-#  end
-#end
-
+namespace :v1  do
   resources :locations
   resources :institutions
   resources :entities
@@ -22,6 +17,7 @@ Hikers::Application.routes.draw do
   resources :posts do
     resources :comments, only: [:index]
   end
+end
 
   resources :follows
   resources :views

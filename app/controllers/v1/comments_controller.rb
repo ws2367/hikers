@@ -1,4 +1,4 @@
-class CommentsController < ApplicationController
+class V1::CommentsController < ApplicationController
 
   respond_to :json
   

@@ -1,4 +1,4 @@
-class PostsController < ApplicationController
+class V1::PostsController < ApplicationController
   
   #before_filter :authenticate_user! #, :except => [:show, :index]  
   respond_to :json

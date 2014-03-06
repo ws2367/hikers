@@ -1,4 +1,4 @@
-class InstitutionsController < ApplicationController
+class V1::InstitutionsController < ApplicationController
 
   def create_institution_and_response inst_hash
     location = Location.find(inst_hash[:location_id])

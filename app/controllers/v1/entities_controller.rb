@@ -1,4 +1,4 @@
-class EntitiesController < ApplicationController
+class V1::EntitiesController < ApplicationController
 
   respond_to :json
 
