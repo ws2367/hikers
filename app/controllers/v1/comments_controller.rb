@@ -15,7 +15,7 @@ class V1::CommentsController < ApplicationController
 
   # POST /comments
   def create
-    @post = Post.find(params["Comment"][:post_id])
+    @post = Post.find_by_uuid(params["Comment"][:post_uuid])
     #TODO: check if @post is deleted. If yes, send this info back to client or do nothing
     
     #TODO: set user_id to current_user.id
@@ -32,6 +32,7 @@ class V1::CommentsController < ApplicationController
       @response["uuid"] = @comment.uuid
       @response["anonymized_user_id"] = anonymize_user_id @comment
       @response["updated_at"] = @comment.updated_at.to_f 
+      puts @response
       respond_to do |format|
         format.json {render json: @response}
       end
@@ -67,7 +68,7 @@ class V1::CommentsController < ApplicationController
       @response[i]["uuid"] = comment.uuid
       @response[i]["anonymized_user_id"] = anonymize_user_id comment
       @response[i]["updated_at"] = comment.updated_at.to_f #TODO: limit to 3-digit precision
-      @response[i]["post_id"] = comment.post.id
+      @response[i]["post_uuid"] = comment.post.uuid
     }
 
     respond_to do |format|

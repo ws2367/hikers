@@ -6,20 +6,20 @@ class V1::PostsController < ApplicationController
   def map_post_and_create_response hash
 
     post = Post.new(:content=>hash["content"], 
-                        :uuid=>hash["uuid"],
-                        :deleted => false)
+                    :uuid=>hash["uuid"],
+                    :deleted => false)
 
     response = Hash.new
     if post.save
       response["id"] = post.id
       response["uuid"] = post.uuid
       response["updated_at"] = post.updated_at.to_f 
-      puts "did saved"
     end
 
-    hash["entities_ids"].each { |entity_id|
-      puts entity_id
-      Connection.create(post_id: post.id, entity_id: entity_id)
+    hash["entities_uuids"].each { |entity_uuid|
+      puts entity_uuid
+      entity = Entity.find_by_uuid(entity_uuid)
+      Connection.create(post_id: post.id, entity_id: entity.id)
     }
 
     return response
@@ -130,7 +130,7 @@ class V1::PostsController < ApplicationController
       @results[i]["isYours"] = 0 #TODO: compare current user and this user id
       @results[i]["deleted"] = post.deleted
       @results[i]["uuid"] = post.uuid
-      @results[i]["entities_ids"] = post.entities.collect { |ent| ent.id}
+      @results[i]["entities_uuids"] = post.entities.collect { |ent| ent.uuid}
     }
 
 =begin

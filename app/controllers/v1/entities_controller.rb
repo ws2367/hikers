@@ -3,7 +3,7 @@ class V1::EntitiesController < ApplicationController
   respond_to :json
 
   def create_entity_and_response entity_hash
-    institution = Institution.find(entity_hash[:institution_id])
+    institution = Institution.find_by_uuid(entity_hash[:institution_uuid])
     #TODO: check if @institution is deleted. If yes, send this info back to client or do nothing
     
     entity = institution.entities.new(:name => entity_hash["name"],
@@ -55,7 +55,7 @@ class V1::EntitiesController < ApplicationController
       @results[i]["updated_at"] = entity.updated_at.to_f #TODO: limit to 3-digit precision
       #@results[i]["deleted"] = entity.deleted #TODO: probably add deleted field to DB??
       @results[i]["uuid"] = entity.uuid
-      @results[i]["institution_id"] = entity.institution.id
+      @results[i]["institution_uuid"] = entity.institution.uuid
     }
 
     respond_to do |format|

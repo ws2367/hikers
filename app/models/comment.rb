@@ -16,7 +16,7 @@
 #
 
 class Comment < ActiveRecord::Base
-  attr_accessible :content, :user_id, :deleted, :uuid
+  attr_accessible :content, :user_id, :deleted, :uuid, :post_id
 
   belongs_to :post
   belongs_to :user
@@ -40,7 +40,7 @@ class Comment < ActiveRecord::Base
   }
 
   validates :uuid, uniqueness: true
-  
+
   # boolean validation cannot use presence since false.blank? is true
   # validates :status, inclusion: { in: [true, false] }
 
