@@ -7,9 +7,10 @@ class V1::EntitiesController < ApplicationController
     #TODO: check if @institution is deleted. If yes, send this info back to client or do nothing
     
     entity = institution.entities.new(:name => entity_hash["name"],
-                                       :uuid => entity_hash["uuid"])
+                                       :uuid => entity_hash["uuid"],
+                                       :user_id => 5) #TODO: fix this!
     subresponse = Hash.new
-    if entity.save
+    if entity.save!
       subresponse["id"] = entity.id
       subresponse["uuid"] = entity.uuid
       subresponse["updated_at"] = entity.updated_at.to_f 
