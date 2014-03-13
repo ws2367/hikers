@@ -8,7 +8,7 @@ class V1::EntitiesController < ApplicationController
     
     entity = institution.entities.new(:name => entity_hash["name"],
                                        :uuid => entity_hash["uuid"],
-                                       :user_id => 5) #TODO: fix this!
+                                       :user_id => 1) #TODO: fix this!
     subresponse = Hash.new
     if entity.save!
       subresponse["id"] = entity.id
@@ -58,7 +58,7 @@ class V1::EntitiesController < ApplicationController
       @results[i]["uuid"] = entity.uuid
       @results[i]["institution_uuid"] = entity.institution.uuid
     }
-
+    puts @results
     respond_to do |format|
        format.json { render json: @results }
      end
