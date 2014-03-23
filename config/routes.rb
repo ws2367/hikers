@@ -14,6 +14,11 @@ namespace :v1  do
   resources :posts
   resources :comments
   
+  # Custom controller for API token access
+  devise_for :users, :controllers => {sessions:'v1/sessions'} 
+
+  get 'S3Credentials' => 'credentials#get'
+  
   resources :posts do
     resources :comments, only: [:index]
   end
@@ -24,20 +29,15 @@ end
   resources :shares
   resources :hates
   resources :likes
-
-#    match "/sinatra" => HomeApp, :anchor => false
-
-  devise_for :users, :controllers => {sessions:'sessions'} # Custom controller for API token access
-
   resources :users
-  #match 'users/:id' => 'users#show', as: :user
+
   post 'orderposts' => 'posts#order'
 
   post 'searchposts' => 'posts#search'
 
   post 'addnumshares' => 'shares#addnum'
 
-  get 'S3Credentials' => 'credentials#get'
+  
 
   #root :to => "pins#index"
   # The priority is based upon order of creation: first created -> highest priority.

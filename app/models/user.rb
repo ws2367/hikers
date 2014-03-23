@@ -3,8 +3,8 @@
 # Table name: users
 #
 #  id                     :integer          not null, primary key
-#  user_name              :string(255)      default(""), not null
-#  encrypted_password     :string(255)      default(""), not null
+#  user_name              :string(255)      default("")
+#  encrypted_password     :string(255)      default("")
 #  reset_password_token   :string(255)
 #  reset_password_sent_at :datetime
 #  remember_created_at    :datetime
@@ -18,6 +18,8 @@
 #  status                 :boolean          default(TRUE)
 #  device_token           :string(255)
 #  authentication_token   :string(255)
+#  fb_user_id             :integer
+#  fb_access_token        :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -27,11 +29,11 @@ class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :token_authenticatable, 
-         :rememberable, :trackable, :validatable, :authentication_keys => [:user_name]
+         :rememberable, :trackable, :validatable, :authentication_keys => [:fb_user_id]
 
   # Seems like we don't need to do it in Rails 4 since it's all strong params
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :user_name, :password, :password_confirmation, :remember_me, :login
+  attr_accessible :fb_user_id, :fb_access_token, :user_name, :password, :password_confirmation, :remember_me, :login
 
 # Virtual attribute for authenticating by either user_name or device_token
 # This is in addition to a real persisted field like 'user_name'
@@ -46,6 +48,11 @@ attr_accessor :login
 #    where(conditions).first
 #  end
 #end
+
+#rewrite the method so we don't need email
+def password_required?
+  false
+end
 
 #rewrite the method so we don't need email
 def email_required? 
@@ -66,10 +73,10 @@ def prev
 end
 
 
-validates :user_name,
-  :uniqueness => {
-    :case_sensitive => false
-  }
+# validates :user_name,
+#   :uniqueness => {
+#     :case_sensitive => false
+#   }
 
 has_many :institution, inverse_of: :user
 has_many :entities,    inverse_of: :user

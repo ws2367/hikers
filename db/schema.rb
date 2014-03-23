@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140303212638) do
+ActiveRecord::Schema.define(:version => 20140323215225) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -148,8 +148,8 @@ ActiveRecord::Schema.define(:version => 20140303212638) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "user_name",              :default => "",   :null => false
-    t.string   "encrypted_password",     :default => "",   :null => false
+    t.string   "user_name",              :default => ""
+    t.string   "encrypted_password",     :default => ""
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
@@ -163,11 +163,12 @@ ActiveRecord::Schema.define(:version => 20140303212638) do
     t.boolean  "status",                 :default => true
     t.string   "device_token"
     t.string   "authentication_token"
+    t.integer  "fb_user_id"
+    t.string   "fb_access_token"
   end
 
   add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true
-  add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
-  add_index "users", ["user_name"], :name => "index_users_on_user_name", :unique => true
+  add_index "users", ["fb_user_id"], :name => "index_users_on_fb_user_id", :unique => true
 
   create_table "views", :force => true do |t|
     t.integer  "user_id"

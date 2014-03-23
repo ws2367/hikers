@@ -3,8 +3,8 @@
 # Table name: users
 #
 #  id                     :integer          not null, primary key
-#  user_name              :string(255)      default(""), not null
-#  encrypted_password     :string(255)      default(""), not null
+#  user_name              :string(255)      default("")
+#  encrypted_password     :string(255)      default("")
 #  reset_password_token   :string(255)
 #  reset_password_sent_at :datetime
 #  remember_created_at    :datetime
@@ -18,6 +18,8 @@
 #  status                 :boolean          default(TRUE)
 #  device_token           :string(255)
 #  authentication_token   :string(255)
+#  fb_user_id             :integer
+#  fb_access_token        :string(255)
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html

@@ -10,6 +10,8 @@ gem 'uuidtools'
 
 gem 'rails-api'
 
+gem "koala", "~> 1.8.0rc1"
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 # Official API doc: http://api.rubyonrails.org/v3.2.13/
 gem 'rails', '3.2.13'

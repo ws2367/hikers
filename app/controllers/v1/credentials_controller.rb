@@ -1,4 +1,4 @@
-class CredentialsController < ApplicationController
+class V1::CredentialsController < ApplicationController
 
   before_filter :authenticate_user! #, :except => [:show, :index]  
   respond_to :json
