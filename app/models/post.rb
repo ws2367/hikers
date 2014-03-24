@@ -49,19 +49,23 @@ class Post < ActiveRecord::Base
   has_many :sharers, through: :shares, 
                      source: :user
 
+  scope :top,
+    joins(:follows, :comments).
+    select("posts.*, 0.4 * count(follows.id) + 0.6 * count(comments.id) as order_count").
+    group("posts.id").
+    order("order_count desc")
+  
+  scope :top_followed,
+    joins(:follows).
+    select("posts.*, count(follows.id) as order_count").
+    group("posts.id").
+    order("order_count desc")
 
-  #def get_picture index
-  #  send_file pictures[index].img.path, :type => pictures[index].img_content_type
-  #end
-
-  # img is a File object
-  #def create_picture img
-  #  @pic = pictures.new
-  #  @pic.img = img
-  #  @pic.save
-    # pictures.first.img = fp
-    # pictures.first.save
-  #end
+  scope :top_commented,
+    joins(:comment).
+    select("posts.*, count(comments.id) as order_count").
+    group("posts.id").
+    order("order_count desc")
 
   #TODO: remember to add 'read more'
   validates :content, length: {
