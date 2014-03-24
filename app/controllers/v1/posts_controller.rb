@@ -102,15 +102,19 @@ class V1::PostsController < ApplicationController
   end
 
 
+  def remove_client_matched_posts(posts, client_posts_ids)
+    puts client_posts_ids
+    return posts.select {|post| !client_posts_ids.find_index(post.id) }
+  end
+
   # GET /posts
   def index
-    last_modified = params[:timestamp]
-
-    #num = params[:num] # TODO: depreciated
-    #sortby = params[:sortby] # TODO: depreciated
-
+    
     #@posts = Post.find(:all, :order => "updated_at DESC", :limit => num)
-    @posts = Post.where("updated_at > ?", Time.at(last_modified.to_f).utc)
+    #@posts = Post.where("updated_at > ?", Time.at(last_modified.to_f).utc)
+    @posts = Post.top.limit(10)
+
+    @posts = remove_client_matched_posts(@posts, params[:Post]) if params[:Post]
     
     @results = Array.new
     # TODO: Query in batch
@@ -141,7 +145,7 @@ class V1::PostsController < ApplicationController
           :is_your_friend => 1,
           :fb_user_id => 0,
           :institution => {
-            :uuid => ent.institution.uuid
+            :id => ent.institution.id
           }
         }
       }
