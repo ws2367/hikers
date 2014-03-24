@@ -1,3 +1,5 @@
+require 'csv'
+
 namespace :db do
 
 
@@ -17,6 +19,65 @@ namespace :db do
         end
     end
 
+
+    desc "Fill database with sample data"
+    task populate: :environment do
+        fb_user_id = 1131095462 # MY FB id......
+        puts "[DEBUG] creating user with fb id #{fb_user_id}"
+        begin
+            User.create(fb_user_id: fb_user_id)
+        rescue
+            puts "[CAUTION] failed in creating user!"
+        end
+        puts "[DEBUG] Now we gonna add states (locations)!"
+
+        states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California","Florida",
+         "Georgia", "Missouri", "Montana", "Nebraska", "Nevada", "New York", "Wyoming"]
+
+        states.each do |state|
+            begin
+                Location.create!(name: state)
+            rescue
+                puts "[CAUTION] failed to create location #{state}"
+            end
+        end
+
+        puts "[DEBUG] Now we gonna add institutions, posts and comments!"
+
+            Location.all.each do |state|
+                name = Faker::Company.name
+                @inst = state.institutions.create!(name: name, 
+                                                   uuid: UUIDTools::UUID.random_create.to_s)
+
+                counter = 1
+                User.all.each do |user|
+
+                    name = Faker::Name.name
+                    @ent = user.entities.create!(name: name,
+                                                 institution_id: @inst.id,
+                                                 uuid: UUIDTools::UUID.random_create.to_s)
+
+                    content = "Post " + counter.to_s + " While the announcement appeared to end hopes of finding survivors more than two weeks after the flight vanished, it left many key questions unanswered, including what went wrong aboard."
+
+                    @post = @ent.posts.create!(content: content, 
+                                               user_id: user.id,
+                                               uuid: UUIDTools::UUID.random_create.to_s)
+                    Connection.create!(post_id: @post.id, entity_id: @ent.prev.id)
+
+                    @post.follows.create!(user_id:user.id)
+
+                    @comment = @post.comments.create!(content: "comment 1",
+                                                      user_id: user.id,
+                                                      uuid: UUIDTools::UUID.random_create.to_s)
+
+                    @comment = @post.comments.create!(content: "comment 2",
+                                                      user_id: user.id,
+                                                      uuid: UUIDTools::UUID.random_create.to_s)
+            end
+        end
+    end
+
+=begin 
     desc "Fill database with sample data"
     task populate: :environment do
 
@@ -116,7 +177,7 @@ namespace :db do
 
                 @lastUser = user
             end
-
+=end
 =begin
         10.times do |n|
             puts "[DEBUG} creating user #{n+1} of 10"
@@ -139,6 +200,6 @@ namespace :db do
                 user.pins.create!(image: image, description: description)
             end
         end
-=end
     end
+=end
 end

@@ -20,6 +20,7 @@ class Location < ActiveRecord::Base
     message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
 
   validates :name, presence: true
+  validates :name, uniqueness: true
   # This should not be commented out when using real location libraries
   # validates :name, uniqueness: true
 
