@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(:version => 20140323215225) do
     t.boolean  "status",     :default => true
     t.integer  "hatersNum",  :default => 0
     t.integer  "likersNum",  :default => 0
-    t.string   "deleted"
+    t.string   "deleted",    :default => "f"
     t.string   "uuid"
   end
 
@@ -80,10 +80,10 @@ ActiveRecord::Schema.define(:version => 20140323215225) do
 
   create_table "institutions", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
     t.integer  "location_id"
-    t.boolean  "deleted"
+    t.boolean  "deleted",     :default => false
     t.string   "uuid"
   end
 
@@ -120,8 +120,8 @@ ActiveRecord::Schema.define(:version => 20140323215225) do
 
   create_table "posts", :force => true do |t|
     t.text     "content"
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
     t.integer  "entity_id"
     t.integer  "user_id"
     t.boolean  "status",       :default => true
@@ -130,7 +130,7 @@ ActiveRecord::Schema.define(:version => 20140323215225) do
     t.integer  "likersNum",    :default => 0
     t.integer  "viewersNum",   :default => 0
     t.integer  "entityNum",    :default => 0
-    t.boolean  "deleted"
+    t.boolean  "deleted",      :default => false
     t.string   "uuid"
   end
 
@@ -163,8 +163,7 @@ ActiveRecord::Schema.define(:version => 20140323215225) do
     t.boolean  "status",                 :default => true
     t.string   "device_token"
     t.string   "authentication_token"
-    t.integer  "fb_user_id"
-    t.string   "fb_access_token"
+    t.string   "fb_user_id"
   end
 
   add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true
