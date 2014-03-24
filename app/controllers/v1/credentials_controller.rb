@@ -1,10 +1,15 @@
 class V1::CredentialsController < ApplicationController
 
-  before_filter :authenticate_user! #, :except => [:show, :index]  
   respond_to :json
+  before_filter :authenticate_v1_user! #, :except => [:show, :index]  
+  
 
   # GET get
   def get
+
+    puts "user sign in:"
+    puts v1_user_signed_in?
+
     sts    = AWS::STS.new
     policy = AWS::STS::Policy.new
 
@@ -23,7 +28,9 @@ class V1::CredentialsController < ApplicationController
                                   "SECRET_KEY" => federated_session.credentials[:secret_access_key],
                                   "SESSION_TOKEN" => federated_session.credentials[:session_token],
                                   "expires_at" => federated_session.expires_at} }
+
     end
+    
   end
 
 end

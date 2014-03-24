@@ -189,6 +189,9 @@ Devise.setup do |config|
   # The :"*/*" and "*/*" formats below is required to match Internet
   # Explorer requests.
   # config.navigational_formats = [:"*/*", "*/*", :html]
+  # 
+  # This line prevents Rails from missing flash method called by ActionDispatch
+  config.navigational_formats = []
 
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
