@@ -1,5 +1,8 @@
 class V1::InstitutionsController < ApplicationController
 
+  respond_to :json
+  before_filter :authenticate_v1_user!
+
   def create_institution_and_response inst_hash
     location = Location.find(inst_hash[:location_id])
     #TODO: check if location is deleted. If yes, send this info back to client or do nothing

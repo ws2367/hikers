@@ -1,7 +1,8 @@
 class V1::EntitiesController < ApplicationController
 
   respond_to :json
-
+  before_filter :authenticate_v1_user!
+  
   def create_entity_and_response entity_hash
     institution = Institution.find_by_uuid(entity_hash[:institution_uuid])
     #TODO: check if @institution is deleted. If yes, send this info back to client or do nothing

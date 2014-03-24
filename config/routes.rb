@@ -1,11 +1,5 @@
-#require 'home_app.rb'
-
 Hikers::Application.routes.draw do
 
-  get "institutions/index"
-
-  post "pictures/:post_id" => 'pictures#create'
-  get "pictures/:post_id/:index" => 'pictures#show'
 
 namespace :v1  do
   resources :locations
@@ -18,26 +12,11 @@ namespace :v1  do
   devise_for :users, :controllers => {sessions:'v1/sessions'} 
 
   get 'S3Credentials' => 'credentials#get'
-  
+
   resources :posts do
     resources :comments, only: [:index]
   end
 end
-
-  resources :follows
-  resources :views
-  resources :shares
-  resources :hates
-  resources :likes
-  resources :users
-
-  post 'orderposts' => 'posts#order'
-
-  post 'searchposts' => 'posts#search'
-
-  post 'addnumshares' => 'shares#addnum'
-
-  
 
   #root :to => "pins#index"
   # The priority is based upon order of creation: first created -> highest priority.

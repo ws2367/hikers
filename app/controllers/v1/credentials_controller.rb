@@ -1,6 +1,7 @@
 class V1::CredentialsController < ApplicationController
 
   respond_to :json
+  # NOTE that the helper method changes according to the namespace
   before_filter :authenticate_v1_user! #, :except => [:show, :index]  
   
 

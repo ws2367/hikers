@@ -1,7 +1,7 @@
 class V1::PostsController < ApplicationController
   
-  #before_filter :authenticate_user! #, :except => [:show, :index]  
   respond_to :json
+  before_filter :authenticate_v1_user!
 
   def map_post_and_create_response hash
 
@@ -101,13 +101,6 @@ class V1::PostsController < ApplicationController
 =end
   end
 
-  # GET /posts/1
-  def show
-  	@post = Post.find(params[:id])
-  	respond_to do |format|
-      		format.json { render json: @post }
-    end
-  end
 
   # GET /posts
   def index
@@ -123,67 +116,48 @@ class V1::PostsController < ApplicationController
     # TODO: Query in batch
     # this is bad because it queries the DB as many times as the number of posts
     @posts.each_with_index {|post, i|
-      @results[i] = Hash.new
-      @results[i]["id"] = post.id
-      @results[i]["content"] = post.content
-      @results[i]["updated_at"] = post.updated_at.to_f #TODO: limit to 3-digit precision
-      @results[i]["isYours"] = 0 #TODO: compare current user and this user id
-      @results[i]["deleted"] = post.deleted
-      @results[i]["uuid"] = post.uuid
-      @results[i]["entities_uuids"] = post.entities.collect { |ent| ent.uuid}
-    }
+      @results[i] = {
+        :id => post.id,
+        :uuid => post.uuid,
+        :content => post.content,
+        :updated_at => post.updated_at.to_f, #TODO: limit to 3-digit precision
+        :deleted => post.deleted,
 
-=begin
-    @posts.each_with_index {|post, i|
-      @results[i] = Hash.new
-      @results[i]["id"] = post.id
-      @results[i]["content"] = post.content
-      @results[i]["updated_at"] = post.updated_at.to_f #TODO: limit to 3-digit precision
-      @results[i]["isYours"] = 0 #TODO: compare current user and this user id
-      @results[i]["deleted"] = post.deleted
-      @results[i]["uuid"] = post.uuid
-      @results[i]["entities_ids"] = post.entities.collect { |ent| 
+        # meta attributes
+        :is_yours => 0, #TODO: compare current user and this user id
+        :following => 0, #TOOD: check follow table
+        :popularity => rand(100)
+      }
+      
+      # association
+      @results[i]["entities"] = post.entities.collect { |ent| ent
         {
           :id => ent.id,
+          :uuid => ent.uuid,
           :name => ent.name, 
-          :uuid => 234, #TODO: add uuid to db
           :updated_at => ent.updated_at.to_f,
-          :institution => {
-            "id" => ent.institution.id, 
-            "name" => ent.institution.name, 
-            "uuid" => 234, #TODO: add uuid to db
-            "deleted" => false,
-            "updated_at" => ent.institution.updated_at.to_f,
-            :location => {
-              "id" => ent.institution.location.id, 
-              "name" => ent.institution.location.name
-            }
-          }
-        } 
-      }
 
-      salt = rand(100000)
-      @results[i]["comments"] = 
-        post.comments.collect { |comment|
-          {
-            :id => comment.id,
-            :anonymized_user_id => comment.user.id + salt, # TODO: set user_id differently if it's the poster
-            :content => comment.content,
-            :deleted => false, #TODO: add deleted to db
-            :uuid => 234, #TODO: add uuid field to database
-            :updated_at => comment.updated_at.to_f
+          #meta attributes
+          :is_your_friend => 1,
+          :fb_user_id => 0,
+          :institution => {
+            :uuid => ent.institution.uuid
           }
         }
-
-      #logger.info("Picture id=#{@pic.id} is found.")
-      
-      # TODO: set up image url derived from S3 
+      }
     }
-=end
+    puts @results
 
-    #respond_with @results
     respond_to do |format|
        format.json { render json: @results }
+    end
+  end
+
+  # GET /posts/1
+  def show
+    @post = Post.find(params[:id])
+    respond_to do |format|
+          format.json { render json: @post }
     end
   end
 

@@ -1,7 +1,8 @@
 class V1::LocationsController < ApplicationController
 
   respond_to :json
-
+  before_filter :authenticate_v1_user!
+  
   #location /locations
   def create
     respond_to do |format|
