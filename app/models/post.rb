@@ -14,7 +14,7 @@
 #  likersNum    :integer          default(0)
 #  viewersNum   :integer          default(0)
 #  entityNum    :integer          default(0)
-#  deleted      :boolean
+#  deleted      :boolean          default(FALSE)
 #  uuid         :string(255)
 #
 

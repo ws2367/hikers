@@ -163,7 +163,8 @@ ActiveRecord::Schema.define(:version => 20140323215225) do
     t.boolean  "status",                 :default => true
     t.string   "device_token"
     t.string   "authentication_token"
-    t.string   "fb_user_id"
+    t.integer  "fb_user_id"
+    t.string   "fb_access_token"
   end
 
   add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true

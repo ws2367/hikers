@@ -11,7 +11,7 @@
 #  status     :boolean          default(TRUE)
 #  hatersNum  :integer          default(0)
 #  likersNum  :integer          default(0)
-#  deleted    :string(255)
+#  deleted    :string(255)      default("f")
 #  uuid       :string(255)
 #
 

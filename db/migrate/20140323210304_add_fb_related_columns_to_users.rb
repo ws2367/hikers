@@ -1,6 +1,6 @@
 class AddFbRelatedColumnsToUsers < ActiveRecord::Migration
   def change
-    change_column :users, :user_name,  :string,        :null => true, :default => ""
-    change_column :users, :encrypted_password, :string, :null => true, :default => ""
+    add_column :users, :fb_user_id, :integer
+    add_column :users, :fb_access_token, :string
   end
 end
