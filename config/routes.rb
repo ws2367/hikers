@@ -7,15 +7,21 @@ namespace :v1  do
   resources :entities
   resources :posts
   resources :comments
-  
+
+  resources :posts do
+    resources :comments, only: [:index]
+  end
+
+  resources :entities do
+    resources :posts, only: [:index]
+  end
+
   # Custom controller for API token access
   devise_for :users, :controllers => {sessions:'v1/sessions'} 
 
   get 'S3Credentials' => 'credentials#get'
 
-  resources :posts do
-    resources :comments, only: [:index]
-  end
+
 end
 
   #root :to => "pins#index"

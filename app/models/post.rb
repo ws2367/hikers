@@ -49,23 +49,29 @@ class Post < ActiveRecord::Base
   has_many :sharers, through: :shares, 
                      source: :user
 
+
+  def popularity
+    return 0.4 * self.follows.count + 0.6 * self.comments.count
+  end
+
   scope :top,
     joins(:follows, :comments).
-    select("posts.*, 0.4 * count(follows.id) + 0.6 * count(comments.id) as order_count").
+    select("posts.*, 0.4 * count(follows.id) + 0.6 * count(comments.id) as popularity").
     group("posts.id").
-    order("order_count desc")
+    order("popularity desc, updated_at desc").
+    includes(entities: [:institution])
   
   scope :top_followed,
     joins(:follows).
-    select("posts.*, count(follows.id) as order_count").
+    select("posts.*, count(follows.id) as popularity").
     group("posts.id").
-    order("order_count desc")
+    order("popularity desc, updated_at desc")
 
   scope :top_commented,
     joins(:comment).
-    select("posts.*, count(comments.id) as order_count").
+    select("posts.*, count(comments.id) as popularity").
     group("posts.id").
-    order("order_count desc")
+    order("popularity desc, updated_at desc")
 
   #TODO: remember to add 'read more'
   validates :content, length: {
