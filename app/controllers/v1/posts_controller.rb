@@ -1,7 +1,7 @@
 class V1::PostsController < ApplicationController
   
   respond_to :json
-  #before_filter :authenticate_v1_user!
+  before_filter :authenticate_v1_user!
 
   def map_post_and_create_response hash
 
@@ -195,7 +195,7 @@ class V1::PostsController < ApplicationController
 
   # GET /posts or GET /entities/:id/posts
   def index
-    @posts = Array.new
+    @posts = Array.new #prevent @posts from being null
 
     @start_over = false
     if params[:last_of_previous_post_ids]
@@ -256,10 +256,37 @@ class V1::PostsController < ApplicationController
       add_entities_against_client_matched_entities(post, params[:Entity])
       @results << @result
     }
-    puts @results
 
+    # prepare institution information
+    institution_response = Hash.new
+    if params["Institution"]
+      institution_id = params["Institution"]
+      
+      inst = nil
+      begin
+        inst = Institution.find(institution_id)
+      rescue
+        logger.info("Institution ID #{institution_id} cannot be found.")
+      end
+      
+      institution_response = {
+          :id => inst.id,
+          :uuid => inst.uuid,
+          :name => inst.name,
+          :deleted => inst.deleted,
+          :updated_at => inst.updated_at
+        } if inst
+
+        institution_response[:location_id] = inst.location.id if inst and inst.location
+    end
+
+    @response = Hash.new
+    @response["Post"] = @results
+    @response["Institution"] = institution_response if institution_response
+
+    puts @response
     respond_to do |format|
-       format.json { render json: @results }
+       format.json { render json: @response }
     end
   end
 

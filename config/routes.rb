@@ -1,26 +1,23 @@
 Hikers::Application.routes.draw do
 
-
 namespace :v1  do
-  resources :locations
-  resources :institutions
-  resources :entities
-  resources :posts
-  resources :comments
+  get 'locations', to: "locations#index"
 
-  resources :posts do
+  #resources :posts, only: [:index, :create]
+  resources :comments, only: [:create]
+
+  resources :posts , only: [:index, :create] do
     resources :comments, only: [:index]
   end
 
-  resources :entities do
+  resources :entities, only: [:create] do
     resources :posts, only: [:index]
   end
 
+  get 'S3Credentials' => 'credentials#create'
+
   # Custom controller for API token access
-  devise_for :users, :controllers => {sessions:'v1/sessions'} 
-
-  get 'S3Credentials' => 'credentials#get'
-
+  devise_for :users, only: :sessions, :controllers => {sessions:'v1/sessions'} 
 
 end
 

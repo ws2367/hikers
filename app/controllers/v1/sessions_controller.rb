@@ -3,7 +3,13 @@ class V1::SessionsController < ApplicationController
   respond_to :json
   skip_before_filter :authenticate_user!, :only => :create
 
-  def create #mapped to POST users/sign_in
+  #GET users/sign_in(.:format)
+  def new
+    puts "a GET sign_in"
+  end
+
+  # POST users/sign_in
+  def create 
     fb_access_token = params[:fb_access_token]
     app_id = 610309559054620
     app_secret = "8afb1403ddd477000e5393af310a8441"

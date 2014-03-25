@@ -5,8 +5,8 @@ class V1::CredentialsController < ApplicationController
   before_filter :authenticate_v1_user! #, :except => [:show, :index]  
   
 
-  # GET get
-  def get
+  # GET /S3Credentials
+  def create
 
     puts "user sign in:"
     puts v1_user_signed_in?
