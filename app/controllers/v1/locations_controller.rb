@@ -1,23 +1,9 @@
 class V1::LocationsController < ApplicationController
 
   respond_to :json
-  before_filter :authenticate_v1_user!
+  # before_filter :authenticate_v1_user!
   
-  #location /locations
-  def create
-    respond_to do |format|
-      format.json { render status: :ok}
-    end
-  end
-
-  # GET /locations/1
-  def show
-    @location = Location.find(params[:id])
-    respond_to do |format|
-          format.json { render json: @location }
-    end
-  end
-
+  
   # GET /locations
   def index
     last_modified = params[:timestamp]

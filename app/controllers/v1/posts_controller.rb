@@ -120,14 +120,18 @@ class V1::PostsController < ApplicationController
             :fb_user_id => 0,
             :institution => {
               :id => ent.institution.id
+
             }
           }
+          hash[:institution][:location_id] = 
+            ent.institution.location.id if ent.institution and 
+                                           ent.institution.location
         end
         hash
       }
     else
       @result["entities"] = post.entities.collect { |ent| ent
-        {
+        hash = {
           :id => ent.id,
           :uuid => ent.uuid,
           :name => ent.name, 
@@ -140,6 +144,11 @@ class V1::PostsController < ApplicationController
             :id => ent.institution.id
           }
         }
+        hash[:institution][:location_id] = 
+          ent.institution.location.id if ent.institution and 
+                                         ent.institution.location
+                                         
+        hash
       }
     end
   end
@@ -282,7 +291,7 @@ class V1::PostsController < ApplicationController
 
     @response = Hash.new
     @response["Post"] = @results
-    @response["Institution"] = institution_response if institution_response
+    @response["Institution"] = institution_response if institution_response.count > 0
 
     puts @response
     respond_to do |format|
