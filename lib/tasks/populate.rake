@@ -62,7 +62,7 @@ namespace :db do
                     @post = @ent.posts.create!(content: content, 
                                                user_id: user.id,
                                                uuid: UUIDTools::UUID.random_create.to_s)
-                    Connection.create!(post_id: @post.id, entity_id: @ent.prev.id)
+                    Connection.create!(post_id: @post.id, entity_id: @ent.prev.id) if @ent.prev.id != @ent.id
 
                     @post.follows.create!(user_id:user.id)
 
