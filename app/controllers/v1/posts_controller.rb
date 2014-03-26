@@ -93,64 +93,6 @@ class V1::PostsController < ApplicationController
     respond_to do |format|
       format.json {render json: @response}
     end
-
-  # let's not do the nested way
-=begin
-    new_post = Post.where( "uuid = ?", params["uuid"])[0]
-    if new_post
-      # do nothing
-    else
-      new_post = Post.new("content"=>params["content"], 
-                          "uuid"=>params["uuid"])
-    end
-
-    if params["entities"].count > 0
-      entities = params["entities"]
-      entities.each do |entity|
-
-        institution = entity["institution"]
-        location = institution["location"]
-
-        new_location = Location.where("name = ?", location["name"])[0]
-        if new_location
-          # do nothing
-        else
-          new_location = Location.new("name"=>location["name"])
-          new_location.save! # so we have the id ready
-        end
-        new_institution = Institution.where("uuid = ?", institution["uuid"])[0]
-        if new_institution
-          # do nothing
-        else
-          new_institution = Institution.new(
-            "name"=>institution["name"], 
-            "uuid"=>institution["uuid"]
-          )
-          new_institution.location = new_location
-          new_institution.save! # so we have the id ready
-        end
-
-        new_entity = Entity.where(" uuid = ?", entity['uuid'])
-        if new_entity
-          # update relationship with posts
-        else 
-          new_entity = Entity.new(
-            "name" => entity["name"],
-            "uuid" => entity["uuid"])
-          neadd_entities_against_client_matched_entities(@results[i], post, param[:Entity])w_entity.institution = new_institution
-          new_post.entities << new_entity
-          new_entity.save!
-        end
-      end
-    end
-
-    new_post.save!
-    
-    respond_to do |format|
-      format.json { render status: :ok}
-    end
-
-=end
   end
 
 
@@ -351,12 +293,33 @@ class V1::PostsController < ApplicationController
     end
   end
 
-  # GET /posts/1
-  def show
-    @post = Post.find(params[:id])
-    respond_to do |format|
-          format.json { render json: @post }
+  # POST /posts/:id/follow
+  def follow
+    post_id = params[:post_id]
+    unless post = Post.find(post_id)
+      render :status => 400,
+             :json => {:message => "Post #{post_id} does not exist." }
+      return
     end
+
+    post.follows.create!(user_id:current_v1_user.id)
+
+    render status: 200, json: {}
+  end
+
+  # DELETE /posts/:id/unfollow
+  def unfollow
+    post_id = params[:post_id]
+    unless post = Post.find(post_id)
+      render :status => 400,
+             :json => {:message => "Post #{post_id} does not exist." }
+      return
+    end
+
+    follow = post.follows.find_by_user_id(current_v1_user.id)
+    follow.delete if follow
+
+    render status: 200, json: {}
   end
 
 

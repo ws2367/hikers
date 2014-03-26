@@ -16,6 +16,9 @@ namespace :v1  do
 
   get 'S3Credentials' => 'credentials#create'
 
+  post 'posts/:post_id/follow' => 'posts#follow'
+  delete 'posts/:post_id/unfollow' => 'posts#unfollow'
+
   # Custom controller for API token access
   devise_for :users, only: :sessions, :controllers => {sessions:'v1/sessions'} 
 
