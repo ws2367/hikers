@@ -83,7 +83,7 @@ class V1::PostsController < ApplicationController
 
     keypath = params["Post"]
     if keypath.class == Array
-      post_response = keypath.collect { |post| create_institution_and_response post}
+      post_response = keypath.collect { |post| map_post_and_create_response post}
     else 
       post_response = map_post_and_create_response keypath      
     end
