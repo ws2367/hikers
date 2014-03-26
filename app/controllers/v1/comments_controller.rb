@@ -22,17 +22,18 @@ class V1::CommentsController < ApplicationController
     #TODO: set user_id to current_user.id
     @comment = @post.comments.new(:content => params["Comment"]["content"],
                                   :uuid => params["Comment"]["uuid"],
-                                  :deleted => false)
+                                  :deleted => false,
+                                  :user_id => current_v1_user.id)
 
-    #TODO: remove after setting it to current_user.id
-    @comment.user_id = 1
-    
+    puts "Comment's user id: " + @comment.user.id.to_s
+
     if @comment.save
       @response = Hash.new
       @response["id"] = @comment.id
       @response["uuid"] = @comment.uuid
       @response["anonymized_user_id"] = anonymize_user_id @comment
       @response["updated_at"] = @comment.updated_at.to_f 
+      
       puts @response
       respond_to do |format|
         format.json {render json: @response}

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140323215225) do
+ActiveRecord::Schema.define(:version => 20140326041233) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(:version => 20140323215225) do
     t.integer  "viewersNum",     :default => 0
     t.text     "positions"
     t.string   "uuid"
+    t.integer  "fb_user_id"
   end
 
   add_index "entities", ["institution_id"], :name => "index_contexts_on_institution_id"
@@ -85,6 +86,7 @@ ActiveRecord::Schema.define(:version => 20140323215225) do
     t.integer  "location_id"
     t.boolean  "deleted",     :default => false
     t.string   "uuid"
+    t.integer  "user_id"
   end
 
   add_index "institutions", ["location_id"], :name => "index_institutions_on_location_id"

@@ -3,6 +3,32 @@ class V1::PostsController < ApplicationController
   respond_to :json
   before_filter :authenticate_v1_user!
 
+  def map_institution_and_create_response hash
+    location = Location.find(hash["location_id"])
+    puts "location " + location.id.to_s
+    inst = location.institutions.new(name: hash["name"],
+                                     uuid: hash["uuid"],
+                                     user_id: current_v1_user.id)
+    response = Hash.new
+    response = { id: inst.id, uuid: inst.uuid, updated_at: inst.updated_at.to_f} if inst.save!
+
+    return response
+  end
+
+  def map_entity_and_create_response hash
+    inst = Institution.find_by_uuid(hash["institution_uuid"])
+
+    entity = inst.entities.new(fb_user_id: hash["fb_user_id"].to_i,
+                               name: hash["name"],
+                               uuid: hash["uuid"],
+                               user_id: current_v1_user.id)
+
+    respnose = Hash.new
+    response = { id: entity.id, uuid: entity.uuid, updated_at: entity.updated_at.to_f} if entity.save!
+
+    return response
+  end
+
   def map_post_and_create_response hash
 
     post = Post.new(:content=>hash["content"], 
@@ -16,31 +42,57 @@ class V1::PostsController < ApplicationController
       response["updated_at"] = post.updated_at.to_f 
     end
 
-    hash["entities_uuids"].each { |entity_uuid|
-      puts entity_uuid
-      entity = Entity.find_by_uuid(entity_uuid)
-      Connection.create(post_id: post.id, entity_id: entity.id)
-    }
+    if hash["entities_uuids"]
+      hash["entities_uuids"].each { |entity_uuid|
+        puts entity_uuid
+        entity = Entity.find_by_uuid(entity_uuid)
+        Connection.create(post_id: post.id, entity_id: entity.id)
+      }
+    else
+      puts "[ERROR] post does not include entity uuids. The association cannot be created."
+    end
 
     return response
   end
 
   #POST /posts
   def create
+
+    @response = Hash.new
+    institutions = params["Institution"]
+    if institutions
+      if institutions.class == Array
+        institution_response = institutions.collect {|inst| map_institution_and_create_response inst}
+      else # if it is a single object
+        instituttion_response = map_institution_and_create_response institutions
+      end
+      @response["Instiution"] = institution_response
+      puts "insitituion"
+    end
+
+    entities = params["Entity"]
+    if entities
+      if entities.class == Array
+        entitiy_response = entities.collect {|entity| map_entity_and_create_response entity}
+      else
+        entitiy_response = map_entity_and_create_response entities
+      end
+      @response["Entity"] = entitiy_response
+      puts "entity"
+    end
+
     keypath = params["Post"]
     if keypath.class == Array
-      @response = Array.new
-      @response = keypath.collect { |inst| create_institution_and_response inst}
-    else # if it is a single object
-      puts "Not array!"
-      @response = map_post_and_create_response keypath      
+      post_response = keypath.collect { |post| create_institution_and_response post}
+    else 
+      post_response = map_post_and_create_response keypath      
     end
+    @response["Post"] = post_response
 
     puts @response
     respond_to do |format|
       format.json {render json: @response}
     end
-
 
   # let's not do the nested way
 =begin

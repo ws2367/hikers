@@ -12,7 +12,7 @@
 #
 
 class Institution < ActiveRecord::Base
-  attr_accessible :name, :deleted, :uuid
+  attr_accessible :name, :deleted, :uuid, :user_id
 
   belongs_to :user
   belongs_to :location

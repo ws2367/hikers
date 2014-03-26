@@ -17,7 +17,7 @@
 #
 
 class Entity < ActiveRecord::Base
-  attr_accessible :name, :user_id, :institution_id, :positions, :uuid, :deleted
+  attr_accessible :name, :user_id, :institution_id, :positions, :uuid, :deleted, :fb_user_id
   serialize :positions
 
   belongs_to :institution

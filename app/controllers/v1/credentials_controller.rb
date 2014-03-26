@@ -7,10 +7,6 @@ class V1::CredentialsController < ApplicationController
 
   # GET /S3Credentials
   def create
-
-    puts "user sign in:"
-    puts v1_user_signed_in?
-
     sts    = AWS::STS.new
     policy = AWS::STS::Policy.new
 
