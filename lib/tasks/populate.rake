@@ -44,36 +44,49 @@ namespace :db do
 
         puts "[DEBUG] Now we gonna add institutions, posts and comments!"
 
-            Location.all.each do |state|
-                name = Faker::Company.name
-                @inst = state.institutions.create!(name: name, 
-                                                   uuid: UUIDTools::UUID.random_create.to_s)
+        counter = 1
+        Location.all.each do |state|
+          name = Faker::Company.name
+          @inst = state.institutions.create!(name: name, 
+                                             uuid: UUIDTools::UUID.random_create.to_s)
 
-                counter = 1
-                User.all.each do |user|
+          User.all.each do |user|
 
-                    name = Faker::Name.name
-                    @ent = user.entities.create!(name: name,
-                                                 institution_id: @inst.id,
-                                                 uuid: UUIDTools::UUID.random_create.to_s)
+              name = Faker::Name.name
+              @ent = user.entities.create!(name: name,
+                                           institution_id: @inst.id,
+                                           uuid: UUIDTools::UUID.random_create.to_s)
+          end
+        end
 
-                    content = "Post " + counter.to_s + " While the announcement appeared to end hopes of finding survivors more than two weeks after the flight vanished, it left many key questions unanswered, including what went wrong aboard."
+        Location.all.each do |state|
+          @entity_num = Entity.count
+          
+          User.all.each do |user|
+            content = "Post " + counter.to_s + " While the announcement appeared to end hopes of finding survivors more than two weeks after the flight vanished, it left many key questions unanswered, including what went wrong aboard."
+            counter += 1
 
-                    @post = @ent.posts.create!(content: content, 
-                                               user_id: user.id,
-                                               uuid: UUIDTools::UUID.random_create.to_s)
-                    Connection.create!(post_id: @post.id, entity_id: @ent.prev.id) if @ent.prev.id != @ent.id
+            max_entity_num = (@entity_num / 1.5).to_i
+            entity_ids = (1..@entity_num).to_a.shuffle[1, rand(max_entity_num - 1) + 1]
+            entities = Entity.find(entity_ids)
 
-                    @post.follows.create!(user_id:user.id)
+            @post = Post.create!(content: content, 
+                                 user_id: user.id,
+                                 uuid: UUIDTools::UUID.random_create.to_s)
+            entities.each { |entity|
+              Connection.create!(post_id: @post.id, entity_id: entity.id)
+            }
 
-                    @comment = @post.comments.create!(content: "comment 1",
-                                                      user_id: user.id,
-                                                      uuid: UUIDTools::UUID.random_create.to_s)
+            #@post.follows.create!(user_id:user.id)
 
-                    @comment = @post.comments.create!(content: "comment 2",
-                                                      user_id: user.id,
-                                                      uuid: UUIDTools::UUID.random_create.to_s)
-            end
+            @comment = @post.comments.create!(content: "comment 1",
+                                              user_id: user.id,
+                                              uuid: UUIDTools::UUID.random_create.to_s)
+
+            @comment = @post.comments.create!(content: "comment 2",
+                                                user_id: user.id,
+                                                uuid: UUIDTools::UUID.random_create.to_s)
+          end
         end
     end
 
