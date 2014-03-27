@@ -50,25 +50,32 @@ class Post < ActiveRecord::Base
                      source: :user
 
 
+  def isFollowing user_id
+    (return 1 if self.follows.find_by_user_id(user_id) != nil) if user_id
+    return 0
+  end
+
   def popularity
     return 0.4 * self.follows.count + 0.6 * self.comments.count
   end
 
-  scope :top,
-    joins(:follows, :comments).
+  # Note that this has to be a left outer join...
+  scope :popular,
+    joins('LEFT OUTER JOIN follows ON follows.followee_id = posts.id AND followee_type = "Post"').
+    joins('LEFT OUTER JOIN comments ON comments.post_id = posts.id').
     select("posts.*, 0.4 * count(follows.id) + 0.6 * count(comments.id) as popularity").
     group("posts.id").
     order("popularity desc, updated_at desc").
     includes(entities: [:institution])
   
-  scope :top_followed,
-    joins(:follows).
+  scope :most_followed,
+    joins('LEFT OUTER JOIN follows ON follows.followee_id = posts.id AND followee_type = "Post"').
     select("posts.*, count(follows.id) as popularity").
     group("posts.id").
     order("popularity desc, updated_at desc")
 
-  scope :top_commented,
-    joins(:comment).
+  scope :most_commented,
+    joins('LEFT OUTER JOIN comments ON comments.post_id = posts.id').
     select("posts.*, count(comments.id) as popularity").
     group("posts.id").
     order("popularity desc, updated_at desc")
@@ -76,7 +83,7 @@ class Post < ActiveRecord::Base
   #TODO: remember to add 'read more'
   validates :content, length: {
     minimum: 1,
-    maximum: 400,
+    maximum: 220,
     tokenizer: lambda { |str| str.scan(/\w+/) },
     too_short: "must have at least %{count} words",
     too_long: "must have at most %{count} words"
