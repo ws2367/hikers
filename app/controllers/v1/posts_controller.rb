@@ -154,14 +154,14 @@ class V1::PostsController < ApplicationController
 
   def query_popular_posts
     if @start_over
-      @posts = Post.top.limit(5)
+      @posts = Post.popular.limit(5)
     else
       #popularity = Post.find(@last_of_previous_post_ids).popularity
       #TODO: this is a workaround, but I believe SQL and activerecord can do better
-      start  = Post.top.index{|post| post.id == @last_of_previous_post_ids.to_i}
+      start  = Post.popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
       if start 
         start += 1
-        @posts = Post.top.slice(start, 5)
+        @posts = Post.popular.slice(start, 5)
       else
         @posts = Array.new
       end
@@ -249,8 +249,8 @@ class V1::PostsController < ApplicationController
 
         # meta attributes
         :is_yours => 0, #TODO: compare current user and this user id
-        :following => 0, #TOOD: check follow table
-        :popularity => post.popularity
+        :following => post.isFollowing(current_v1_user.id),
+        :popularity => post.popularity  
       }
       
       # association
