@@ -11,8 +11,8 @@ class V1::SessionsController < ApplicationController
   # POST users/sign_in
   def create 
     fb_access_token = params[:fb_access_token]
-    app_id = 610309559054620
-    app_secret = "8afb1403ddd477000e5393af310a8441"
+    app_id = ENV['FB_APP_ID']
+    app_secret = ENV['FB_APP_SECRET']
 
     if fb_access_token.nil?
       render :status=>400,
