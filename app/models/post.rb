@@ -49,10 +49,17 @@ class Post < ActiveRecord::Base
   has_many :sharers, through: :shares, 
                      source: :user
 
+  # a class method                    
+  # def self.friendsOf(user)
+  #   where("created_at < ?", time)
+  # end
 
   def isFollowing user_id
-    (return 1 if self.follows.find_by_user_id(user_id) != nil) if user_id
-    return 0
+    if user_id
+      return self.follows.find_by_user_id(user_id) != nil
+    else
+      return false
+    end
   end
 
   def popularity
@@ -63,9 +70,9 @@ class Post < ActiveRecord::Base
   scope :popular,
     joins('LEFT OUTER JOIN follows ON follows.followee_id = posts.id AND followee_type = "Post"').
     joins('LEFT OUTER JOIN comments ON comments.post_id = posts.id').
-    select("posts.*, 0.4 * count(follows.id) + 0.6 * count(comments.id) as popularity").
+    select("posts.*, 0.4 * count('follows'.id) + 0.6 * count('comments'.id) as popularity").
     group("posts.id").
-    order("popularity desc, updated_at desc").
+    order("popularity desc, posts.updated_at desc, posts.id desc").
     includes(entities: [:institution])
   
   scope :most_followed,

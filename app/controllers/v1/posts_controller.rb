@@ -110,8 +110,9 @@ class V1::PostsController < ApplicationController
             :updated_at => ent.updated_at.to_f,
 
             #meta attributes
-            :is_your_friend => 1,
-            :fb_user_id => 0,
+            #TODO: correct this fake randomness
+            :is_your_friend => rand(2), # range from 0 to 1
+            :fb_user_id => ent.fb_user_id,
             :institution => {
               :id => ent.institution.id
 
@@ -158,10 +159,14 @@ class V1::PostsController < ApplicationController
     else
       #popularity = Post.find(@last_of_previous_post_ids).popularity
       #TODO: this is a workaround, but I believe SQL and activerecord can do better
-      start  = Post.popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
-      if start 
-        start += 1
-        @posts = Post.popular.slice(start, 5)
+      start_index  = Post.popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
+      if start_index 
+        start_index += 1
+        end_index = start_index + 4
+        end_index = Post.popular.all.count - 1 if end_index > (Post.popular.all.count - 1)
+        puts "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
+        @posts = Post.popular.slice(start_index..end_index)
+        
       else
         @posts = Array.new
       end
@@ -169,11 +174,44 @@ class V1::PostsController < ApplicationController
   end
 
   def query_friends_posts
-
+    if @start_over
+      @posts = Post.popular.limit(5)
+    else
+      #popularity = Post.find(@last_of_previous_post_ids).popularity
+      #TODO: this is a workaround, but I believe SQL and activerecord can do better
+      start_index  = Post.popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
+      if start_index 
+        start_index += 1
+        end_index = start_index + 4
+        end_index = Post.popular.all.count - 1 if end_index > (Post.popular.all.count - 1)
+        puts "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
+        @posts = Post.popular.slice(start_index..end_index)
+        
+      else
+        @posts = Array.new
+      end
+    end
   end
 
   def query_following_posts
-
+    if @start_over
+      @posts = Post.popular.limit(5)
+    else
+      #popularity = Post.find(@last_of_previous_post_ids).popularity
+      #TODO: this is a workaround, but I believe SQL and activerecord can do better
+      start_index  = Post.popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
+      if start_index 
+        start_index += 1
+        end_index = start_index + 4
+        end_index = Post.popular.all.count - 1 if end_index > (Post.popular.all.count - 1)
+        puts "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
+        @posts = Post.popular.slice(start_index..end_index)
+        
+      else
+        @posts = Array.new
+      end
+    end
+    
   end
 
   def query_posts_for_entity entity
@@ -188,7 +226,8 @@ class V1::PostsController < ApplicationController
       start = entity.posts.order("updated_at desc").index{|post| post.id == @last_of_previous_post_ids.to_i}
       if start 
         start += 1
-        @posts = entity.posts.order("updated_at desc").slice(start, 5)        
+        #TODO: check if start is within 5 posts away from the end 
+        @posts = entity.posts.order("updated_at desc").slice(start, 5) 
       else
         @posts = Array.new
       end
@@ -205,6 +244,7 @@ class V1::PostsController < ApplicationController
       @last_of_previous_post_ids = params[:last_of_previous_post_ids]
     else
       @start_over = true
+      puts "Start over"
     end
 
     # handle different types
@@ -248,7 +288,7 @@ class V1::PostsController < ApplicationController
         :deleted => post.deleted,
 
         # meta attributes
-        :is_yours => 0, #TODO: compare current user and this user id
+        :is_yours => (current_v1_user.id == post.user_id), #TODO: compare current user and this user id
         :following => post.isFollowing(current_v1_user.id),
         :popularity => post.popularity  
       }
