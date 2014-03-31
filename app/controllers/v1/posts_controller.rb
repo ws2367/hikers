@@ -241,7 +241,7 @@ class V1::PostsController < ApplicationController
         start_index += 1
         end_index = start_index + 4
         end_index = Post.popular.all.count - 1 if end_index > (Post.popular.all.count - 1)
-        puts "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
+        puts "Popular: start_index: " + start_index.to_s + " end_index: " + end_index.to_s
         @posts = Post.popular.slice(start_index..end_index)
         
       else
@@ -251,18 +251,19 @@ class V1::PostsController < ApplicationController
   end
 
   def query_friends_posts
+    user_id = current_v1_user.id
     if @start_over
-      @posts = Post.popular.limit(5)
+      @posts = Post.about_friends_of(user_id).popular.limit(5)
     else
       #popularity = Post.find(@last_of_previous_post_ids).popularity
       #TODO: this is a workaround, but I believe SQL and activerecord can do better
-      start_index  = Post.popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
+      start_index  = Post.about_friends_of(user_id).popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
       if start_index 
         start_index += 1
-        end_index = start_index + 4
-        end_index = Post.popular.all.count - 1 if end_index > (Post.popular.all.count - 1)
-        puts "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
-        @posts = Post.popular.slice(start_index..end_index)
+        count = Post.about_friends_of(user_id).popular.all.count
+        end_index = [(start_index + 4), (count - 1)].min
+        puts "Friends: start_index: " + start_index.to_s + " end_index: " + end_index.to_s
+        @posts = Post.about_friends_of(user_id).popular.slice(start_index..end_index)
         
       else
         @posts = Array.new
@@ -272,23 +273,39 @@ class V1::PostsController < ApplicationController
 
   def query_following_posts
     if @start_over
-      @posts = Post.popular.limit(5)
+      user_id = current_v1_user.id
+      @posts = Post.followed_by(user_id).popular.limit(5)
     else
-      #popularity = Post.find(@last_of_previous_post_ids).popularity
-      #TODO: this is a workaround, but I believe SQL and activerecord can do better
-      start_index  = Post.popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
+      start_index  = Post.followed_by(user_id).popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
       if start_index 
         start_index += 1
-        end_index = start_index + 4
-        end_index = Post.popular.all.count - 1 if end_index > (Post.popular.all.count - 1)
-        puts "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
-        @posts = Post.popular.slice(start_index..end_index)
+        count = Post.followed_by(user_id).popular.all.count
+        end_index = [(start_index + 4), (count - 1)].min
+        puts "Following: start_index: " + start_index.to_s + " end_index: " + end_index.to_s
+        @posts = Post.followed_by(user_id).popular.slice(start_index..end_index)
         
       else
         @posts = Array.new
       end
     end
-    
+  end
+
+  def query_my_posts
+    if @start_over
+      user_id = current_v1_user.id
+      @posts = Post.followed_by(user_id).popular.limit(5)
+    else
+      start_index  = Post.followed_by(user_id).popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
+      if start_index 
+        start_index += 1
+        count = Post.followed_by(user_id).popular.all.count
+        end_index = [(start_index + 4), (count - 1)].min
+        puts "Following: start_index: " + start_index.to_s + " end_index: " + end_index.to_s
+        @posts = Post.followed_by(user_id).popular.slice(start_index..end_index)
+      else
+        @posts = Array.new
+      end
+    end
   end
 
   def query_posts_for_entity entity
@@ -344,6 +361,9 @@ class V1::PostsController < ApplicationController
       elsif type == "following"
         query_following_posts
 
+      elsif type == "my"
+        query_my_posts
+
       else
         logger.info("Post#index: Wrong type of request: #{type}")
       end
@@ -366,7 +386,7 @@ class V1::PostsController < ApplicationController
 
         # meta attributes
         :is_yours => (current_v1_user.id == post.user_id), #TODO: compare current user and this user id
-        :following => post.isFollowing(current_v1_user.id),
+        :following => post.is_followed_by(current_v1_user.id),
         :popularity => post.popularity  
       }
       
