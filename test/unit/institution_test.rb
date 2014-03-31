@@ -9,6 +9,7 @@
 #  location_id :integer
 #  deleted     :boolean          default(FALSE)
 #  uuid        :string(255)
+#  user_id     :integer
 #
 
 require 'test_helper'
