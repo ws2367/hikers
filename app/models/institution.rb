@@ -12,7 +12,7 @@
 #
 
 class Institution < ActiveRecord::Base
-  attr_accessible :name, :deleted, :uuid, :user_id
+  attr_accessible :name, :deleted, :uuid, :user_id, :location_id
 
   belongs_to :user
   belongs_to :location
@@ -24,7 +24,7 @@ class Institution < ActiveRecord::Base
     message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
 
   #For now, the presence of user_id is not required.
-  validates :name, :location, presence: true
+  validates :name, presence: true
   validates :uuid, uniqueness: true
 
   validates_associated :location, :user
