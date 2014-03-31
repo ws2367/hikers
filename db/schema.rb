@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140326041233) do
+ActiveRecord::Schema.define(:version => 20140331211648) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -67,6 +67,16 @@ ActiveRecord::Schema.define(:version => 20140326041233) do
 
   add_index "follows", ["followee_id"], :name => "index_follows_on_followee_id"
   add_index "follows", ["user_id"], :name => "index_follows_on_user_id"
+
+  create_table "friendships", :force => true do |t|
+    t.integer  "entity_id"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "friendships", ["entity_id"], :name => "index_friendships_on_entity_id"
+  add_index "friendships", ["user_id"], :name => "index_friendships_on_user_id"
 
   create_table "hates", :force => true do |t|
     t.integer  "user_id"
@@ -134,6 +144,7 @@ ActiveRecord::Schema.define(:version => 20140326041233) do
     t.integer  "entityNum",    :default => 0
     t.boolean  "deleted",      :default => false
     t.string   "uuid"
+    t.float    "popularity"
   end
 
   add_index "posts", ["entity_id"], :name => "index_posts_on_context_id"

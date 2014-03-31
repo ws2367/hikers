@@ -89,6 +89,9 @@ has_many :hates,   inverse_of: :user
 has_many :views,   inverse_of: :user
 has_many :shares,  inverse_of: :user
 
+has_many :friendships
+has_many :friends, through: :friendships
+
 has_many :followedEntities, through: :follows, 
                             source: "followee",
                             source_type: "Entity"

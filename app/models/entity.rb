@@ -14,10 +14,11 @@
 #  viewersNum     :integer          default(0)
 #  positions      :text
 #  uuid           :string(255)
+#  fb_user_id     :integer
 #
 
 class Entity < ActiveRecord::Base
-  attr_accessible :name, :user_id, :institution_id, :positions, :uuid, :deleted, :fb_user_id
+  attr_accessible :name, :user_id, :institution_id, :uuid, :deleted, :fb_user_id
   serialize :positions
 
   belongs_to :institution
@@ -25,6 +26,10 @@ class Entity < ActiveRecord::Base
 
   has_many :connections
   has_many :posts,     through: :connections
+
+  has_many :friendships
+  has_many :befriended_users, through: :friendships, source: :user
+
 
   has_many :comments,  through: :posts
 

@@ -10,22 +10,11 @@
 #  updated_at    :datetime         not null
 #
 
-# == Schema Information
-#
-# Table name: follows
-#
-#  id            :integer          not null, primary key
-#  user_id       :integer
-#  followee_id   :integer
-#  followee_type :string(255)
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#
  
 class Follow < ActiveRecord::Base
   attr_accessible :user_id, :followee_id, :followee_type
   belongs_to :user
-  belongs_to :followee, polymorphic: true
+  belongs_to :followee, polymorphic: true, counter_cache: :followersNum
   # attr_accessible :title, :body
   
   # validates associated followee instead of on the other end of association
@@ -45,8 +34,17 @@ class Follow < ActiveRecord::Base
     end
   end
 
-  after_create  {self.followee.increment!(:followersNum)}
-  after_destroy {self.followee.decrement!(:followersNum)}
+  after_create  {
+    self.followee.with_lock do
+      self.followee.update_attribute("popularity", self.followee.popularity.to_f + 0.4)
+    end
+  }
+
+  after_destroy {
+    self.followee.with_lock do
+      self.followee.update_attribute("popularity", self.followee.popularity.to_f - 0.4)
+    end
+  }
   #after_destroy { |record| Person.destroy_all "firm_id = #{record.id}"   }
 
 end

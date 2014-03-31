@@ -45,4 +45,17 @@ class Comment < ActiveRecord::Base
   # validates :status, inclusion: { in: [true, false] }
 
   validates_associated :post, :user
+
+  after_create  {
+    self.post.with_lock do
+      self.post.update_attribute("popularity", self.post.popularity.to_f + 0.6)
+    end
+  }
+
+  after_destroy {
+    self.post.with_lock do
+      self.post.update_attribute("popularity", self.post.popularity.to_f - 0.6)
+    end
+  }
+
 end

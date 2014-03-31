@@ -26,6 +26,9 @@ class Post < ActiveRecord::Base
   has_many :connections
   has_many :entities, through: :connections
   
+  has_many :befriended_users, through: :entities
+  has_many :following_users, through: :follows, source: :user
+
   has_many :comments, inverse_of: :post
   has_many :pictures, inverse_of: :post
   
@@ -53,27 +56,39 @@ class Post < ActiveRecord::Base
   # def self.friendsOf(user)
   #   where("created_at < ?", time)
   # end
-
-  def isFollowing user_id
-    if user_id
-      return self.follows.find_by_user_id(user_id) != nil
-    else
-      return false
-    end
+  
+  def is_by_user user_id
+    return (user_id and (self.user.id == user_id))
   end
 
-  def popularity
-    return 0.4 * self.follows.count + 0.6 * self.comments.count
+  def self.by_user user_id
+    includes(:user).where("users.id = ?", user_id)
+  end
+  
+
+  def is_followed_by user_id
+    return (user_id and self.follows.exists?(user_id: user_id))
+  end
+
+  def self.followed_by user_id
+    includes(:following_users).where("follows.user_id = ?", user_id)
+  end
+
+  # return true if the post is about a friend of the user of user_id
+  def is_about_friends_of(user_id)
+    return self.befriended_users.group("users.id").exists?(id: user_id)
+  end
+  
+  def self.about_friends_of(user_id)
+    includes(:befriended_users).where("friendships.user_id = ?", user_id)
   end
 
   # Note that this has to be a left outer join...
   scope :popular,
-    joins('LEFT OUTER JOIN follows ON follows.followee_id = posts.id AND followee_type = "Post"').
-    joins('LEFT OUTER JOIN comments ON comments.post_id = posts.id').
-    select("posts.*, 0.4 * count('follows'.id) + 0.6 * count('comments'.id) as popularity").
-    group("posts.id").
-    order("popularity desc, posts.updated_at desc, posts.id desc").
-    includes(entities: [:institution])
+    includes(entities: [:institution]).
+    order("posts.popularity desc, posts.updated_at desc, posts.id desc")
+    
+
   
   scope :most_followed,
     joins('LEFT OUTER JOIN follows ON follows.followee_id = posts.id AND followee_type = "Post"').
