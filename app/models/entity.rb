@@ -51,11 +51,26 @@ class Entity < ActiveRecord::Base
   validates :name, format: {with: /\A[a-zA-Z,.'\s\-]+\z/, 
     message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
 
-  validates :name, :institution, :user, presence: true
+  validates :name, :user, presence: true
 
   validates :uuid, uniqueness: true
 
-  validates_associated :institution, :user
+  validates :fb_user_id, uniqueness: true, unless: "fb_user_id.nil?"
+
+  
+  def non_FB_entity_association
+    if fb_user_id.nil?
+      if institution == nil
+        errors.add(:institution, "is not set on a non-FB entity")
+      else
+        errors.add(:customer_id, "is not active") if institution.location == nil
+      end
+    end
+  end
+
+  validate :non_FB_entity_association, on: :create
+
+  validates_associated :user
 
   def addPosition position
     positions.push(position)
