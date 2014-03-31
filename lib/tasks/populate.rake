@@ -73,6 +73,7 @@ namespace :db do
             @post = Post.create!(content: content, 
                                  user_id: user.id,
                                  uuid: UUIDTools::UUID.random_create.to_s)
+            
             entities.each { |entity|
               Connection.create!(post_id: @post.id, entity_id: entity.id)
             }
