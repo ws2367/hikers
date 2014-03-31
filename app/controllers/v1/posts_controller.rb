@@ -1,7 +1,7 @@
 class V1::PostsController < ApplicationController
   
   respond_to :json
-  #before_filter :authenticate_v1_user!
+  before_filter :authenticate_v1_user!
 
   def map_institution_and_create_response hash
     inst = Institution.new(name: hash["name"],
@@ -440,9 +440,11 @@ class V1::PostsController < ApplicationController
     if follow 
       if follow.destroy
         render status: 200, json: {}
+        return
       else
         render status: 422, 
         json: {:message => "Can't destroy the follow of post #{post_id} and user #{current_v1_user.id}"}
+        return
       end
       render status: 400, 
       json: {:message => "Follow of post #{post_id} and user #{current_v1_user.id} does not exist."}
