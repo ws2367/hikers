@@ -63,6 +63,10 @@ class Entity < ActiveRecord::Base
   validates :fb_user_id, uniqueness: true, unless: "fb_user_id.nil?"
 
   
+  def is_friend_of_user user_id
+    return ((user_id) and (self.befriended_users.exists?(user_id)))
+  end
+
   def non_FB_entity_association
     if fb_user_id.nil?
       if institution == nil
