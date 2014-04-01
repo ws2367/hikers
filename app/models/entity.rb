@@ -112,4 +112,49 @@ class Entity < ActiveRecord::Base
       return Entity.last
     end
   end
+
+  def self.handle_importing_FB_friends(friends, user_id)
+    until friends.empty?
+      subset = friends.slice!(0, 30)
+      self.delay.import_FB_friends(subset, user_id)
+    end
+  end
+
+  def self.import_FB_friends(friends, user_id)
+    friends.each {|friend| import_a_FB_friend(friend, user_id)}
+  end
+
+  def self.import_a_FB_friend(friend, user_id)
+    entity = nil
+    unless entity = Entity.find_by_fb_user_id(friend['id'])
+      entity = Entity.create(name: friend["name"], 
+                                uuid: UUIDTools::UUID.random_create.to_s, 
+                                fb_user_id: friend['id'],
+                                user_id: user_id)
+      unless entity
+        logger.info("Failed to create FB Entity #{friend['id']}. Skip to next.") 
+        return #skip this entity
+      end
+
+      # create its institution and connect its location
+      location = nil
+      if friend['location']
+        # assume location name is formatted as "[city name], [state name]"
+        state_name = friend['location']['name'].split(', ')[1]
+        location = Location.find_by_name(state_name)
+      end
+
+      if friend['education']
+        colleges = friend['education'].select{|edu| edu['type']=='College'}
+        unless colleges.empty?          
+          college_name = colleges.last['school']['name']
+          inst = Institution.create_institution(college_name, location, user_id)
+          entity.update_attribute("institution_id", inst.id) if inst
+        end 
+      end
+    end #end of creating entity
+
+    Friendship.create(entity_id: entity.id, user_id: user_id)
+  end
+
 end

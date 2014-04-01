@@ -29,4 +29,29 @@ class Institution < ActiveRecord::Base
   validates :uuid, uniqueness: true
 
   validates_associated :location, :user
+
+  def self.create_institution(name, location, user_id)
+    inst = nil
+    if location
+      if inst = location.institutions.find_by_name(name)
+        #connect location to instutition just created
+        inst.location_id = location.id
+        return inst
+      end
+    end
+
+    # if there is no location, or there is no such institution under that location
+    # NOTE that we don't connect the newly created instutition to the found location
+    # since location is highly detached to institution (which is school) in FB API
+    unless inst = Institution.find_by_name(name)
+      unless inst = Institution.create(name: name,
+                                       uuid: UUIDTools::UUID.random_create.to_s,
+                                       user_id: user_id)
+        logger.info("Failed to create Institution #{name}.") 
+        return
+      end
+    end
+    return inst
+  end
+  
 end
