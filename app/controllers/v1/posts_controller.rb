@@ -6,7 +6,7 @@ class V1::PostsController < ApplicationController
   def map_institution_and_create_response hash
     inst = Institution.new(name: hash["name"],
                            uuid: hash["uuid"],
-                           user_id: 1) #current_v1_user.id)
+                           user_id: current_v1_user.id)
 
     # if the institution belongs to a location
     if hash["location_id"]
@@ -14,10 +14,11 @@ class V1::PostsController < ApplicationController
       inst.location_id = location.id if location
     end
 
+    response = Hash.new
     if inst.save
       response = { id: inst.id, uuid: inst.uuid, updated_at: inst.updated_at.to_f} 
+      puts "Institution_response: " + response.to_s
     else
-      response = Hash.new
       @error = true
     end
 
@@ -28,6 +29,7 @@ class V1::PostsController < ApplicationController
     # if in request, the fb_user_id is not 0 andthe entity of same fb_user_id exists, 
     # it does not create a new one. It sends back id, uuid, fb_user_id and updated_at. 
     entity = nil
+    response = Hash.new
     # Note that nil.to_i = 0
     if hash["fb_user_id"].to_i != 0
       entity = Entity.find_by_fb_user_id(hash["fb_user_id"].to_i)
@@ -42,7 +44,7 @@ class V1::PostsController < ApplicationController
     unless entity
       entity = Entity.new(name: hash["name"], 
                           uuid: hash["uuid"], 
-                          user_id: 1) #current_v1_user.id)
+                          user_id: current_v1_user.id)
 
       entity.fb_user_id = hash["fb_user_id"].to_i if hash["fb_user_id"]
       puts "fb_user_id: " + hash["fb_user_id"].to_s
@@ -57,7 +59,6 @@ class V1::PostsController < ApplicationController
       response = { id: entity.id, uuid: entity.uuid, fb_user_id: entity.fb_user_id, 
                    updated_at: entity.updated_at.to_f} 
      else
-      response = Hash.new
       @error = true
      end
     end
@@ -69,7 +70,8 @@ class V1::PostsController < ApplicationController
 
     post = Post.new(:content=>hash["content"], 
                     :uuid=>hash["uuid"],
-                    :deleted => false)
+                    :deleted => false,
+                    :user_id => current_v1_user.id)
 
     response = Hash.new
     if post.save
@@ -78,6 +80,7 @@ class V1::PostsController < ApplicationController
       response["updated_at"] = post.updated_at.to_f 
     else
       @error = true
+      return response
     end
 
     has_entities = false
@@ -86,8 +89,6 @@ class V1::PostsController < ApplicationController
         if entity = Entity.find_by_uuid(entity_uuid)
           if Connection.create(post_id: post.id, entity_id: entity.id)
             has_entities = true
-          else
-            @error = true
           end
         end
       end
@@ -98,8 +99,6 @@ class V1::PostsController < ApplicationController
         if entity = Entity.find_by_fb_user_id(entity_fb_user_id)
           if Connection.create(post_id: post.id, entity_id: entity.id)
             has_entities = true
-          else
-            @error = true
           end
         end
       end
@@ -107,6 +106,9 @@ class V1::PostsController < ApplicationController
 
     unless has_entities
       puts "[ERROR] post is not associated to any entity. The association cannot be created."
+      unless post.destroy
+        logger.info("Post #{post.id} canoot be destroyed.")
+      end
       @error = true
     end
 
@@ -187,8 +189,7 @@ class V1::PostsController < ApplicationController
             :updated_at => ent.updated_at.to_f,
 
             #meta attributes
-            #TODO: correct this fake randomness
-            :is_your_friend => rand(2), # range from 0 to 1
+            :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
             :fb_user_id => ent.fb_user_id,
             :institution => {
               :id => ent.institution.id
@@ -210,8 +211,8 @@ class V1::PostsController < ApplicationController
           :updated_at => ent.updated_at.to_f,
 
           #meta attributes
-          :is_your_friend => 1,
-          :fb_user_id => 0,
+          :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
+          :fb_user_id => ent.fb_user_id,
           :institution => {
             :id => ent.institution.id
           }
@@ -255,7 +256,6 @@ class V1::PostsController < ApplicationController
     if @start_over
       @posts = Post.about_friends_of(user_id).popular.limit(5)
     else
-      #popularity = Post.find(@last_of_previous_post_ids).popularity
       #TODO: this is a workaround, but I believe SQL and activerecord can do better
       start_index  = Post.about_friends_of(user_id).popular.index{|post| post.id == @last_of_previous_post_ids.to_i}
       if start_index 
@@ -312,16 +312,12 @@ class V1::PostsController < ApplicationController
     if @start_over
       @posts = entity.posts.order("updated_at desc").limit(5)
     else
-      # begin #TODO: move this to outter loop so we hav protection on the whole thing
-      #   updated_date = Post.find(@last_of_previous_post_ids).updated_at
-      # rescue
-      #   puts "Post#index: can't find the last post id of previous posts"
-      # end
-      start = entity.posts.order("updated_at desc").index{|post| post.id == @last_of_previous_post_ids.to_i}
-      if start 
-        start += 1
-        #TODO: check if start is within 5 posts away from the end 
-        @posts = entity.posts.order("updated_at desc").slice(start, 5) 
+      start_index = entity.posts.order("updated_at desc").index{|post| post.id == @last_of_previous_post_ids.to_i}
+      if start_index 
+        start_index += 1
+        count = entity.posts.order("updated_at desc").count
+        end_index = [(start_index + 4), (count - 1)].min
+        @posts = entity.posts.order("updated_at desc").slice(start_index..end_index) 
       else
         @posts = Array.new
       end
