@@ -22,7 +22,7 @@ class Friendship < ActiveRecord::Base
   validate :unique_friendship, on: :create
 
   def unique_friendship
-    if Friendship.where("user_id = ? AND entity_id = ?", user_id, entity_id).count > 0
+    if Friendship.exists?(user_id: user_id, entity_id: entity_id)
       errors.add(:friendship, "has existed.")
     end
   end

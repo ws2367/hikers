@@ -29,7 +29,7 @@ class Follow < ActiveRecord::Base
   validate :unique_follow, on: :create
  
   def unique_follow
-    if Follow.where("user_id = ? AND followee_type = 'Post' AND followee_id = ?", user_id, followee_id).count > 0
+    if Follow..exists?(user_id:user_id, followee_type: 'Post', followee_id: followee_id)
       errors.add(:follow, "has existed.")
     end
   end

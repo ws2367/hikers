@@ -13,11 +13,19 @@ class Connection < ActiveRecord::Base
   attr_accessible :entity_id, :post_id
 
   belongs_to :entity
-  belongs_to :post
+  belongs_to :post, counter_cache: :entityNum
 
   validates :post_id, :entity_id, presence: true
   validates_associated :post, :entity
 
-  after_create  {self.post.increment!(:entityNum)}
-  after_destroy {self.post.decrement!(:entityNum)}
+  validate :unique_connection, on: :create
+ 
+  def unique_connection
+    if Connection.exists?(entity_id:entity_id, post_id: post_id)
+      errors.add(:connection, "has existed.")
+    end
+  end
+
+  #after_create  {self.post.increment!(:entityNum)}
+  #after_destroy {self.post.decrement!(:entityNum)}
 end
