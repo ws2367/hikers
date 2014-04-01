@@ -4,6 +4,7 @@ class V1::PostsController < ApplicationController
   before_filter :authenticate_v1_user!
 
   def map_institution_and_create_response hash
+    #TODO: we might not want to create a new institution every time
     inst = Institution.new(name: hash["name"],
                            uuid: hash["uuid"],
                            user_id: current_v1_user.id)
@@ -61,6 +62,11 @@ class V1::PostsController < ApplicationController
      else
       @error = true
      end
+    end
+    
+    puts "is_your_friend: " + hash['is_your_friend']
+    if hash['is_your_friend'] == '1' or hash['is_your_friend'] == 'true'
+      Friendship.create(user_id: current_v1_user.id, entity_id: entity.id) 
     end
 
     return response
@@ -290,6 +296,7 @@ class V1::PostsController < ApplicationController
     end
   end
 
+  #TODO: my posts, not following posts
   def query_my_posts
     if @start_over
       user_id = current_v1_user.id
@@ -396,8 +403,8 @@ class V1::PostsController < ApplicationController
     # prepare institution information
     institution_response = Hash.new
     if params["Institution"]
-      institution_id = params["Institution"]
-      
+      institution_id = params["Institution"]['id']
+
       inst = nil
       begin
         inst = Institution.find(institution_id)
