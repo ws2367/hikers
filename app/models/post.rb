@@ -32,23 +32,24 @@ class Post < ActiveRecord::Base
   has_many :comments, inverse_of: :post
   has_many :pictures, inverse_of: :post
   
-  has_many :follows,   as: :followee
+  has_many :follows,   as: :followee, dependent: :destroy
   has_many :followers, through: :follows, 
                        source: :user
  
-  has_many :likes,  as: :likee
-  has_many :likers, through: :likes, 
-                    source: :user                      
-  
-  has_many :hates,  as: :hatee
-  has_many :haters, through: :hates, 
-                    source: :user         
 
-  has_many :views,   as: :viewee
+  # has_many :likes,  as: :likee
+  # has_many :likers, through: :likes, 
+  #                   source: :user                      
+  
+  # has_many :hates,  as: :hatee
+  # has_many :haters, through: :hates, 
+  #                   source: :user         
+
+  has_many :views,   as: :viewee, dependent: :destroy
   has_many :viewers, through: :views, 
                      source: :user
  
-  has_many :shares,  as: :sharee
+  has_many :shares,  as: :sharee, dependent: :destroy
   has_many :sharers, through: :shares, 
                      source: :user
 

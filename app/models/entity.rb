@@ -27,7 +27,7 @@ class Entity < ActiveRecord::Base
   has_many :connections
   has_many :posts,     through: :connections
 
-  has_many :friendships
+  has_many :friendships, dependent: :destroy
   has_many :befriended_users, through: :friendships, source: :user
 
 
