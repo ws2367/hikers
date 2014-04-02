@@ -197,14 +197,15 @@ class V1::PostsController < ApplicationController
             #meta attributes
             :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
             :fb_user_id => ent.fb_user_id,
-            :institution => {
-              :id => ent.institution.id
-
-            }
+            :institution => {}
           }
-          hash[:institution][:location_id] = 
-            ent.institution.location.id if ent.institution and 
-                                           ent.institution.location
+          if ent.institution 
+            hash[:institution][:id] = ent.institution.id 
+            if ent.institution.location
+              hash[:institution][:location_id] = ent.institution.location.id
+            end
+          end
+          
         end
         hash
       }
@@ -221,7 +222,7 @@ class V1::PostsController < ApplicationController
           :fb_user_id => ent.fb_user_id,
           :institution => {}
         }
-        
+
         if ent.institution 
           hash[:institution][:id] = ent.institution.id 
           if ent.institution.location
