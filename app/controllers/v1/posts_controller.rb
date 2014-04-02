@@ -131,7 +131,7 @@ class V1::PostsController < ApplicationController
       if institutions.class == Array
         institution_response = institutions.collect {|inst| map_institution_and_create_response inst}
       else # if it is a single object
-        instituttion_response = map_institution_and_create_response institutions
+        institution_response = map_institution_and_create_response institutions
       end
       @response["Instiution"] = institution_response
       puts "insitituion"
@@ -219,13 +219,15 @@ class V1::PostsController < ApplicationController
           #meta attributes
           :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
           :fb_user_id => ent.fb_user_id,
-          :institution => {
-            :id => ent.institution.id
-          }
+          :institution => {}
         }
-        hash[:institution][:location_id] = 
-          ent.institution.location.id if ent.institution and 
-                                         ent.institution.location
+        
+        if ent.institution 
+          hash[:institution][:id] = ent.institution.id 
+          if ent.institution.location
+            hash[:institution][:location_id] = ent.institution.location.id
+          end
+        end
                                          
         hash
       }
@@ -403,7 +405,7 @@ class V1::PostsController < ApplicationController
     # prepare institution information
     institution_response = Hash.new
     if params["Institution"]
-      institution_id = params["Institution"]['id']
+      institution_id = params["Institution"]
 
       inst = nil
       begin
@@ -412,6 +414,9 @@ class V1::PostsController < ApplicationController
         logger.info("Institution ID #{institution_id} cannot be found.")
       end
       
+      puts inst.to_json
+      puts "id: " + institution_id.to_s
+
       institution_response = {
           :id => inst.id,
           :uuid => inst.uuid,
