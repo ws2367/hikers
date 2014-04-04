@@ -52,10 +52,10 @@ class V1::SessionsController < ApplicationController
       @user = User.create(:fb_user_id=>fb_user_id, :fb_access_token=>fb_access_token)
       
       if @user.valid?
-        puts "Requesting FB friends"
-        friends = @graph.get_connections("me", "friends?fields=id,name,education")
-        puts "Finished requesting FB friends"
-        Entity.delay.handle_importing_FB_friends(friends, @user.id)
+        # puts "Requesting FB friends"
+        # friends = @graph.get_connections("me", "friends?fields=id,name,education")
+        # puts "Finished requesting FB friends"
+        # Entity.delay.handle_importing_FB_friends(friends, @user.id)
       else
         render :status=>500, 
                :json=>{:message=>"User cannot be found or created"} 
