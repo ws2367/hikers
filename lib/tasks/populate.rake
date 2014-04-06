@@ -2,12 +2,8 @@ require 'csv'
 
 namespace :db do
 
-
     desc "Fill UUIDs for each fake data"
     task uuid: :environment do
-        Institution.all.each do |institution|
-            institution.update_attribute("uuid", UUIDTools::UUID.random_create.to_s) unless institution.uuid
-        end
         Entity.all.each do |entity|
             entity.update_attribute("uuid", UUIDTools::UUID.random_create.to_s) unless entity.uuid
         end
@@ -25,49 +21,37 @@ namespace :db do
         fb_user_id = 1131095462 # MY FB id......
         puts "[DEBUG] creating user with fb id #{fb_user_id}"
         begin
-            User.create(fb_user_id: fb_user_id)
+            User.create!(fb_user_id: fb_user_id, :fb_access_token=>"test")
         rescue
             puts "[CAUTION] failed in creating user!"
         end
-        puts "[DEBUG] Now we gonna add states (locations)!"
+        
+        
+        puts "[DEBUG] Now we gonna add entities, posts and comments!"
 
-        states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California","Florida",
-         "Georgia", "Missouri", "Montana", "Nebraska", "Nevada", "New York", "Wyoming"]
+        counter = 1
+        
+        User.all.each do |user|
+          10.times do |n|
+            name = Faker::Name.name
+            @ent = user.entities.create!(name: name,
+                                         institution: Faker::Company.name,
+                                         location: Faker::Address.state,
+                                         uuid: UUIDTools::UUID.random_create.to_s)
 
-        states.each do |state|
-            begin
-                Location.create!(name: state)
-            rescue
-                puts "[CAUTION] failed to create location #{state}"
+            Friendship.create!(user_id: user.id, entity_id: @ent.id) if rand(2)
             end
         end
 
-        puts "[DEBUG] Now we gonna add institutions, posts and comments!"
-
-        counter = 1
-        Location.all.each do |state|
-          name = Faker::Company.name
-          @inst = state.institutions.create!(name: name, 
-                                             uuid: UUIDTools::UUID.random_create.to_s)
-
-          User.all.each do |user|
-
-              name = Faker::Name.name
-              @ent = user.entities.create!(name: name,
-                                           institution_id: @inst.id,
-                                           uuid: UUIDTools::UUID.random_create.to_s)
-          end
-        end
-
-        Location.all.each do |state|
-          @entity_num = Entity.count
-          
-          User.all.each do |user|
+        @entity_num = Entity.count
+        
+        User.all.each do |user|
+          10.times do |n|
             content = "Post " + counter.to_s + " While the announcement appeared to end hopes of finding survivors more than two weeks after the flight vanished, it left many key questions unanswered, including what went wrong aboard."
             counter += 1
 
             max_entity_num = (@entity_num / 1.5).to_i
-            entity_ids = (1..@entity_num).to_a.shuffle[1, rand(max_entity_num - 1) + 1]
+            entity_ids = Entity.all.collect{|ent| ent.id}.to_a.shuffle[1, rand(max_entity_num - 1) + 1]
             entities = Entity.find(entity_ids)
 
             @post = Post.create!(content: content, 
@@ -78,8 +62,6 @@ namespace :db do
               Connection.create!(post_id: @post.id, entity_id: entity.id)
             }
 
-            #@post.follows.create!(user_id:user.id)
-
             @comment = @post.comments.create!(content: "comment 1",
                                               user_id: user.id,
                                               uuid: UUIDTools::UUID.random_create.to_s)
@@ -89,6 +71,7 @@ namespace :db do
                                                 uuid: UUIDTools::UUID.random_create.to_s)
           end
         end
+        
     end
 
 =begin 

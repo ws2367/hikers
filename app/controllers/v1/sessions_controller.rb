@@ -1,6 +1,5 @@
 class V1::SessionsController < ApplicationController
 
-  respond_to :json
   skip_before_filter :authenticate_user!, :only => :create
 
   #GET users/sign_in(.:format)

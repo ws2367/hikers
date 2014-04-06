@@ -1,7 +1,6 @@
 class V1::PostsController < ApplicationController
   
-  respond_to :json
-  before_filter :authenticate_v1_user!
+  #before_filter :authenticate_v1_user!
 
   def map_institution_and_create_response hash
     #TODO: we might not want to create a new institution every time
@@ -175,9 +174,7 @@ class V1::PostsController < ApplicationController
     end
 
     puts @response
-    respond_to do |format|
-      format.json {render json: @response}
-    end
+    render json: @response
   end
 
 
@@ -196,16 +193,11 @@ class V1::PostsController < ApplicationController
 
             #meta attributes
             :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
-            :fb_user_id => ent.fb_user_id,
-            :institution => {}
+            :fb_user_id => ent.fb_user_id
           }
-          if ent.institution 
-            hash[:institution][:id] = ent.institution.id 
-            if ent.institution.location
-              hash[:institution][:location_id] = ent.institution.location.id
-            end
-          end
           
+          hash[:institution] = ent.institution if ent.institution 
+          #hash[:location] = ent.location if ent.location
         end
         hash
       }
@@ -219,16 +211,11 @@ class V1::PostsController < ApplicationController
 
           #meta attributes
           :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
-          :fb_user_id => ent.fb_user_id,
-          :institution => {}
+          :fb_user_id => ent.fb_user_id
         }
 
-        if ent.institution 
-          hash[:institution][:id] = ent.institution.id 
-          if ent.institution.location
-            hash[:institution][:location_id] = ent.institution.location.id
-          end
-        end
+        hash[:institution] = ent.institution if ent.institution 
+        #hash[:location] = ent.location if ent.location
                                          
         hash
       }
@@ -388,7 +375,6 @@ class V1::PostsController < ApplicationController
         :uuid => post.uuid,
         :content => post.content,
         :updated_at => post.updated_at.to_f, #TODO: limit to 3-digit precision
-        :deleted => post.deleted,
 
         # meta attributes
         :is_yours => (current_v1_user.id == post.user_id), #TODO: compare current user and this user id
@@ -403,40 +389,11 @@ class V1::PostsController < ApplicationController
       @results << @result
     }
 
-    # prepare institution information
-    institution_response = Hash.new
-    if params["Institution"]
-      institution_id = params["Institution"]
-
-      inst = nil
-      begin
-        inst = Institution.find(institution_id)
-      rescue
-        logger.info("Institution ID #{institution_id} cannot be found.")
-      end
-      
-      puts inst.to_json
-      puts "id: " + institution_id.to_s
-
-      institution_response = {
-          :id => inst.id,
-          :uuid => inst.uuid,
-          :name => inst.name,
-          :deleted => inst.deleted,
-          :updated_at => inst.updated_at
-        } if inst
-
-        institution_response[:location_id] = inst.location.id if inst and inst.location
-    end
-
     @response = Hash.new
     @response["Post"] = @results
-    @response["Institution"] = institution_response if institution_response.count > 0
 
     puts @response
-    respond_to do |format|
-       format.json { render json: @response }
-    end
+    render json: @response
   end
 
   # POST /posts/:id/follow
@@ -495,19 +452,16 @@ class V1::PostsController < ApplicationController
       @posts = Post.where('content LIKE ?', @substring).limit(num)
     end
     
-    respond_to do |format|
-       format.json { render json: @posts }
-    end
+    render json: @posts
+
   end
 
   # DELETE /posts/1
   def destroy
     @post = Comment.find(params[:id])
     @post.status = false
-    respond_to do |format|
-      if @post.save
-        format.json { render json:  @post}
-      end
+    if @post.save
+      render json:  @post
     end
   end
 end

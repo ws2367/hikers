@@ -45,6 +45,6 @@ class Follow < ActiveRecord::Base
       self.followee.update_attribute("popularity", self.followee.popularity.to_f - 0.4)
     end
   }
-  #after_destroy { |record| Person.destroy_all "firm_id = #{record.id}"   }
+  
 
 end

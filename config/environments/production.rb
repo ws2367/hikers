@@ -82,14 +82,14 @@ Hikers::Application.configure do
   # config.autoflush_log = false
 
 # Configuring Amazon S3 for Paperclip file uploads
-config.paperclip_defaults = {
-    :storage => :s3,
-    :s3_credentials => {
-      :bucket => ENV['AWS_BUCKET'],
-      :access_key_id => ENV['AWS_ACCESS_KEY_ID'],
-      :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY']
-    }
-  }
+# config.paperclip_defaults = {
+#     :storage => :s3,
+#     :s3_credentials => {
+#       :bucket => ENV['AWS_BUCKET'],
+#       :access_key_id => ENV['AWS_ACCESS_KEY_ID'],
+#       :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY']
+#     }
+#   }
 
 
   # Use default logging formatter so that PID and timestamp are not suppressed.

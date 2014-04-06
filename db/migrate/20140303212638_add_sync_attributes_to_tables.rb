@@ -5,7 +5,5 @@ class AddSyncAttributesToTables < ActiveRecord::Migration
     add_column :comments, :deleted, :string, :default => false
     add_column :comments, :uuid, :string
     add_column :entities, :uuid, :string
-    add_column :institutions, :deleted, :boolean, :default => false
-    add_column :institutions, :uuid, :string
   end
 end

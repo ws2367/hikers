@@ -18,7 +18,7 @@ module Hikers
     # config.time_zone = 'Central Time (US & Canada)'
     
     # Enable the asset pipeline
-    config.assets.enabled = true
+    config.assets.enabled = false
     
     # Required for Devise on Heroku
     config.assets.initialize_on_precompile = false

@@ -1,6 +1,5 @@
 class V1::CommentsController < ApplicationController
 
-  respond_to :json
   before_filter :authenticate_v1_user!
 
   @@salt = rand(1000000)
@@ -35,9 +34,7 @@ class V1::CommentsController < ApplicationController
       @response["updated_at"] = @comment.updated_at.to_f 
       
       puts @response
-      respond_to do |format|
-        format.json {render json: @response}
-      end
+      render json: @response
     end
   end
 
@@ -111,28 +108,7 @@ class V1::CommentsController < ApplicationController
     @response["Institution"] = institution_response if institution_response.count > 0    
 
     puts @response
-    respond_to do |format|
-       format.json { render json: @response }
-     end
+    render json: @response
   end
 
-  # GET /comments/1
-  def show
-  	@comment = Comment.find(params[:id])
-  	respond_to do |format|
-      		format.json { render json: @comment }
-    end
-  end
-
-  # DELETE /comments/1
-  def destroy
-    @comment = Comment.find(params[:id])
-  	@comment.status = false
-  	#@user.save!
-  	respond_to do |format|
-      if @comment.save
-      	format.json { render json:  @comment}
-      end
-    end
-  end
-end
+ end
