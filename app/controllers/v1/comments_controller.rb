@@ -72,40 +72,14 @@ class V1::CommentsController < ApplicationController
         :updated_at => comment.updated_at.to_f, #TODO: limit to 3-digit precision
 
         #meta attributes
-        :deleted => comment.deleted,
         :anonymized_user_id => anonymize_user_id(comment),
 
         :post_uuid => comment.post.uuid
       }
-    }
-
-    # prepare institution information
-    institution_response = Array.new
-    if params["Institution"]
-      institution_ids = params["Institution"]
-      
-      insts = Array.new
-      begin
-        insts = Institution.find(institution_ids)
-      rescue
-        logger.info("Institution IDs #{institution_ids} cannot be found for each.")
-      end
-      
-      institution_response = insts.collect{ |inst| 
-        hash = {
-          :id => inst.id,
-          :uuid => inst.uuid,
-          :name => inst.name,
-          :deleted => inst.deleted,
-          :updated_at => inst.updated_at
-        } 
-        hash[:location_id] = inst.location.id if inst.location
-        hash 
-      } if insts.count > 0
-    end
+    }    
 
     @response["Comment"] = comment_response
-    @response["Institution"] = institution_response if institution_response.count > 0    
+    #@response["Institution"] = institution_response if institution_response.count > 0    
 
     puts @response
     render json: @response

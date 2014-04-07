@@ -15,11 +15,11 @@ ActiveRecord::Schema.define(:version => 20140405080738) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
-    t.datetime "created_at",                  :null => false
-    t.datetime "updated_at",                  :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.integer  "post_id"
     t.integer  "user_id"
-    t.string   "deleted",    :default => "f"
+    t.boolean  "deleted",    :default => false
     t.string   "uuid"
   end
 
@@ -75,16 +75,14 @@ ActiveRecord::Schema.define(:version => 20140405080738) do
     t.text     "content"
     t.datetime "created_at",                      :null => false
     t.datetime "updated_at",                      :null => false
-    t.integer  "entity_id"
     t.integer  "user_id"
     t.integer  "followersNum", :default => 0
     t.integer  "entityNum",    :default => 0
     t.boolean  "deleted",      :default => false
     t.string   "uuid"
-    t.float    "popularity"
+    t.float    "popularity",   :default => 0.0
   end
 
-  add_index "posts", ["entity_id"], :name => "index_posts_on_context_id"
   add_index "posts", ["user_id"], :name => "index_posts_on_user_id"
 
   create_table "shares", :force => true do |t|

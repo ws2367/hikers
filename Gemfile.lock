@@ -55,9 +55,6 @@ GEM
       multipart-post (>= 1.2, < 3)
     hike (1.2.3)
     i18n (0.6.1)
-    jbuilder (1.5.3)
-      activesupport (>= 3.0.0)
-      multi_json (>= 1.2.0)
     journey (1.0.4)
     json (1.8.1)
     kgio (2.9.2)
@@ -74,9 +71,12 @@ GEM
     multipart-post (2.0.0)
     nokogiri (1.6.1)
       mini_portile (~> 0.5.0)
+    oj (2.7.2)
     orm_adapter (0.5.0)
     pg (0.17.1)
     polyglot (0.3.4)
+    rabl (0.9.3)
+      activesupport (>= 2.3.14)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -141,10 +141,11 @@ DEPENDENCIES
   aws-sdk
   devise (~> 3.0.0)
   faker (= 1.1.2)
-  jbuilder (~> 1.2)
   json
   koala (~> 1.8.0rc1)
+  oj
   pg
+  rabl
   rails (= 3.2.13)
   rails-api
   sdoc

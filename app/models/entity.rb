@@ -15,7 +15,7 @@
 #
 
 class Entity < ActiveRecord::Base
-  attr_accessible :name, :user_id, :uuid, :deleted, :fb_user_id, :institution, :location
+  attr_accessible :name, :user_id, :uuid, :uuid_c, :deleted, :fb_user_id, :institution, :location
 
   belongs_to :user
 
@@ -62,6 +62,11 @@ class Entity < ActiveRecord::Base
     message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
 
   
+  def updated_at_in_float
+    updated_at.to_f
+  end
+
+
   def is_friend_of_user user_id
     return ((user_id) and (self.befriended_users.exists?(user_id)))
   end
@@ -109,6 +114,44 @@ class Entity < ActiveRecord::Base
       return @ent
     else
       return Entity.last
+    end
+  end
+
+
+  def self.map_an_entity hash
+    # In a request, the fb_user_id should not be 0 or nil.
+    # It sends back id, uuid, fb_user_id and updated_at. 
+    entity = nil
+    # Note that nil.to_i = 0
+    if hash["fb_user_id"].to_i != 0
+      entity = Entity.find_by_fb_user_id(hash["fb_user_id"].to_i)
+      if entity # if the entity exists
+        return entity 
+      else # if the entity does not exist
+        entity = Entity.new(name: hash["name"], 
+                            uuid: hash["uuid"], 
+                            fb_user_id: hash["fb_user_id"].to_i,
+                            user_id: current_v1_user.id)
+
+        entity.institution = hash["institution"] if hash["institution"]
+        entity.location = hash["location"] if hash["location"]
+        
+        if entity.save
+          puts "is_your_friend: " + hash['is_your_friend']
+          if hash['is_your_friend'] == '1' or hash['is_your_friend'] == 'true'
+            Friendship.create(user_id: current_v1_user.id, entity_id: entity.id) 
+          end
+          return entity
+
+        else
+          @error = true
+          return nil
+        end
+
+      end
+    else # if fb_user_id is not valid
+      @error = true
+      return nil
     end
   end
 

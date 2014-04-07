@@ -50,11 +50,11 @@ class Post < ActiveRecord::Base
   has_many :sharers, through: :shares, 
                      source: :user
 
-  # a class method                    
-  # def self.friendsOf(user)
-  #   where("created_at < ?", time)
-  # end
   
+  def updated_at_in_float
+    updated_at.to_f
+  end
+
   def is_by_user user_id
     return (user_id and (self.user.id == user_id))
   end

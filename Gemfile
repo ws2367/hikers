@@ -4,12 +4,18 @@ source 'https://rubygems.org'
 gem 'unicorn'
 gem 'json'
 
+# Rendering json
+gem 'rabl'
+# Also add either `oj` or `yajl-ruby` as the JSON parser
+gem 'oj'
+
 # for a rake task
 gem 'uuidtools'
 
 # reduce the redundancy and make the action controller faster 
 gem 'rails-api'
 
+# Facebook SDK
 gem "koala", "~> 1.8.0rc1"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -39,8 +45,7 @@ gem 'thin'
 
 gem 'faker', '1.1.2'
 
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 1.2'
+
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.

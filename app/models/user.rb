@@ -28,9 +28,13 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :fb_user_id, :fb_access_token, :login
 
-# Virtual attribute for authenticating by either user_name or device_token
-# This is in addition to a real persisted field like 'user_name'
-attr_accessor :login
+  # Virtual attribute for authenticating by either user_name or device_token
+  # This is in addition to a real persisted field like 'user_name'
+  attr_accessor :login
+
+  #validates :fb_user_id, uniqueness: true
+  #validates :fb_user_id, presence: true
+
 
 #authentication key can be either user_name or device_token
 #def self.find_first_by_auth_conditions(warden_conditions)
