@@ -1,186 +1,115 @@
 class V1::PostsController < ApplicationController
   
-  respond_to :json
   before_filter :authenticate_v1_user!
 
-  def map_institution_and_create_response hash
-    #TODO: we might not want to create a new institution every time
-    inst = Institution.new(name: hash["name"],
-                           uuid: hash["uuid"],
-                           user_id: current_v1_user.id)
-
-    # if the institution belongs to a location
-    if hash["location_id"]
-      location = Location.find(hash["location_id"]) 
-      inst.location_id = location.id if location
-    end
-
-    response = Hash.new
-    if inst.save
-      response = { id: inst.id, uuid: inst.uuid, updated_at: inst.updated_at.to_f} 
-      puts "Institution_response: " + response.to_s
-    else
-      @error = true
-    end
-
-    return response
-  end
-
-  def map_entity_and_create_response hash
-    # if in request, the fb_user_id is not 0 andthe entity of same fb_user_id exists, 
-    # it does not create a new one. It sends back id, uuid, fb_user_id and updated_at. 
+  def map_an_entity hash
+    # In a request, the fb_user_id should not be 0 or nil.
+    # It sends back id, uuid, fb_user_id and updated_at. 
     entity = nil
-    response = Hash.new
     # Note that nil.to_i = 0
     if hash["fb_user_id"].to_i != 0
       entity = Entity.find_by_fb_user_id(hash["fb_user_id"].to_i)
-      if entity
-        response = { id: entity.id, uuid: entity.uuid, 
-                     fb_user_id: entity.fb_user_id, 
-                     updated_at: entity.updated_at.to_f}
+      if entity # if the entity exists
+        return entity 
+      else # if the entity does not exist
+        entity = Entity.new(name: hash["name"], 
+                            uuid: UUIDTools::UUID.random_create.to_s, 
+                            fb_user_id: hash["fb_user_id"].to_i,
+                            user_id: current_v1_user.id)
+
+        entity.institution = hash["institution"] if hash["institution"]
+        entity.location = hash["location"] if hash["location"]
+        
+        if entity.save
+          puts "is_your_friend: " + hash['is_your_friend']
+          if hash['is_your_friend'] == '1' or hash['is_your_friend'] == 'true'
+            Friendship.create(user_id: current_v1_user.id, 
+                              entity_id: entity.id) 
+          end
+          return entity
+
+        else
+          logger.info("[ERROR] Failed to create entity.")
+          @error = true
+          return nil
+        end
+
       end
-    end
-
-    # if it is not an existing FB entity, we create it anyway
-    unless entity
-      entity = Entity.new(name: hash["name"], 
-                          uuid: hash["uuid"], 
-                          user_id: current_v1_user.id)
-
-      entity.fb_user_id = hash["fb_user_id"].to_i if hash["fb_user_id"]
-      puts "fb_user_id: " + hash["fb_user_id"].to_s
-
-      # if the entity belongs to an institution
-      if hash["institution_uuid"]
-        inst = Institution.find_by_uuid(hash["institution_uuid"]) 
-        entity.institution_id = inst.id if inst
-      end
-
-      if entity.save
-      response = { id: entity.id, uuid: entity.uuid, fb_user_id: entity.fb_user_id, 
-                   updated_at: entity.updated_at.to_f} 
-     else
+    else # if fb_user_id is not valid
+      logger.info("[ERROR] Invalid entity fb_user_id")
       @error = true
-     end
+      return nil
     end
-    
-    puts "is_your_friend: " + hash['is_your_friend']
-    if hash['is_your_friend'] == '1' or hash['is_your_friend'] == 'true'
-      Friendship.create(user_id: current_v1_user.id, entity_id: entity.id) 
-    end
-
-    return response
   end
+    
 
-  def map_post_and_create_response hash
+  def map_a_post(hash, entities)
 
-    post = Post.new(:content=>hash["content"], 
-                    :uuid=>hash["uuid"],
-                    :deleted => false,
-                    :user_id => current_v1_user.id)
+    if entities.empty?
+      logger.info("[ERROR] post is not associated to any entity. The association cannot be created.")
+      @error = true 
+      return nil
+    end
 
-    response = Hash.new
-    if post.save
-      response["id"] = post.id
-      response["uuid"] = post.uuid
-      response["updated_at"] = post.updated_at.to_f 
-    else
+    post = Post.new(content: hash["content"], 
+                    uuid: hash["uuid"],
+                    user_id: current_v1_user.id)
+
+    unless post.save!
+      logger.info("[ERROR] Failed to create post")
       @error = true
-      return response
+      return nil
     end
 
-    has_entities = false
-    if hash["entities_uuids"]
-      hash["entities_uuids"].each do |entity_uuid|
-        if entity = Entity.find_by_uuid(entity_uuid)
-          if Connection.create(post_id: post.id, entity_id: entity.id)
-            has_entities = true
-          end
-        end
+    for entity in entities
+      if entity.valid?
+        Connection.create(post_id: post.id, entity_id: entity.id)
       end
     end
 
-    if hash["entities_fb_user_ids"]
-      hash["entities_fb_user_ids"].each do |entity_fb_user_id|
-        if entity = Entity.find_by_fb_user_id(entity_fb_user_id)
-          if Connection.create(post_id: post.id, entity_id: entity.id)
-            has_entities = true
-          end
-        end
-      end
-    end
-
-    unless has_entities
-      puts "[ERROR] post is not associated to any entity. The association cannot be created."
-      unless post.destroy
-        logger.info("Post #{post.id} canoot be destroyed.")
-      end
-      @error = true
-    end
-
-    return response
+    return post
   end
 
   #POST /posts
   def create
     @error = false
     puts params
-    @response = Hash.new
-    institutions = params["Institution"]
-    if institutions
-      if institutions.class == Array
-        institution_response = institutions.collect {|inst| map_institution_and_create_response inst}
-      else # if it is a single object
-        institution_response = map_institution_and_create_response institutions
-      end
-      @response["Instiution"] = institution_response
-      puts "insitituion"
-    end
-
-    if @error
-      render :status => 422,
-               :json => {:message => "Institution cannot be set accordingly." }
-      return
-    end
-
-    entities = params["Entity"]
-    if entities
-      if entities.class == Array
-        entitiy_response = entities.collect {|entity| map_entity_and_create_response entity}
+    
+    entitiesToMap = params["Entity"]
+    if entitiesToMap
+      if entitiesToMap.class == Array
+        @entities = entitiesToMap.collect {|entity| map_an_entity entity}
       else
-        entitiy_response = map_entity_and_create_response entities
+        @entities = [map_an_entity(entitiesToMap)] # make sure it is an array
       end
-      @response["Entity"] = entitiy_response
       puts "entity"
     end
 
     if @error
       render :status => 422,
-               :json => {:message => "Entity cannot be set accordingly." }
+             :json => {:message => "Entity cannot be set accordingly." }
       return
     end
 
-    keypath = params["Post"]
-    if keypath.class == Array
-      post_response = keypath.collect { |post| map_post_and_create_response post}
+    postsToMap = params["Post"]
+    if postsToMap.class == Array
+      @posts = postsToMap.collect { |post| map_a_post(post, @entities)}
     else 
-      post_response = map_post_and_create_response keypath      
+      @posts = map_a_post(postsToMap, @entities)
     end
-    @response["Post"] = post_response
-
+    
     if @error
       render :status => 422,
-               :json => {:message => "Post cannot be set accordingly." }
+             :json => {:message => "Post cannot be set accordingly." }
       return
     end
 
-    puts @response
-    respond_to do |format|
-      format.json {render json: @response}
-    end
+    puts @entities
+    puts @posts
+    render "posts/create"
   end
 
-
+=begin
   def add_entities_against_client_matched_entities(post, entity_ids)
     if entity_ids 
       @result["entities"] = post.entities.collect { |ent| ent
@@ -196,16 +125,11 @@ class V1::PostsController < ApplicationController
 
             #meta attributes
             :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
-            :fb_user_id => ent.fb_user_id,
-            :institution => {}
+            :fb_user_id => ent.fb_user_id
           }
-          if ent.institution 
-            hash[:institution][:id] = ent.institution.id 
-            if ent.institution.location
-              hash[:institution][:location_id] = ent.institution.location.id
-            end
-          end
           
+          hash[:institution] = ent.institution if ent.institution 
+          #hash[:location] = ent.location if ent.location
         end
         hash
       }
@@ -219,26 +143,41 @@ class V1::PostsController < ApplicationController
 
           #meta attributes
           :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
-          :fb_user_id => ent.fb_user_id,
-          :institution => {}
+          :fb_user_id => ent.fb_user_id
         }
 
-        if ent.institution 
-          hash[:institution][:id] = ent.institution.id 
-          if ent.institution.location
-            hash[:institution][:location_id] = ent.institution.location.id
-          end
-        end
+        hash[:institution] = ent.institution if ent.institution 
+        #hash[:location] = ent.location if ent.location
                                          
         hash
       }
     end
   end
 
+  def add_entities post
+    @result["entities"] = post.entities.collect { |ent| ent
+        hash = {
+          :id => ent.id,
+          :name => ent.name, 
+          :updated_at => ent.updated_at.to_f,
+
+          #meta attributes
+          :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
+          :fb_user_id => ent.fb_user_id
+        }
+
+        hash[:institution] = ent.institution if ent.institution 
+        #hash[:location] = ent.location if ent.location
+                                         
+        hash
+      }
+  end
+
   def remove_client_matched_posts(client_posts_ids)
     puts client_posts_ids
     @posts.select {|post| !client_posts_ids.find_index(post.id) } if client_posts_ids
   end
+=end
 
   def query_popular_posts
     if @start_over
@@ -350,9 +289,15 @@ class V1::PostsController < ApplicationController
     # handle different types
     if params[:entity_id]
       entity_id = params[:entity_id]
-      entity = Entity.find(entity_id)
-      # Entity does not exist!
-      logger.info("Post#index: Entity #{entity_id} does not exist") unless entity
+      
+      # use find_by_id so it does not throw exceptions
+      entity = Entity.find_by_id(entity_id)
+      unless entity
+        logger.info("Post#index: Entity #{entity_id} does not exist")
+        render :status => 400,
+               :json => {:message => "Entity #{entity_id} does not exist." }
+        return 
+      end
 
       query_posts_for_entity entity
 
@@ -377,72 +322,46 @@ class V1::PostsController < ApplicationController
       logger.info("Post#index: Missing either entity_id or type in parameters")
     end
 
-    remove_client_matched_posts(params[:Post]) #@posts cannot be null!
+    #remove_client_matched_posts(params[:Post]) #@posts cannot be null!
 
-    @results = Array.new
+    # @results = Array.new
     # TODO: Query in batch
     # this is bad because it queries the DB as many times as the number of posts
-    @posts.each_with_index {|post, i|
-      @result = {
-        :id => post.id,
-        :uuid => post.uuid,
-        :content => post.content,
-        :updated_at => post.updated_at.to_f, #TODO: limit to 3-digit precision
-        :deleted => post.deleted,
+    # @posts.each_with_index {|post, i|
+    #   @result = {
+    #     :id => post.id,
+    #     :uuid => post.uuid,
+    #     :content => post.content,
+    #     :updated_at => post.updated_at.to_f, #TODO: limit to 3-digit precision
 
-        # meta attributes
-        :is_yours => (current_v1_user.id == post.user_id), #TODO: compare current user and this user id
-        :following => post.is_followed_by(current_v1_user.id),
-        :popularity => post.popularity  
-      }
+    #     # meta attributes
+    #     :is_yours => (current_v1_user.id == post.user_id), #TODO: compare current user and this user id
+    #     :following => post.is_followed_by(current_v1_user.id),
+    #     :popularity => post.popularity  
+    #   }
       
       # association
       # this method checks the nullity of param[:Entity]
       # TODO: remove @results[i] from arguments since it is accessible in the method
-      add_entities_against_client_matched_entities(post, params[:Entity])
-      @results << @result
-    }
+      # add_entities_against_client_matched_entities(post, params[:Entity])
+      # add_entities(post)
 
-    # prepare institution information
-    institution_response = Hash.new
-    if params["Institution"]
-      institution_id = params["Institution"]
+    #   @results << @result
+    # }
 
-      inst = nil
-      begin
-        inst = Institution.find(institution_id)
-      rescue
-        logger.info("Institution ID #{institution_id} cannot be found.")
-      end
-      
-      puts inst.to_json
-      puts "id: " + institution_id.to_s
+    # @response = Hash.new
+    # @response["Post"] = @results
 
-      institution_response = {
-          :id => inst.id,
-          :uuid => inst.uuid,
-          :name => inst.name,
-          :deleted => inst.deleted,
-          :updated_at => inst.updated_at
-        } if inst
-
-        institution_response[:location_id] = inst.location.id if inst and inst.location
-    end
-
-    @response = Hash.new
-    @response["Post"] = @results
-    @response["Institution"] = institution_response if institution_response.count > 0
-
-    puts @response
-    respond_to do |format|
-       format.json { render json: @response }
-    end
+    #puts @response
+    #render json: @response 
+    @user_id = current_v1_user.id # for view template's information
+    render "posts/index"
   end
 
   # POST /posts/:id/follow
   def follow
     post_id = params[:post_id]
-    unless post = Post.find(post_id)
+    unless post = Post.find_by_id(post_id)
       render :status => 400,
              :json => {:message => "Post #{post_id} does not exist." }
       return
@@ -459,7 +378,7 @@ class V1::PostsController < ApplicationController
   # DELETE /posts/:id/unfollow
   def unfollow
     post_id = params[:post_id]
-    unless post = Post.find(post_id)
+    unless post = Post.find_by_id(post_id)
       render :status => 400,
              :json => {:message => "Post #{post_id} does not exist." }
       return
@@ -472,11 +391,12 @@ class V1::PostsController < ApplicationController
         return
       else
         render status: 422, 
-        json: {:message => "Can't destroy the follow of post #{post_id} and user #{current_v1_user.id}"}
+        json: {:message => "Can't destroy the follow of post #{post_id} and you"}
         return
       end
+    else
       render status: 400, 
-      json: {:message => "Follow of post #{post_id} and user #{current_v1_user.id} does not exist."}
+      json: {:message => "Follow of post #{post_id} and you does not exist."}
     end
   end
 
@@ -495,19 +415,16 @@ class V1::PostsController < ApplicationController
       @posts = Post.where('content LIKE ?', @substring).limit(num)
     end
     
-    respond_to do |format|
-       format.json { render json: @posts }
-    end
+    render json: @posts
+
   end
 
   # DELETE /posts/1
   def destroy
     @post = Comment.find(params[:id])
     @post.status = false
-    respond_to do |format|
-      if @post.save
-        format.json { render json:  @post}
-      end
+    if @post.save
+      render json:  @post
     end
   end
 end

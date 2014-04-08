@@ -1,6 +1,5 @@
 class V1::CommentsController < ApplicationController
 
-  respond_to :json
   before_filter :authenticate_v1_user!
 
   @@salt = rand(1000000)
@@ -35,9 +34,7 @@ class V1::CommentsController < ApplicationController
       @response["updated_at"] = @comment.updated_at.to_f 
       
       puts @response
-      respond_to do |format|
-        format.json {render json: @response}
-      end
+      render json: @response
     end
   end
 
@@ -75,64 +72,17 @@ class V1::CommentsController < ApplicationController
         :updated_at => comment.updated_at.to_f, #TODO: limit to 3-digit precision
 
         #meta attributes
-        :deleted => comment.deleted,
         :anonymized_user_id => anonymize_user_id(comment),
 
         :post_uuid => comment.post.uuid
       }
-    }
-
-    # prepare institution information
-    institution_response = Array.new
-    if params["Institution"]
-      institution_ids = params["Institution"]
-      
-      insts = Array.new
-      begin
-        insts = Institution.find(institution_ids)
-      rescue
-        logger.info("Institution IDs #{institution_ids} cannot be found for each.")
-      end
-      
-      institution_response = insts.collect{ |inst| 
-        hash = {
-          :id => inst.id,
-          :uuid => inst.uuid,
-          :name => inst.name,
-          :deleted => inst.deleted,
-          :updated_at => inst.updated_at
-        } 
-        hash[:location_id] = inst.location.id if inst.location
-        hash 
-      } if insts.count > 0
-    end
+    }    
 
     @response["Comment"] = comment_response
-    @response["Institution"] = institution_response if institution_response.count > 0    
+    #@response["Institution"] = institution_response if institution_response.count > 0    
 
     puts @response
-    respond_to do |format|
-       format.json { render json: @response }
-     end
+    render json: @response
   end
 
-  # GET /comments/1
-  def show
-  	@comment = Comment.find(params[:id])
-  	respond_to do |format|
-      		format.json { render json: @comment }
-    end
-  end
-
-  # DELETE /comments/1
-  def destroy
-    @comment = Comment.find(params[:id])
-  	@comment.status = false
-  	#@user.save!
-  	respond_to do |format|
-      if @comment.save
-      	format.json { render json:  @comment}
-      end
-    end
-  end
-end
+ end

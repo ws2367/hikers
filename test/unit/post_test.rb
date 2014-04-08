@@ -8,14 +8,11 @@
 #  updated_at   :datetime         not null
 #  entity_id    :integer
 #  user_id      :integer
-#  status       :boolean          default(TRUE)
 #  followersNum :integer          default(0)
-#  hatersNum    :integer          default(0)
-#  likersNum    :integer          default(0)
-#  viewersNum   :integer          default(0)
 #  entityNum    :integer          default(0)
 #  deleted      :boolean          default(FALSE)
 #  uuid         :string(255)
+#  popularity   :float
 #
 
 require 'test_helper'

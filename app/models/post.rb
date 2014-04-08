@@ -8,14 +8,11 @@
 #  updated_at   :datetime         not null
 #  entity_id    :integer
 #  user_id      :integer
-#  status       :boolean          default(TRUE)
 #  followersNum :integer          default(0)
-#  hatersNum    :integer          default(0)
-#  likersNum    :integer          default(0)
-#  viewersNum   :integer          default(0)
 #  entityNum    :integer          default(0)
 #  deleted      :boolean          default(FALSE)
 #  uuid         :string(255)
+#  popularity   :float
 #
 
 class Post < ActiveRecord::Base
@@ -23,14 +20,14 @@ class Post < ActiveRecord::Base
 
   belongs_to :user
 
-  has_many :connections
+  has_many :connections, dependent: :destroy
   has_many :entities, through: :connections
-  
+  has_many :comments, inverse_of: :post
+
   has_many :befriended_users, through: :entities
   has_many :following_users, through: :follows, source: :user
 
-  has_many :comments, inverse_of: :post
-  has_many :pictures, inverse_of: :post
+  # has_many :pictures, inverse_of: :post
   
   has_many :follows,   as: :followee, dependent: :destroy
   has_many :followers, through: :follows, 
@@ -45,19 +42,19 @@ class Post < ActiveRecord::Base
   # has_many :haters, through: :hates, 
   #                   source: :user         
 
-  has_many :views,   as: :viewee, dependent: :destroy
-  has_many :viewers, through: :views, 
-                     source: :user
+  # has_many :views,   as: :viewee, dependent: :destroy
+  # has_many :viewers, through: :views, 
+  #                    source: :user
  
   has_many :shares,  as: :sharee, dependent: :destroy
   has_many :sharers, through: :shares, 
                      source: :user
 
-  # a class method                    
-  # def self.friendsOf(user)
-  #   where("created_at < ?", time)
-  # end
   
+  def updated_at_in_float
+    updated_at.to_f
+  end
+
   def is_by_user user_id
     return (user_id and (self.user.id == user_id))
   end
@@ -86,7 +83,7 @@ class Post < ActiveRecord::Base
 
   # Note that this has to be a left outer join...
   scope :popular,
-    includes(entities: [:institution]).
+    includes(:entities).
     order("posts.popularity desc, posts.updated_at desc, posts.id desc")
     
 

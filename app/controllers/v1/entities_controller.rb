@@ -1,6 +1,5 @@
 class V1::EntitiesController < ApplicationController
 
-  respond_to :json
   before_filter :authenticate_v1_user!
   
   def create_entity_and_response entity_hash
@@ -30,17 +29,14 @@ class V1::EntitiesController < ApplicationController
     end
 
     puts @response
-    respond_to do |format|
-      format.json {render json: @response}
-    end
+    render json: @response
   end
 
   # GET /entities/1
   def show
   	@entity = Entity.find(params[:id])
-    respond_to do |format|
-       format.json { render json: @entity }
-    end
+    
+    render json: @entity
   end
 
   # GET /entities
@@ -60,12 +56,7 @@ class V1::EntitiesController < ApplicationController
       @results[i]["institution_uuid"] = entity.institution.uuid
     }
     puts @results
-    respond_to do |format|
-       format.json { render json: @results }
-     end
+    render json: @results
   end
 
-  # PUT /entities/1
-  def update
-  end
 end
