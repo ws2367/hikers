@@ -62,6 +62,19 @@ class Entity < ActiveRecord::Base
     message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
 
   
+  # only run when creating
+  after_create :find_user_friends, on: :create
+ 
+  def find_user_friends
+    User.all.each do |user|
+      if user.has_fb_friend_id fb_user_id
+        Friendship.create(entity_id: id, user_id: user.id)
+        puts "Created friendship!"
+      end
+    end
+  end
+  protected :find_user_friends
+
   def updated_at_in_float
     updated_at.to_f
   end
@@ -85,20 +98,6 @@ class Entity < ActiveRecord::Base
 
   validates_associated :user
 
-  def addPosition position
-    positions.push(position)
-    update_attribute(:positions, positions)
-  end
-
-  def removePosition position
-    if positions.delete(position) != nil
-      update_attribute(:positions, positions)
-      return true
-    else
-      return false
-    end
-  end
-
   def next
     @ent = Entity.where("id > ?", id).order("id ASC").first
     if @ent
@@ -118,42 +117,6 @@ class Entity < ActiveRecord::Base
   end
 
 
-  def self.map_an_entity hash
-    # In a request, the fb_user_id should not be 0 or nil.
-    # It sends back id, uuid, fb_user_id and updated_at. 
-    entity = nil
-    # Note that nil.to_i = 0
-    if hash["fb_user_id"].to_i != 0
-      entity = Entity.find_by_fb_user_id(hash["fb_user_id"].to_i)
-      if entity # if the entity exists
-        return entity 
-      else # if the entity does not exist
-        entity = Entity.new(name: hash["name"], 
-                            uuid: hash["uuid"], 
-                            fb_user_id: hash["fb_user_id"].to_i,
-                            user_id: current_v1_user.id)
-
-        entity.institution = hash["institution"] if hash["institution"]
-        entity.location = hash["location"] if hash["location"]
-        
-        if entity.save
-          puts "is_your_friend: " + hash['is_your_friend']
-          if hash['is_your_friend'] == '1' or hash['is_your_friend'] == 'true'
-            Friendship.create(user_id: current_v1_user.id, entity_id: entity.id) 
-          end
-          return entity
-
-        else
-          @error = true
-          return nil
-        end
-
-      end
-    else # if fb_user_id is not valid
-      @error = true
-      return nil
-    end
-  end
 
   # def self.handle_importing_FB_friends(friends, user_id)
   #   until friends.empty?

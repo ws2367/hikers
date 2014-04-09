@@ -2,11 +2,6 @@ class V1::SessionsController < ApplicationController
 
   skip_before_filter :authenticate_user!, :only => :create
 
-  #GET users/sign_in(.:format)
-  def new
-    puts "a GET sign_in"
-  end
-
   # POST users/sign_in
   def create 
     fb_access_token = params[:fb_access_token]
@@ -51,10 +46,12 @@ class V1::SessionsController < ApplicationController
       @user = User.create(:fb_user_id=>fb_user_id, :fb_access_token=>fb_access_token)
       
       if @user.valid?
-        # puts "Requesting FB friends"
-        # friends = @graph.get_connections("me", "friends?fields=id,name,education")
-        # puts "Finished requesting FB friends"
-        # Entity.delay.handle_importing_FB_friends(friends, @user.id)
+        #TODO: move the work to background
+        puts "Requesting FB friends"
+        friends = @graph.get_connections("me", "friends?fields=id")
+        puts "Finished requesting FB friends"
+        count = @user.cache_fb_friends_ids friends
+        puts "Number of friendships created for User %s: %s" % [count, @user.id]
       else
         render :status=>500, 
                :json=>{:message=>"User cannot be found or created"} 

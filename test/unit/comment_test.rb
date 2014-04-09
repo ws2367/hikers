@@ -8,7 +8,7 @@
 #  updated_at :datetime         not null
 #  post_id    :integer
 #  user_id    :integer
-#  deleted    :string(255)      default("f")
+#  deleted    :boolean          default(FALSE)
 #  uuid       :string(255)
 #
 
