@@ -1,3 +1,3 @@
 # Be sure to restart your server when you modify this file.
 
-Hikers::Application.config.session_store :cookie_store, key: '_hikers_session'
+Moose::Application.config.session_store :cookie_store, key: '_hikers_session'

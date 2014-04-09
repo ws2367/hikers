@@ -1,4 +1,4 @@
-Hikers::Application.routes.draw do
+Moose::Application.routes.draw do
 
 namespace :v1  do
   get 'locations', to: "locations#index"

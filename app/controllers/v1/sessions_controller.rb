@@ -64,7 +64,8 @@ class V1::SessionsController < ApplicationController
     # http://rdoc.info/github/plataformatec/devise/master/Devise/Models/TokenAuthenticatable
     @user.ensure_authentication_token!
 
-    render :status=>200, :json=>{:token=>@user.authentication_token}
+    render :status=>200, :json=>{:token=>@user.authentication_token, 
+                                 :bucket_name=>Moose::Application::PHOTO_BUCKET_NAME}
   end
 
 
