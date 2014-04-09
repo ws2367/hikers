@@ -15,7 +15,7 @@
 class Comment < ActiveRecord::Base
   attr_accessible :content, :user_id, :deleted, :uuid, :post_id
 
-  belongs_to :post
+  belongs_to :post, counter_cache: :comments_count
   belongs_to :user
 
   # has_many :likes,  as: :likee

@@ -2,16 +2,16 @@
 #
 # Table name: entities
 #
-#  id           :integer          not null, primary key
-#  name         :string(255)
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  user_id      :integer
-#  followersNum :integer          default(0)
-#  uuid         :string(255)
-#  fb_user_id   :integer
-#  institution  :string(255)
-#  location     :string(255)
+#  id              :integer          not null, primary key
+#  name            :string(255)
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  user_id         :integer
+#  followers_count :integer          default(0)
+#  uuid            :string(255)
+#  fb_user_id      :integer
+#  institution     :string(255)
+#  location        :string(255)
 #
 
 class Entity < ActiveRecord::Base

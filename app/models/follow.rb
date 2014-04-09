@@ -14,7 +14,7 @@
 class Follow < ActiveRecord::Base
   attr_accessible :user_id, :followee_id, :followee_type
   belongs_to :user
-  belongs_to :followee, polymorphic: true, counter_cache: :followersNum
+  belongs_to :followee, polymorphic: true, counter_cache: :followers_count
   # attr_accessible :title, :body
   
   # validates associated followee instead of on the other end of association

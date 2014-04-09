@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140409070030) do
+ActiveRecord::Schema.define(:version => 20140409204031) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -38,10 +38,10 @@ ActiveRecord::Schema.define(:version => 20140409070030) do
 
   create_table "entities", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",                  :null => false
-    t.datetime "updated_at",                  :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
     t.integer  "user_id"
-    t.integer  "followersNum", :default => 0
+    t.integer  "followers_count", :default => 0
     t.string   "uuid"
     t.integer  "fb_user_id"
     t.string   "institution"
@@ -73,14 +73,14 @@ ActiveRecord::Schema.define(:version => 20140409070030) do
 
   create_table "posts", :force => true do |t|
     t.text     "content"
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.integer  "user_id"
-    t.integer  "followersNum", :default => 0
-    t.integer  "entityNum",    :default => 0
-    t.boolean  "deleted",      :default => false
+    t.integer  "followers_count", :default => 0
+    t.boolean  "deleted",         :default => false
     t.string   "uuid"
-    t.float    "popularity",   :default => 0.0
+    t.float    "popularity",      :default => 0.0
+    t.integer  "comments_count",  :default => 0
   end
 
   add_index "posts", ["user_id"], :name => "index_posts_on_user_id"

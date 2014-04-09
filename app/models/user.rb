@@ -72,7 +72,7 @@ def has_fb_friend_id fb_friend_id
 end
 
 # return the number of friendships created
-def cache_fb_friends_ids friends
+def process_fb_friends_ids friends
   ids = friends.collect{|frd| frd['id'].to_i}
   fb_friends_ids = ids
   puts id

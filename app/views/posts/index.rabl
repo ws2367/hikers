@@ -2,7 +2,7 @@
 
 
 collection @posts, :root => "Post", :object_root => false
-attributes :id, :uuid, :content, :popularity
+attributes :id, :uuid, :content, :popularity, :followers_count, :comments_count
 attributes :updated_at_in_float => :updated_at
 
 node(:is_yours) { |post| (@user_id == post.user_id) }

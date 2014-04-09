@@ -2,15 +2,12 @@ class V1::CommentsController < ApplicationController
 
   before_filter :authenticate_v1_user!
 
-  @@salt = rand(1000000)
-  
-  puts "Salt= " + @@salt.to_s
 
   # TODO: Given the same user id and same post id, anonymized_user_id should return the same id
   # but it should also be impossible to guess the user id from knowing post ids
   # probably use a static salt that gets updated frequently here?
   def anonymize_user_id comment
-    return comment.user_id + comment.post_id + @@salt
+    return comment.user_id + comment.post_id
   end
 
   # POST /comments

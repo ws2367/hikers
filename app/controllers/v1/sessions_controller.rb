@@ -50,7 +50,7 @@ class V1::SessionsController < ApplicationController
         puts "Requesting FB friends"
         friends = @graph.get_connections("me", "friends?fields=id")
         puts "Finished requesting FB friends"
-        count = @user.cache_fb_friends_ids friends
+        count = @user.process_fb_friends_ids friends
         puts "Number of friendships created for User %s: %s" % [count, @user.id]
       else
         render :status=>500, 
