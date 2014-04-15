@@ -72,6 +72,22 @@ class Post < ActiveRecord::Base
     return posts
   end
 
+
+  def self.query_popular_posts(user_id, start_over, last_of_previous_post_ids)
+    query_result = Post.popular
+    return fetch_segment(query_result, start_over, last_of_previous_post_ids)
+  end
+
+  def self.query_friends_posts(user_id, start_over, last_of_previous_post_ids)
+    query_result = Post.about_friends_of(user_id).popular
+    return fetch_segment(query_result, start_over, last_of_previous_post_ids)
+  end
+
+  def self.query_following_posts(user_id, start_over, last_of_previous_post_ids)
+    query_result = Post.followed_by(user_id).popular
+    return fetch_segment(query_result, start_over, last_of_previous_post_ids)
+  end
+
   def self.query_posts_about_me(user_id, start_over, last_of_previous_post_ids)
     query_result = Post.about_user(user_id).popular
     return fetch_segment(query_result, start_over, last_of_previous_post_ids)

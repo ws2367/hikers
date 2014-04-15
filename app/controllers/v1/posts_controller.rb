@@ -179,84 +179,6 @@ class V1::PostsController < ApplicationController
   end
 =end
 
-  def query_popular_posts
-    query_result = Post.popular
-    if @start_over
-      @posts = query_result.limit(5)
-    else
-      #popularity = Post.find(@last_of_previous_post_ids).popularity
-      #TODO: this is a workaround, but I believe SQL and activerecord can do better
-      start_index  = query_result.index{|post| post.id == @last_of_previous_post_ids.to_i}
-      if start_index 
-        start_index += 1
-        count = query_result.all.count
-        end_index = [(start_index + 4), (count - 1)].min
-        puts "Popular: start_index: " + start_index.to_s + " end_index: " + end_index.to_s
-        @posts = query_result.slice(start_index..end_index)
-        
-      else
-        @posts = Array.new
-      end
-    end
-  end
-
-  def query_friends_posts
-    query_result = Post.about_friends_of(current_v1_user.id).popular
-    if @start_over
-      @posts = query_result.limit(5)
-    else
-      #TODO: this is a workaround, but I believe SQL and activerecord can do better
-      start_index  = query_result.index{|post| post.id == @last_of_previous_post_ids.to_i}
-      if start_index 
-        start_index += 1
-        count = query_result.all.count
-        end_index = [(start_index + 4), (count - 1)].min
-        puts "Friends: start_index: " + start_index.to_s + " end_index: " + end_index.to_s
-        @posts = query_result.slice(start_index..end_index)
-        
-      else
-        @posts = Array.new
-      end
-    end
-  end
-
-  def query_following_posts
-    query_result = Post.followed_by(current_v1_user.id).popular
-    if @start_over
-      @posts = query_result.limit(5)
-    else
-      start_index  = query_result.index{|post| post.id == @last_of_previous_post_ids.to_i}
-      if start_index 
-        start_index += 1
-        count = query_result.all.count
-        end_index = [(start_index + 4), (count - 1)].min
-        puts "Following: start_index: " + start_index.to_s + " end_index: " + end_index.to_s
-        @posts = query_result.slice(start_index..end_index)
-        
-      else
-        @posts = Array.new
-      end
-    end
-  end
-
-  def query_posts_about_me
-    if @start_over
-      query_result = Post.about_user(current_v1_user.id).popular
-      @posts = query_result.limit(5)
-    else
-      start_index  = query_result.index{|post| post.id == @last_of_previous_post_ids.to_i}
-      if start_index 
-        start_index += 1
-        count = query_result.all.count
-        end_index = [(start_index + 4), (count - 1)].min
-        puts "Posts about me: start_index: " + start_index.to_s + " end_index: " + end_index.to_s
-        @posts = query_result.slice(start_index..end_index)
-      else
-        @posts = Array.new
-      end
-    end
-  end
-
   def query_posts_for_entity entity
     if @start_over
       @posts = entity.posts.order("updated_at desc").limit(5)
@@ -305,21 +227,19 @@ class V1::PostsController < ApplicationController
     elsif params[:type]
       type = params[:type]
       if type == "popular"
-        query_popular_posts
-
+        @posts = Post.query_popular_posts(current_v1_user.id, @start_over, @last_of_previous_post_ids)
+        
       elsif type == "friends"
-        query_friends_posts
+        @posts = Post.query_friends_posts(current_v1_user.id, @start_over, @last_of_previous_post_ids)
 
       elsif type == "following"
-        query_following_posts
+        @posts = Post.query_following_posts(current_v1_user.id, @start_over, @last_of_previous_post_ids)
 
       elsif type == "my_posts"
         @posts = Post.query_my_posts(current_v1_user.id, @start_over, @last_of_previous_post_ids)
         
-
       elsif type == "posts_about_me"
-        #@posts = Post.query_my_posts(current_v1_user.id, @start_over, @last_of_previous_post_ids)
-        query_posts_about_me
+        @posts = Post.query_posts_about_me(current_v1_user.id, @start_over, @last_of_previous_post_ids)
 
       else
         logger.info("Post#index: Wrong type of request: #{type}")
