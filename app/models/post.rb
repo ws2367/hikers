@@ -54,6 +54,35 @@ class Post < ActiveRecord::Base
     updated_at.to_f
   end
 
+  def self.fetch_segment(query_result, start_over, last_of_previous_post_ids)
+    if start_over
+      posts = query_result.limit(5)
+    else
+      start_index  = query_result.index{|post| post.id == last_of_previous_post_ids.to_i}
+      if start_index 
+        start_index += 1
+        count = query_result.all.count
+        end_index = [(start_index + 4), (count - 1)].min
+        puts "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
+        posts = query_result.slice(start_index..end_index)
+      else
+        posts = Array.new
+      end
+    end
+    return posts
+  end
+
+  def self.query_posts_about_me(user_id, start_over, last_of_previous_post_ids)
+    query_result = Post.about_user(user_id).popular
+    return fetch_segment(query_result, start_over, last_of_previous_post_ids)
+  end
+
+  def self.query_my_posts(user_id, start_over, last_of_previous_post_ids)
+    query_result = Post.by_user(user_id).popular
+    return fetch_segment(query_result, start_over, last_of_previous_post_ids)
+  end
+
+
   def is_by_user user_id
     return (user_id and (self.user.id == user_id))
   end
@@ -80,12 +109,21 @@ class Post < ActiveRecord::Base
     includes(:befriended_users).where("friendships.user_id = ?", user_id)
   end
 
+  def self.about_user(user_id)
+    user = User.find_by_id(user_id)
+    unless user 
+      logger.info("[ERROR] Invalid user_id while querying posts about the user")
+      return nil  
+    end
+    fb_user_id = user.fb_user_id
+    return includes(:entities).where("entities.fb_user_id = ?", fb_user_id)
+  end
+
   # Note that this has to be a left outer join...
   scope :popular,
     includes(:entities).
     order("posts.popularity desc, posts.updated_at desc, posts.id desc")
     
-
   
   scope :most_followed,
     joins('LEFT OUTER JOIN follows ON follows.followee_id = posts.id AND followee_type = "Post"').
@@ -99,7 +137,6 @@ class Post < ActiveRecord::Base
     group("posts.id").
     order("popularity desc, updated_at desc")
 
-  #TODO: remember to add 'read more'
   validates :content, length: {
     minimum: 1,
     maximum: 220,
@@ -108,13 +145,8 @@ class Post < ActiveRecord::Base
     too_long: "must have at most %{count} words"
   }
   
-  #TODO: Uncomment it when user comes alive
-  #validates :content, :connection, :user, presence: true
-  #validates_associated :user
+  validates :content, :connection, :user, presence: true
+  validates_associated :user
   
   validates :uuid, uniqueness: true
-
-  # boolean validation cannot use presence since false.blank? is true
-  # validates :status, inclusion: { in: [true, false] }
-
 end
