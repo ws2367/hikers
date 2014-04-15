@@ -344,6 +344,7 @@ class V1::PostsController < ApplicationController
 
   # POST /posts/:post_id/share
   def share 
+    puts params
     post_id = params[:post_id]
     unless post = Post.find_by_id(post_id)
       render :status => 400,
@@ -360,7 +361,7 @@ class V1::PostsController < ApplicationController
         share.add_number(number.to_i)
       end
     else
-      share.add_number(number.to_i)
+      share.add_number(numbers.to_i)
     end
 
     if share.save
