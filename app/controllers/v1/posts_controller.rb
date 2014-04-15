@@ -325,7 +325,7 @@ class V1::PostsController < ApplicationController
     end
   end
 
-  # POST /posts/:id/report
+  # POST /posts/:post_id/report
   def report
     post_id = params[:post_id]
     unless post = Post.find_by_id(post_id)
@@ -341,6 +341,35 @@ class V1::PostsController < ApplicationController
     end  
   end
 
+
+  # POST /posts/:post_id/share
+  def share 
+    post_id = params[:post_id]
+    unless post = Post.find_by_id(post_id)
+      render :status => 400,
+             :json => {:message => "Post #{post_id} does not exist." }
+      return
+    end
+
+    share = post.shares.new(user_id: current_v1_user.id)
+
+    numbers = params["numbers"]
+
+    if numbers.class == Array
+      numbers.each do |number|
+        share.add_number(number.to_i)
+      end
+    else
+      share.add_number(number.to_i)
+    end
+
+    if share.save
+      render :status => 200, :json => {}
+    else
+      render :status => 422,
+             :json => {:message => "Can't save the share" }
+    end
+  end
 
   # POST /searchposts
   def search

@@ -21,6 +21,7 @@ namespace :v1  do
 
   post 'posts/:post_id/report' => 'posts#report'
   post 'posts/:post_id/share' => 'posts#share'
+  
   # Custom controller for API token access
   devise_for :users, only: :sessions, :controllers => {sessions:'v1/sessions'} 
 

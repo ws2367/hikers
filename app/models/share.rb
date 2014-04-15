@@ -27,7 +27,7 @@
 
 class Share < ActiveRecord::Base
   attr_accessible :numbers, :sharee_id, :sharee_type, :user_id
-  serialize :numbers
+  serialize(:numbers, Array)
 
   belongs_to :user
   belongs_to :sharee, polymorphic: true
@@ -41,15 +41,24 @@ class Share < ActiveRecord::Base
 
   validates :user_id, :sharee_id, :sharee_type, presence: true
 
-  def addNum(num)
+  #TODO: add validation of cell phone numbers
+  def add_number(num)
     numbers.push(num)
+    update_attribute(:numbers, numbers)
   end
 
-  def removeNum(num)
-    return numbers.delete(num) != nil
+  def remove_number(num)
+    return false unless num
+
+    if numbers.delete(num) != nil
+      update_attribute(:numbers, numbers)
+      return true
+    else
+      return false
+    end
   end
 
-  def incNum?(num)
+  def has_number?(num)
     return numbers.include?(num)
   end
 end
