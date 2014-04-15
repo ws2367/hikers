@@ -198,7 +198,7 @@ class V1::PostsController < ApplicationController
 
   # GET /posts or GET /entities/:id/posts
   def index
-    ActiveRecord::Base.logger.level = 1
+    
     @posts = Array.new #prevent @posts from being null
 
     @start_over = false
@@ -297,8 +297,7 @@ class V1::PostsController < ApplicationController
       render status: 200, json: {}
     else
       render status: 422, json: {}
-    end
-    
+    end  
   end
 
   # DELETE /posts/:id/unfollow
@@ -324,6 +323,22 @@ class V1::PostsController < ApplicationController
       render status: 400, 
       json: {:message => "Follow of post #{post_id} and you does not exist."}
     end
+  end
+
+  # POST /posts/:id/report
+  def report
+    post_id = params[:post_id]
+    unless post = Post.find_by_id(post_id)
+      render :status => 400,
+             :json => {:message => "Post #{post_id} does not exist." }
+      return
+    end
+
+    if post.reports.create(user_id:current_v1_user.id)
+      render status: 200, json: {}
+    else
+      render status: 422, json: {}
+    end  
   end
 
 

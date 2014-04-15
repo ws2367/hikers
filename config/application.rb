@@ -9,7 +9,7 @@ Bundler.require(:default, Rails.env)
 
 module Moose
   class Application < Rails::Application
-
+    
     # Load bucket_name from the file config/photo_bucket_name
     is_photo_bucket_name_set = false
     File.open('config/photo_bucket_name') {|f| 

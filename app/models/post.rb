@@ -15,10 +15,12 @@
 #
 
 class Post < ActiveRecord::Base
+  ActiveRecord::Base.logger.level = 1
   attr_accessible :content, :user_id, :uuid, :deleted
 
   belongs_to :user
 
+  has_many :reports, dependent: :destroy
   has_many :connections, dependent: :destroy
   has_many :entities, through: :connections
   has_many :comments, inverse_of: :post

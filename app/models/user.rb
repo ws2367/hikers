@@ -122,6 +122,7 @@ has_many :entities,    inverse_of: :user
 has_many :posts,       inverse_of: :user
 has_many :comments,    inverse_of: :user
 
+has_many :reports, dependent: :destroy
 has_many :follows, inverse_of: :user, dependent: :destroy
 # has_many :likes,   inverse_of: :user
 # has_many :hates,   inverse_of: :user
