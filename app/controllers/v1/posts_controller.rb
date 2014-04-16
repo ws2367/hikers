@@ -4,7 +4,7 @@ class V1::PostsController < ApplicationController
 
   def map_an_entity hash
     # In a request, the fb_user_id should not be 0 or nil.
-    # It sends back id, uuid, fb_user_id and updated_at. 
+    # It sends back id, fb_user_id and updated_at. 
     entity = nil
     # Note that nil.to_i = 0
     if hash["fb_user_id"].to_i != 0
@@ -12,8 +12,7 @@ class V1::PostsController < ApplicationController
       if entity # if the entity exists
         return entity 
       else # if the entity does not exist
-        entity = Entity.new(name: hash["name"], 
-                            uuid: UUIDTools::UUID.random_create.to_s, 
+        entity = Entity.new(name: hash["name"],
                             fb_user_id: hash["fb_user_id"].to_i,
                             user_id: current_v1_user.id)
 

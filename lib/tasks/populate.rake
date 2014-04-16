@@ -4,9 +4,9 @@ namespace :db do
 
     desc "Fill UUIDs for each fake data"
     task uuid: :environment do
-        Entity.all.each do |entity|
-            entity.update_attribute("uuid", UUIDTools::UUID.random_create.to_s) unless entity.uuid
-        end
+        # Entity.all.each do |entity|
+        #     entity.update_attribute("uuid", UUIDTools::UUID.random_create.to_s) unless entity.uuid
+        # end
         Post.all.each do |post|
             post.update_attribute("uuid", UUIDTools::UUID.random_create.to_s) unless post.uuid
         end

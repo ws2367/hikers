@@ -8,14 +8,13 @@
 #  updated_at      :datetime         not null
 #  user_id         :integer
 #  followers_count :integer          default(0)
-#  uuid            :string(255)
 #  fb_user_id      :integer
 #  institution     :string(255)
 #  location        :string(255)
 #
 
 class Entity < ActiveRecord::Base
-  attr_accessible :name, :user_id, :uuid, :uuid_c, :deleted, :fb_user_id, :institution, :location
+  attr_accessible :name, :user_id, :fb_user_id, :institution, :location
 
   belongs_to :user
 
@@ -53,12 +52,9 @@ class Entity < ActiveRecord::Base
 
   validates :name, :user, presence: true
 
-  validates :uuid, uniqueness: true
+  validates :fb_user_id, uniqueness: true #, unless: "fb_user_id.nil?"
 
-  validates :fb_user_id, uniqueness: true, unless: "fb_user_id.nil?"
-
-
- validates :name, format: {with: /\A[a-zA-Z',.\-\s]+\z/, 
+  validates :name, format: {with: /\A[a-zA-Z',.\-\s]+\z/, 
     message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
 
   
@@ -84,17 +80,17 @@ class Entity < ActiveRecord::Base
     return ((user_id) and (self.befriended_users.exists?(user_id)))
   end
 
-  def non_FB_entity_association
-    if fb_user_id.nil?
-      if institution == nil
-        errors.add(:institution, "is not set on a non-FB entity")
-      else
-        errors.add(:location, "is not set on a non-FB entity") if location == nil
-      end
-    end
-  end
+  # def non_FB_entity_association
+  #   if fb_user_id.nil?
+  #     if institution == nil
+  #       errors.add(:institution, "is not set on a non-FB entity")
+  #     else
+  #       errors.add(:location, "is not set on a non-FB entity") if location == nil
+  #     end
+  #   end
+  # end
 
-  validate :non_FB_entity_association, on: :create
+  # validate :non_FB_entity_association, on: :create
 
   validates_associated :user
 
