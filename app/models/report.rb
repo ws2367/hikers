@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: reports
+#
+#  id         :integer          not null, primary key
+#  post_id    :integer
+#  user_id    :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 class Report < ActiveRecord::Base
   attr_accessible :post_id, :user_id
 

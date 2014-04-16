@@ -10,7 +10,7 @@ namespace :v1  do
     resources :comments, only: [:index]
   end
 
-  resources :entities, only: [:create] do
+  resources :entities, only: [] do
     resources :posts, only: [:index]
   end
 
