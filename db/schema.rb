@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140416185437) do
+ActiveRecord::Schema.define(:version => 20140417094310) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -38,11 +38,11 @@ ActiveRecord::Schema.define(:version => 20140416185437) do
 
   create_table "entities", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
     t.integer  "user_id"
-    t.integer  "followers_count", :default => 0
-    t.integer  "fb_user_id"
+    t.integer  "followers_count",              :default => 0
+    t.integer  "fb_user_id",      :limit => 8
     t.string   "institution"
     t.string   "location"
   end
@@ -80,6 +80,7 @@ ActiveRecord::Schema.define(:version => 20140416185437) do
     t.string   "uuid"
     t.float    "popularity",      :default => 0.0
     t.integer  "comments_count",  :default => 0
+    t.boolean  "is_active",       :default => false
   end
 
   add_index "posts", ["user_id"], :name => "index_posts_on_user_id"
@@ -102,15 +103,15 @@ ActiveRecord::Schema.define(:version => 20140416185437) do
   end
 
   create_table "users", :force => true do |t|
-    t.integer  "sign_in_count",        :default => 0
+    t.integer  "sign_in_count",                     :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
     t.string   "authentication_token"
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
-    t.integer  "fb_user_id"
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
+    t.integer  "fb_user_id",           :limit => 8
     t.string   "fb_access_token"
     t.text     "fb_friends_ids"
   end

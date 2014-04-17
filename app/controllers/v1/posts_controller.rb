@@ -179,19 +179,19 @@ class V1::PostsController < ApplicationController
 =end
 
   def query_posts_for_entity entity
+    query_result = entity.posts.active.order("updated_at desc")
     if @start_over
-      @posts = entity.posts.order("updated_at desc").limit(5)
+      @posts = query_result.limit(5)
     else
-      start_index = entity.posts.order("updated_at desc").index{|post| post.id == @last_of_previous_post_ids.to_i}
+      start_index = query_result.index{|post| post.id == @last_of_previous_post_ids.to_i}
       if start_index 
         start_index += 1
-        count = entity.posts.order("updated_at desc").count
+        count = query_result.count
         end_index = [(start_index + 4), (count - 1)].min
-        @posts = entity.posts.order("updated_at desc").slice(start_index..end_index) 
+        @posts = query_result.slice(start_index..end_index) 
       else
         @posts = Array.new
       end
-      # @posts = entity.posts.where("posts.updated_at < ?", updated_date).limit(5)
     end
   end
 
@@ -371,30 +371,49 @@ class V1::PostsController < ApplicationController
     end
   end
 
+  # POST /posts/:post_id/activate
+  def activate
+    #TODO: maybe confirm the creator is the user who sent the POST request?
+    post_id = params[:post_id]
+    unless post = Post.find_by_id(post_id)
+      render :status => 400,
+             :json => {:message => "Post #{post_id} does not exist." }
+      return
+    end
+
+    post.is_active = true
+    if post.save
+      render :status => 200, :json => {}
+    else
+      render :status => 422,
+             :json => {:message => "Can't save the post" }
+    end
+  end
+
   # POST /searchposts
-  def search
-    keyword = params[:keyword]
-    num = params[:num]
-    searchby = params[:searchby]
-    if searchby == "location"
-      @location = Location.where(name: keyword).limit(3)
+  # def search
+  #   keyword = params[:keyword]
+  #   num = params[:num]
+  #   searchby = params[:searchby]
+  #   if searchby == "location"
+  #     @location = Location.where(name: keyword).limit(3)
       
-      @posts = Post.where(name: name).limit(params[:num])
-    elsif searchby == "content"
-      @substring = '%' + keyword + '%'
-      @posts = Post.where('content LIKE ?', @substring).limit(num)
-    end
+  #     @posts = Post.where(name: name).limit(params[:num])
+  #   elsif searchby == "content"
+  #     @substring = '%' + keyword + '%'
+  #     @posts = Post.where('content LIKE ?', @substring).limit(num)
+  #   end
     
-    render json: @posts
+  #   render json: @posts
 
-  end
+  # end
 
-  # DELETE /posts/1
-  def destroy
-    @post = Comment.find(params[:id])
-    @post.status = false
-    if @post.save
-      render json:  @post
-    end
-  end
+  # # DELETE /posts/1
+  # def destroy
+  #   @post = Comment.find(params[:id])
+  #   @post.status = false
+  #   if @post.save
+  #     render json:  @post
+  #   end
+  # end
 end

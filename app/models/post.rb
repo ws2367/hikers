@@ -12,6 +12,7 @@
 #  uuid            :string(255)
 #  popularity      :float            default(0.0)
 #  comments_count  :integer          default(0)
+#  is_active       :boolean          default(FALSE)
 #
 
 class Post < ActiveRecord::Base
@@ -76,27 +77,27 @@ class Post < ActiveRecord::Base
 
 
   def self.query_popular_posts(user_id, start_over, last_of_previous_post_ids)
-    query_result = Post.popular
+    query_result = Post.active.popular
     return fetch_segment(query_result, start_over, last_of_previous_post_ids)
   end
 
   def self.query_friends_posts(user_id, start_over, last_of_previous_post_ids)
-    query_result = Post.about_friends_of(user_id).popular
+    query_result = Post.active.about_friends_of(user_id).popular
     return fetch_segment(query_result, start_over, last_of_previous_post_ids)
   end
 
   def self.query_following_posts(user_id, start_over, last_of_previous_post_ids)
-    query_result = Post.followed_by(user_id).popular
+    query_result = Post.active.followed_by(user_id).popular
     return fetch_segment(query_result, start_over, last_of_previous_post_ids)
   end
 
   def self.query_posts_about_me(user_id, start_over, last_of_previous_post_ids)
-    query_result = Post.about_user(user_id).popular
+    query_result = Post.active.about_user(user_id).popular
     return fetch_segment(query_result, start_over, last_of_previous_post_ids)
   end
 
   def self.query_my_posts(user_id, start_over, last_of_previous_post_ids)
-    query_result = Post.by_user(user_id).popular
+    query_result = Post.active.by_user(user_id).popular
     return fetch_segment(query_result, start_over, last_of_previous_post_ids)
   end
 
@@ -136,6 +137,12 @@ class Post < ActiveRecord::Base
     fb_user_id = user.fb_user_id
     return includes(:entities).where("entities.fb_user_id = ?", fb_user_id)
   end
+
+  scope :active,
+    where("is_active = ?", true)
+
+  scope :inactive,
+    where("is_active = ?", false)
 
   # Note that this has to be a left outer join...
   scope :popular,

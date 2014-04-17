@@ -12,6 +12,7 @@
 #  uuid            :string(255)
 #  popularity      :float            default(0.0)
 #  comments_count  :integer          default(0)
+#  is_active       :boolean          default(FALSE)
 #
 
 require 'test_helper'
