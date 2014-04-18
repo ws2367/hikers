@@ -1,7 +1,6 @@
 
 desc "Rebuild database, create a photo bucket and source credentials"
-task :reborn, [] => :environment do
-  raise "Not allowed to run on production" if Rails.env.production?
+task :reset, [] => :environment do
 
   puts "[DEBUG] Will drop existing database!"
   Rake::Task['db:drop'].execute
