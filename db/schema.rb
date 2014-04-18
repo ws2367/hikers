@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140417094310) do
+ActiveRecord::Schema.define(:version => 20140418181710) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -70,6 +70,15 @@ ActiveRecord::Schema.define(:version => 20140417094310) do
   add_index "friendships", ["entity_id"], :name => "index_friendships_on_entity_id"
   add_index "friendships", ["user_id"], :name => "index_friendships_on_user_id"
 
+  create_table "invitations", :force => true do |t|
+    t.string   "inviter_name"
+    t.string   "inviter_birthday"
+    t.string   "inviter_fb_id"
+    t.integer  "user_id"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+  end
+
   create_table "posts", :force => true do |t|
     t.text     "content"
     t.datetime "created_at",                         :null => false
@@ -111,9 +120,11 @@ ActiveRecord::Schema.define(:version => 20140417094310) do
     t.string   "authentication_token"
     t.datetime "created_at",                                       :null => false
     t.datetime "updated_at",                                       :null => false
+    t.string   "name"
     t.integer  "fb_user_id",           :limit => 8
     t.string   "fb_access_token"
     t.text     "fb_friends_ids"
+    t.string   "location"
   end
 
   add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true

@@ -11,9 +11,11 @@
 #  authentication_token :string(255)
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  name                 :string(255)
 #  fb_user_id           :integer
 #  fb_access_token      :string(255)
 #  fb_friends_ids       :text
+#  location             :string(255)
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html

@@ -162,13 +162,13 @@ class Post < ActiveRecord::Base
     group("posts.id").
     order("popularity desc, updated_at desc")
 
-  validates :content, length: {
-    minimum: 1,
-    maximum: 220,
-    tokenizer: lambda { |str| str.scan(/\w+/) },
-    too_short: "must have at least %{count} words",
-    too_long: "must have at most %{count} words"
-  }
+  # validates :content, length: {
+  #   minimum: 1,
+  #   maximum: 220,
+  #   tokenizer: lambda { |str| str.scan(/\w+/) },
+  #   too_short: "must have at least %{count} words",
+  #   too_long: "must have at most %{count} words"
+  # }
   
   validates :content, :connection, :user, presence: true
   validates_associated :user

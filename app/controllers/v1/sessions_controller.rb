@@ -35,34 +35,44 @@ class V1::SessionsController < ApplicationController
     profile = @graph.get_object("me")
 
     fb_user_id = profile["id"].to_i
+    name       = profile["name"]
     location   = profile["location"]["name"]
 
-    puts fb_user_id.to_s + ", " + location
+    puts "User (id: %s, name: %s, location: %s) logged in." % [fb_user_id.to_s, name, location]
 
     @user = User.find_by_fb_user_id(fb_user_id)
     
+    response = Hash.new
     if @user.nil?
       logger.info("User #{fb_user_id} failed signin. The user was then created.")
-      @user = User.create(:fb_user_id=>fb_user_id, :fb_access_token=>fb_access_token)
+      @user = User.create(:fb_user_id=>fb_user_id, 
+                          :fb_access_token=>fb_access_token,
+                          :name=>name,
+                          :location=>location)
       
       if @user.valid?
+        response['signup'] = 'true'
+
         #TODO: move the work to background
         puts "Requesting FB friends"
         friends = @graph.get_connections("me", "friends?fields=id")
         puts "Finished requesting FB friends"
         count = @user.process_fb_friends_ids friends
-        puts "Number of friendships created for User %s: %s" % [count, @user.id]
+        puts "Number of friendships created for User %s: %s" % [@user.id, count]
       else
         render :status=>500, 
                :json=>{:message=>"User cannot be found or created"} 
       end
+    else
+      response['signup'] = 'false'
     end
 
     # http://rdoc.info/github/plataformatec/devise/master/Devise/Models/TokenAuthenticatable
     @user.ensure_authentication_token!
 
-    render :status=>200, :json=>{:token=>@user.authentication_token, 
-                                 :bucket_name=>Moose::Application::PHOTO_BUCKET_NAME}
+    response['token'] = @user.authentication_token
+    response['bucket_name'] = Moose::Application::PHOTO_BUCKET_NAME
+    render :status=>200, :json=>response
   end
 
 
