@@ -28,13 +28,6 @@ class Comment < ActiveRecord::Base
 
   validates :content, :post, :user, presence: true
 
-  validates :content, length: {
-    minimum: 1,
-    maximum: 200,
-    tokenizer: lambda { |str| str.scan(/\w+/) },
-    too_short: "must have at least %{count} words",
-    too_long: "must have at most %{count} words"
-  }
 
   validates :uuid, uniqueness: true
 

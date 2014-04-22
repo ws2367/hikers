@@ -47,15 +47,10 @@ class Entity < ActiveRecord::Base
   has_many :sharers, through: :shares, 
                      source: :user
 
-  validates :name, format: {with: /\A[a-zA-Z,.'\s\-]+\z/, 
-    message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
 
   validates :name, :user, presence: true
 
   validates :fb_user_id, uniqueness: true #, unless: "fb_user_id.nil?"
-
-  validates :name, format: {with: /\A[a-zA-Z',.\-\s]+\z/, 
-    message: "only allow letters, spaces, dashes, commas, dots, and apostrophes."}
 
   
   # only run when creating

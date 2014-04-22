@@ -24,9 +24,7 @@ Moose::Application.configure do
 
   # config.assets.compress = false
   # 
-  Paperclip.options[:command_path] = "/usr/local/bin"
   # Compress JavaScripts and CSS.
-  config.assets.js_compressor = :uglifier
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
