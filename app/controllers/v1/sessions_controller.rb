@@ -36,7 +36,11 @@ class V1::SessionsController < ApplicationController
 
     fb_user_id = profile["id"].to_i
     name       = profile["name"]
-    location   = profile["location"]["name"]
+    if profile["location"]
+      location   = profile["location"]["name"] 
+    else
+      location = nil
+    end
 
     puts "User (id: %s, name: %s, location: %s) logged in." % [fb_user_id.to_s, name, location]
 
