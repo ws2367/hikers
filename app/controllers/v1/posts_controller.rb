@@ -7,8 +7,7 @@ class V1::PostsController < ApplicationController
     # notify the entities of the post
     users = User.users_as_entities_of_post(post)
     post_author = post.user
-    puts "users referred in the post:"
-    puts users
+    logger.info("#{users.count} users referred in the post are found. Will try to send notification to them")
     # notify the entities of the post
     users.each do |user|
       if ((user.id != post_author.id) and 
@@ -23,7 +22,7 @@ class V1::PostsController < ApplicationController
         notification = Houston::Notification.new(device: user.device_token)
         notification.alert = "Someone wrote a post about you!"
         notification.badge = user.badge_number
-        puts "Notification is sent to user #{user.name}"
+        #puts "Notification is sent to user #{user.name}"
         apn.push(notification)  
       end
     end
@@ -47,7 +46,7 @@ class V1::PostsController < ApplicationController
         entity.location = hash["location"] if hash["location"]
         
         if entity.save
-          puts "is_your_friend: " + hash['is_your_friend']
+          # puts "is_your_friend: " + hash['is_your_friend']
           if hash['is_your_friend'] == '1' or hash['is_your_friend'] == 'true'
             Friendship.create(user_id: current_v1_user.id, 
                               entity_id: entity.id) 
@@ -99,7 +98,7 @@ class V1::PostsController < ApplicationController
   #POST /posts
   def create
     @error = false
-    puts params
+    # puts params
     
     entitiesToMap = params["Entity"]
     if entitiesToMap
