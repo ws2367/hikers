@@ -46,7 +46,7 @@ class V1::CommentsController < ApplicationController
         apn = Houston::Client.development
         apn.certificate = File.read("config/apple_push_notification.pem")
         notification = Houston::Notification.new(device: follower.device_token)
-        notification.alert = "Someone wrote a comment on your post!"
+        notification.alert = "Someone wrote a comment on the post you favorited!"
         notification.badge = follower.badge_number
         puts "Notification is sent to user #{follower.name}"
         apn.push(notification)  
