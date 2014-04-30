@@ -129,6 +129,7 @@ class Post < ActiveRecord::Base
     includes(:befriended_users).where("friendships.user_id = ?", user_id)
   end
 
+  #TODO: here it should be rewritten using joins, not where which is slower
   def self.about_user(user_id)
     user = User.find_by_id(user_id)
     unless user 

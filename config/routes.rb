@@ -27,6 +27,8 @@ namespace :v1  do
   # Custom controller for API token access
   devise_for :users, only: :sessions, :controllers => {sessions:'v1/sessions'} 
 
+  post 'users/set_badge' => 'users#set_badge'
+
 end
 
   #root :to => "pins#index"

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140430030321) do
+ActiveRecord::Schema.define(:version => 20140430053958) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(:version => 20140430030321) do
     t.text     "fb_friends_ids"
     t.string   "location"
     t.string   "device_token"
+    t.integer  "badge_number",                      :default => 0
   end
 
   add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true

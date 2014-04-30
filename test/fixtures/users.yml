@@ -17,6 +17,7 @@
 #  fb_friends_ids       :text
 #  location             :string(255)
 #  device_token         :string(255)
+#  badge_number         :integer          default(0)
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
