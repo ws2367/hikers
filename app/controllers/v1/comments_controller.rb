@@ -53,6 +53,29 @@ class V1::CommentsController < ApplicationController
 
       end
     end
+
+    # notify the entities of the post of the comment
+    users = User.users_as_entities_of_post(comment.post)
+    comment_author = comment.user
+    logger.info("#{users.count} users referred in the post are found. Will try to send notification to them")
+    # notify the entities of the post
+    users.each do |user|
+      if ((user.id != comment_author.id) and 
+          (user.device_token != nil)
+         )
+
+        # increment their badge numbers
+        user.update_attribute("badge_number", (user.badge_number + 1))
+        # send out notification
+        apn = Houston::Client.development
+        apn.certificate = File.read("config/apple_push_notification.pem")
+        notification = Houston::Notification.new(device: user.device_token)
+        notification.alert = "Someone wrote a comment on a post about you!"
+        notification.badge = user.badge_number
+        #puts "Notification is sent to user #{user.name}"
+        apn.push(notification)  
+      end
+    end
   end
 
   # POST /comments
