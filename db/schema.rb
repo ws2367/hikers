@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140418181710) do
+ActiveRecord::Schema.define(:version => 20140430030321) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -38,11 +38,10 @@ ActiveRecord::Schema.define(:version => 20140418181710) do
 
   create_table "entities", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",                                  :null => false
-    t.datetime "updated_at",                                  :null => false
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
     t.integer  "user_id"
-    t.integer  "followers_count",              :default => 0
-    t.integer  "fb_user_id",      :limit => 8
+    t.integer  "fb_user_id",  :limit => 8
     t.string   "institution"
     t.string   "location"
   end
@@ -125,6 +124,7 @@ ActiveRecord::Schema.define(:version => 20140418181710) do
     t.string   "fb_access_token"
     t.text     "fb_friends_ids"
     t.string   "location"
+    t.string   "device_token"
   end
 
   add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true

@@ -16,6 +16,7 @@
 #  fb_access_token      :string(255)
 #  fb_friends_ids       :text
 #  location             :string(255)
+#  device_token         :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -29,7 +30,7 @@ class User < ActiveRecord::Base
 
   # Seems like we don't need to do it in Rails 4 since it's all strong params
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :fb_user_id, :fb_access_token, :login, :fb_friends_ids, :name, :location
+  attr_accessible :fb_user_id, :fb_access_token, :login, :fb_friends_ids, :name, :location, :device_token
   serialize(:fb_friends_ids, Array)
 
   # Virtual attribute for authenticating by either user_name or device_token

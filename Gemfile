@@ -9,6 +9,9 @@ gem 'rabl'
 # Also add either `oj` or `yajl-ruby` as the JSON parser
 gem 'oj'
 
+# for push notification
+gem 'houston'
+
 # for a rake task
 gem 'uuidtools'
 
