@@ -12,12 +12,12 @@ class V1::CommentsController < ApplicationController
 
   #TODO: this should be done in the background
   def send_push_notification comment
-    comment_auther = comment.user
+    comment_author = comment.user
     # notify the author of the post
     post_author = comment.post.user
     # check if the author of the post is the same as the author of the comment
     # and whether the device token is set
-    if ((post_author.id != comment_auther.id) and 
+    if ((post_author.id != comment_author.id) and 
         (post_author.device_token != nil)
        )
 
@@ -36,7 +36,7 @@ class V1::CommentsController < ApplicationController
     # notify the followers of the post
     followers = comment.post.followers
     followers.each do |follower|
-      if ((follower.id != comment_auther.id) and 
+      if ((follower.id != comment_author.id) and 
           (follower.device_token != nil)
          )
 

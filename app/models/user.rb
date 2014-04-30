@@ -93,6 +93,24 @@ def process_fb_friends_ids friends
   return count
 end
 
+#TODO: make it faster by using joins
+# return the users that are referred in the posts (the entities of the post)
+def self.users_as_entities_of_post post
+  unless post
+    logger.info("[ERROR] Invalid post while querying users as entities of a post")
+    return nil
+  end
+  result = Array.new
+  post.entities.each do |entity|
+    fb_user_id = entity.fb_user_id
+    user = User.find_by_fb_user_id(fb_user_id)
+    result << user if user
+  end
+
+  return result
+end
+
+
 #rewrite the method so we don't need email
 def password_required?
   false

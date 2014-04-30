@@ -2,6 +2,33 @@ class V1::PostsController < ApplicationController
   
   before_filter :authenticate_v1_user!
 
+  #TODO: this should be done in the background
+  def send_push_notification post
+    # notify the entities of the post
+    users = User.users_as_entities_of_post(post)
+    post_author = post.user
+    puts "users referred in the post:"
+    puts users
+    # notify the entities of the post
+    users.each do |user|
+      if ((user.id != post_author.id) and 
+          (user.device_token != nil)
+         )
+
+        # increment their badge numbers
+        user.update_attribute("badge_number", (user.badge_number + 1))
+        # send out notification
+        apn = Houston::Client.development
+        apn.certificate = File.read("config/apple_push_notification.pem")
+        notification = Houston::Notification.new(device: user.device_token)
+        notification.alert = "Someone wrote a post about you!"
+        notification.badge = user.badge_number
+        puts "Notification is sent to user #{user.name}"
+        apn.push(notification)  
+      end
+    end
+  end
+
   def map_an_entity hash
     # In a request, the fb_user_id should not be 0 or nil.
     # It sends back id, fb_user_id and updated_at. 
@@ -81,7 +108,6 @@ class V1::PostsController < ApplicationController
       else
         @entities = [map_an_entity(entitiesToMap)] # make sure it is an array
       end
-      puts "entity"
     end
 
     if @error
@@ -383,6 +409,7 @@ class V1::PostsController < ApplicationController
 
     post.is_active = true
     if post.save
+      send_push_notification post
       render :status => 200, :json => {}
     else
       render :status => 422,

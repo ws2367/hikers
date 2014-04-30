@@ -78,24 +78,6 @@ class V1::SessionsController < ApplicationController
     # http://rdoc.info/github/plataformatec/devise/master/Devise/Models/TokenAuthenticatable
     @user.ensure_authentication_token!
 
-    # testing
-    unless @user.device_token.nil?
-      puts "Prepare Push Notification"
-      apn = Houston::Client.development
-      apn.certificate = File.read("config/apple_push_notification.pem")
-      # Create a notification that alerts a message to the user, plays a sound, and sets the badge on the app
-      notification = Houston::Notification.new(device: @user.device_token)
-      notification.alert = "Welcome, %s!" % @user.name
-
-      # Notifications can also change the badge count, have a custom sound, indicate available Newsstand content, or pass along arbitrary data.
-      notification.badge = @user.id
-      notification.sound = "sosumi.aiff"
-      notification.content_available = true
-      notification.custom_data = {foo: "bar"}
-
-      # And... sent! That's all it takes.
-      apn.push(notification)
-    end
     response['token'] = @user.authentication_token
     response['bucket_name'] = Moose::Application::PHOTO_BUCKET_NAME
     render :status=>200, :json=>response
