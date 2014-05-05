@@ -5,8 +5,7 @@ class V1::SessionsController < ApplicationController
   # POST users/sign_in
   def create 
     fb_access_token = params[:fb_access_token]
-    device_token = params[:device_token]
-    puts "device token: %s" % device_token
+    
     app_id = ENV['FB_APP_ID']
     app_secret = ENV['FB_APP_SECRET']
 
@@ -54,8 +53,7 @@ class V1::SessionsController < ApplicationController
       @user = User.create(:fb_user_id=>fb_user_id, 
                           :fb_access_token=>fb_access_token,
                           :name=>name,
-                          :location=>location,
-                          :device_token=>device_token)
+                          :location=>location)
       
       if @user.valid?
         response['signup'] = 'true'
@@ -71,7 +69,6 @@ class V1::SessionsController < ApplicationController
                :json=>{:message=>"User cannot be found or created"} 
       end
     else
-      @user.update_attribute("device_token", device_token)
       response['signup'] = 'false'
     end
 

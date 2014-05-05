@@ -29,6 +29,9 @@ class V1::CommentsController < ApplicationController
       notification = Houston::Notification.new(device: post_author.device_token)
       notification.alert = "Someone wrote a comment on your post!"
       notification.badge = post_author.badge_number
+      notification.content_available = true
+      notification.custom_data = {post_id: comment.post.id}
+
       apn.push(notification)  
       puts "Notification is sent to user #{post_author.name}"
     end
@@ -48,9 +51,11 @@ class V1::CommentsController < ApplicationController
         notification = Houston::Notification.new(device: follower.device_token)
         notification.alert = "Someone wrote a comment on the post you favorited!"
         notification.badge = follower.badge_number
-        puts "Notification is sent to user #{follower.name}"
-        apn.push(notification)  
+        notification.content_available = true
+        notification.custom_data = {post_id: comment.post.id}
 
+        apn.push(notification)  
+        puts "Notification is sent to user #{follower.name}"
       end
     end
 
@@ -72,6 +77,9 @@ class V1::CommentsController < ApplicationController
         notification = Houston::Notification.new(device: user.device_token)
         notification.alert = "Someone wrote a comment on a post about you!"
         notification.badge = user.badge_number
+        notification.content_available = true
+        notification.custom_data = {post_id: comment.post.id}
+        
         #puts "Notification is sent to user #{user.name}"
         apn.push(notification)  
       end

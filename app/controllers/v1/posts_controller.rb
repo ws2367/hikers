@@ -22,6 +22,9 @@ class V1::PostsController < ApplicationController
         notification = Houston::Notification.new(device: user.device_token)
         notification.alert = "Someone wrote a post about you!"
         notification.badge = user.badge_number
+
+        notification.content_available = true
+        notification.custom_data = {post_id: post.id}
         #puts "Notification is sent to user #{user.name}"
         apn.push(notification)  
       end
