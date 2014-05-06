@@ -20,5 +20,7 @@ class V1::UsersController < ApplicationController
     puts "device token: %s" % device_token
     
     current_v1_user.update_attribute("device_token", device_token)
+    
+    render :status=>200, :json=>{}
   end
 end
