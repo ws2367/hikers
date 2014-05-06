@@ -2,11 +2,11 @@
 #
 # Table name: friendships
 #
-#  id         :integer          not null, primary key
-#  entity_id  :integer
-#  user_id    :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id                :integer          not null, primary key
+#  user_id           :integer
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  entity_fb_user_id :integer
 #
 
 require 'test_helper'

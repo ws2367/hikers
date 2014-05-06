@@ -28,8 +28,6 @@ class Post < ActiveRecord::Base
 
   has_many :befriended_users, through: :entities
   has_many :following_users, through: :follows, source: :user
-
-  # has_many :pictures, inverse_of: :post
   
   has_many :follows,   as: :followee, dependent: :destroy
   has_many :followers, through: :follows, 

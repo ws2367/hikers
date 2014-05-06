@@ -50,10 +50,10 @@ class V1::PostsController < ApplicationController
         
         if entity.save
           # puts "is_your_friend: " + hash['is_your_friend']
-          if hash['is_your_friend'] == '1' or hash['is_your_friend'] == 'true'
-            Friendship.create(user_id: current_v1_user.id, 
-                              entity_id: entity.id) 
-          end
+          # if hash['is_your_friend'] == '1' or hash['is_your_friend'] == 'true'
+          #   Friendship.create(user_id: current_v1_user.id, 
+          #                     entity_id: entity.id) 
+          # end
           return entity
 
         else

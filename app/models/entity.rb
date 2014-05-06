@@ -20,7 +20,7 @@ class Entity < ActiveRecord::Base
   has_many :connections, dependent: :destroy
   has_many :posts,     through: :connections
 
-  has_many :friendships, dependent: :destroy
+  has_many :friendships, primary_key: :fb_user_id, foreign_key: :entity_fb_user_id
   has_many :befriended_users, through: :friendships, source: :user
 
 
@@ -53,17 +53,17 @@ class Entity < ActiveRecord::Base
 
   
   # only run when creating
-  after_create :find_user_friends, on: :create
+  # after_create :find_user_friends, on: :create
  
-  def find_user_friends
-    User.all.each do |user|
-      if user.has_fb_friend_id fb_user_id
-        Friendship.create(entity_id: id, user_id: user.id)
-        puts "Created friendship!"
-      end
-    end
-  end
-  protected :find_user_friends
+  # def find_user_friends
+  #   User.all.each do |user|
+  #     if user.has_fb_friend_id fb_user_id
+  #       Friendship.create(entity_id: id, user_id: user.id)
+  #       puts "Created friendship!"
+  #     end
+  #   end
+  # end
+  # protected :find_user_friends
 
   def updated_at_in_float
     updated_at.to_f

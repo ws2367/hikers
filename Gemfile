@@ -12,6 +12,9 @@ gem 'oj'
 # for push notification
 gem 'houston'
 
+# bulk insert! import in batch
+gem "activerecord-import", ">= 0.2.0"
+
 # for a rake task
 gem 'uuidtools'
 
