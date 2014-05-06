@@ -116,14 +116,7 @@ class V1::CommentsController < ApplicationController
       #send out notification!
       send_push_notification @comment
 
-      @response = Hash.new
-      @response["id"] = @comment.id
-      @response["uuid"] = @comment.uuid
-      @response["anonymized_user_id"] = @comment.anonymized_user_id
-      @response["updated_at"] = @comment.updated_at.to_f 
-      
-      puts @response
-      render json: @response
+      render 'comments/create'
     end
   end
 
@@ -149,29 +142,7 @@ class V1::CommentsController < ApplicationController
       @comments = Comment.where("updated_at > ?", Time.at(last_modified.to_f).utc)
     end
 
-    # Mapping and Response Descriptor
-    @response = Hash.new
-
-    comment_response = Array.new
-    @comments.each_with_index {|comment, i|
-      comment_response[i] = {
-        :id => comment.id,
-        :uuid => comment.uuid,
-        :content => comment.content,
-        :updated_at => comment.updated_at.to_f, #TODO: limit to 3-digit precision
-
-        #meta attributes
-        :anonymized_user_id => comment.anonymized_user_id,
-
-        :post_uuid => comment.post.uuid
-      }
-    }    
-
-    @response["Comment"] = comment_response
-    #@response["Institution"] = institution_response if institution_response.count > 0    
-
-    puts @response
-    render json: @response
+    render "comments/index"
   end
 
  end
