@@ -53,7 +53,8 @@ class V1::SessionsController < ApplicationController
       @user = User.create(:fb_user_id=>fb_user_id, 
                           :fb_access_token=>fb_access_token,
                           :name=>name,
-                          :location=>location)
+                          :location=>location,
+                          :device_token=>device_token)
       
       if @user.valid?
         response['signup'] = 'true'
