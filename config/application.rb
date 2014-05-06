@@ -12,20 +12,20 @@ module Moose
     
     # Load bucket_name from the file config/photo_bucket_name
     is_photo_bucket_name_set = false
-    File.open('config/photo_bucket_name') {|f| 
-        values = f.readline.split('=')
-        if values[0] == 'photo_bucket_name'
-            PHOTO_BUCKET_NAME = values[1].chomp
-            is_photo_bucket_name_set = true
-        end
-    }
-    puts
+    if File.exists? 'config/photo_bucket_name'
+        File.open('config/photo_bucket_name') {|f| 
+            values = f.readline.split('=')
+            if values[0].chomp.strip == 'photo_bucket_name'
+                PHOTO_BUCKET_NAME = values[1].chomp.strip
+                is_photo_bucket_name_set = true
+            end
+        }
+    end
     if is_photo_bucket_name_set
         puts "Set photo bucket name to %s" % PHOTO_BUCKET_NAME
     else
-        puts "[ERROR] Failed to set photo bucket name. Should stop server."
+        puts "Failed to set photo bucket name. ***If you are running the server, stop it.***"
     end
-    puts
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers

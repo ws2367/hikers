@@ -17,7 +17,7 @@ set :branch, 'microbuild'
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
 # They will be linked in the 'deploy:link_shared_paths' step.
-set :shared_paths, ['log', 'script/setenv.sh', 'config/photo_bucket_name']
+set :shared_paths, ['log', 'config/app_credentials', 'config/photo_bucket_name']
 
 set :rails_env, 'development'
 set :term_mode, :nil 
