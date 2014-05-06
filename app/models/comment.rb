@@ -2,18 +2,19 @@
 #
 # Table name: comments
 #
-#  id         :integer          not null, primary key
-#  content    :text
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  post_id    :integer
-#  user_id    :integer
-#  deleted    :boolean          default(FALSE)
-#  uuid       :string(255)
+#  id                 :integer          not null, primary key
+#  content            :text
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  post_id            :integer
+#  user_id            :integer
+#  deleted            :boolean          default(FALSE)
+#  uuid               :string(255)
+#  anonymized_user_id :integer
 #
 
 class Comment < ActiveRecord::Base
-  attr_accessible :content, :user_id, :deleted, :uuid, :post_id
+  attr_accessible :content, :user_id, :deleted, :uuid, :post_id, :anonymized_user_id
 
   belongs_to :post, counter_cache: :comments_count
   belongs_to :user

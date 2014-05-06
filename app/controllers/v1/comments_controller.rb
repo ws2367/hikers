@@ -3,11 +3,26 @@ class V1::CommentsController < ApplicationController
   before_filter :authenticate_v1_user!
 
    
-  # TODO: Given the same user id and same post id, anonymized_user_id should return the same id
-  # but it should also be impossible to guess the user id from knowing post ids
-  # probably use a static salt that gets updated frequently here?
-  def anonymize_user_id comment
-    return comment.user_id + comment.post_id
+  MAX_INDEX_OF_ANONYMIZED_USER_ID = 29
+
+  def anonymize_user_id(post, user_id)
+    # if the user has commented before...
+    existing_user_ids = post.comments.collect{|comment| [comment.user_id, comment.anonymized_user_id]}
+    index = existing_user_ids.find_index{|pair| pair[0] == user_id}
+    if index
+      return existing_user_ids[index][1]
+    else 
+    # if the user has not commented before...
+      used_anonymized_user_ids = post.comments.collect{|comment| comment.anonymized_user_id}
+      available_anonymized_user_ids = (1..MAX_INDEX_OF_ANONYMIZED_USER_ID).to_a - used_anonymized_user_ids
+      result = available_anonymized_user_ids.sample
+      # if all possible ids are used.... then we have to randomly pick up one
+      if result == nil
+        result = (1..MAX_INDEX_OF_ANONYMIZED_USER_ID).sample
+        logger.info("[ERROR] Post #{post.id} has too many commenters! Supply with more comment icons.")
+      end
+      return result
+    end
   end
 
   #TODO: this should be done in the background
@@ -94,10 +109,8 @@ class V1::CommentsController < ApplicationController
     @comment = @post.comments.new(:content => params["Comment"]["content"],
                                   :uuid => params["Comment"]["uuid"],
                                   :deleted => false,
-                                  :user_id => current_v1_user.id)
-
-    puts "Comment's user id: " + @comment.user.id.to_s
-
+                                  :user_id => current_v1_user.id,
+                                  :anonymized_user_id => anonymize_user_id(@post, current_v1_user.id))
 
     if @comment.save
       #send out notification!
@@ -106,7 +119,7 @@ class V1::CommentsController < ApplicationController
       @response = Hash.new
       @response["id"] = @comment.id
       @response["uuid"] = @comment.uuid
-      @response["anonymized_user_id"] = anonymize_user_id @comment
+      @response["anonymized_user_id"] = @comment.anonymized_user_id
       @response["updated_at"] = @comment.updated_at.to_f 
       
       puts @response
@@ -148,7 +161,7 @@ class V1::CommentsController < ApplicationController
         :updated_at => comment.updated_at.to_f, #TODO: limit to 3-digit precision
 
         #meta attributes
-        :anonymized_user_id => anonymize_user_id(comment),
+        :anonymized_user_id => comment.anonymized_user_id,
 
         :post_uuid => comment.post.uuid
       }
