@@ -28,6 +28,7 @@ namespace :v1  do
   devise_for :users, only: :sessions, :controllers => {sessions:'v1/sessions'} 
 
   post 'users/set_badge' => 'users#set_badge'
+  post 'users/set_device_token' => 'users#set_device_token'
 
 end
 

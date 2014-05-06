@@ -5,7 +5,7 @@ class V1::SessionsController < ApplicationController
   # POST users/sign_in
   def create 
     fb_access_token = params[:fb_access_token]
-    
+
     app_id = ENV['FB_APP_ID']
     app_secret = ENV['FB_APP_SECRET']
 
@@ -69,6 +69,7 @@ class V1::SessionsController < ApplicationController
                :json=>{:message=>"User cannot be found or created"} 
       end
     else
+
       response['signup'] = 'false'
     end
 
