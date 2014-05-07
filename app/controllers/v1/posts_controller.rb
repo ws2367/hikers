@@ -224,9 +224,24 @@ class V1::PostsController < ApplicationController
   end
 
   # GET /posts or GET /entities/:id/posts
-  def index
-    
+  def index    
     @posts = Array.new #prevent @posts from being null
+
+    # if it just wants a single post
+    if params[:post_id]
+      post_id = params[:post_id]
+      post = Post.find_by_id(post_id)
+      unless post
+        render :status => 400,
+               :json => {:message => "Post #{post_id} does not exist." }
+        return
+      end
+
+      @posts << post
+      @user_id = current_v1_user.id # for view template's information
+      render 'posts/index'
+      return # we've done the business here
+    end
 
     @start_over = false
     if params[:last_of_previous_post_ids]
@@ -310,6 +325,21 @@ class V1::PostsController < ApplicationController
     @user_id = current_v1_user.id # for view template's information
     render "posts/index"
   end
+
+  # # GET /post
+  # def single_post
+  #   post_id = params[:post_id]
+  #   unless post = Post.find_by_id(post_id)
+  #     render :status => 400,
+  #            :json => {:message => "Post #{post_id} does not exist." }
+  #     return
+  #   end
+
+  #   @posts = [post]
+  #   @user_id = current_v1_user.id # for view template's information
+  #   render 'posts/index'
+  # end
+
 
   # POST /posts/:id/follow
   def follow
