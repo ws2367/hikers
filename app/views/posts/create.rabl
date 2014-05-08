@@ -9,7 +9,7 @@ object false
 child @posts => "Post" do
   #collection favourite_groups
   #extends 'favourites/base'
-  attributes :id, :uuid
+  attributes :id, :uuid, :popularity
   attributes :updated_at_in_float => :updated_at
 end
 
