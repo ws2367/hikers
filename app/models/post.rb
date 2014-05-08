@@ -33,24 +33,26 @@ class Post < ActiveRecord::Base
   has_many :followers, through: :follows, 
                        source: :user
  
-
-  # has_many :likes,  as: :likee
-  # has_many :likers, through: :likes, 
-  #                   source: :user                      
-  
-  # has_many :hates,  as: :hatee
-  # has_many :haters, through: :hates, 
-  #                   source: :user         
-
-  # has_many :views,   as: :viewee, dependent: :destroy
-  # has_many :viewers, through: :views, 
-  #                    source: :user
- 
   has_many :shares,  as: :sharee, dependent: :destroy
   has_many :sharers, through: :shares, 
                      source: :user
 
+  validates :content, :connection, :user, presence: true
+  validates_associated :user
   
+  validates :uuid, uniqueness: true
+
+  # popularity = tc + tp + nc*300 + nf*150
+  # tc: creation time of the last comment
+  # tp: creation time of the post
+  # nc: # of comments
+  # nf: # of follows
+  after_create {
+    self.with_lock do
+      self.update_attribute("popularity", self.created_at.to_f * 2)
+    end
+  }
+
   def updated_at_in_float
     updated_at.to_f
   end
@@ -152,15 +154,15 @@ class Post < ActiveRecord::Base
   
   scope :most_followed,
     joins('LEFT OUTER JOIN follows ON follows.followee_id = posts.id AND followee_type = "Post"').
-    select("posts.*, count(follows.id) as popularity").
+    select("posts.*, count(follows.id) as follow_count").
     group("posts.id").
-    order("popularity desc, updated_at desc")
+    order("follow_count desc, updated_at desc")
 
   scope :most_commented,
     joins('LEFT OUTER JOIN comments ON comments.post_id = posts.id').
-    select("posts.*, count(comments.id) as popularity").
+    select("posts.*, count(comments.id) as comment_count").
     group("posts.id").
-    order("popularity desc, updated_at desc")
+    order("comment_count desc, updated_at desc")
 
   # validates :content, length: {
   #   minimum: 1,
@@ -170,8 +172,5 @@ class Post < ActiveRecord::Base
   #   too_long: "must have at most %{count} words"
   # }
   
-  validates :content, :connection, :user, presence: true
-  validates_associated :user
-  
-  validates :uuid, uniqueness: true
+
 end

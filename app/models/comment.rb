@@ -19,24 +19,7 @@ class Comment < ActiveRecord::Base
   belongs_to :post, counter_cache: :comments_count
   belongs_to :user
 
-  # has_many :likes,  as: :likee
-  # has_many :likers, through: :likes, 
-  #                   source: :user                      
-
-  # has_many :hates,  as: :hatee
-  # has_many :haters, through: :hates, 
-  #                   source: :user  
-
-  def updated_at_in_float
-    updated_at.to_f
-  end
-
-  def post_uuid
-    self.post.uuid
-  end
-
   validates :content, :post, :user, presence: true
-
 
   validates :uuid, uniqueness: true
 
@@ -46,15 +29,48 @@ class Comment < ActiveRecord::Base
   validates_associated :post, :user
 
   after_create  {
+    subtrahend = self.prev ? self.prev.created_at.to_f : self.post.created_at.to_f
+    new_popularity = self.post.popularity.to_f - subtrahend + self.created_at.to_f + 300
+
     self.post.with_lock do
-      self.post.update_attribute("popularity", self.post.popularity.to_f + 0.6)
+      self.post.update_attribute("popularity", new_popularity)
     end
   }
 
-  after_destroy {
+  before_destroy {
+    addend = self.prev ? selfself.prev.created_at.to_f : self.post.created_at.to_f
+    new_popularity = self.post.popularity.to_f - self.created_at.to_f + addend - 300
+
     self.post.with_lock do
-      self.post.update_attribute("popularity", self.post.popularity.to_f - 0.6)
+      self.post.update_attribute("popularity", new_popularity)
     end
   }
+
+  def updated_at_in_float
+    updated_at.to_f
+  end
+
+  def post_uuid
+    self.post.uuid
+  end
+
+  # return the next comment in the same post
+  def next
+    post_comments = self.post.comments #in order of id
+    index = post_comments.index(self)
+    return post_comments[index + 1]
+  end
+
+  # return the next comment in the same post
+  def prev
+    post_comments = self.post.comments #in order of id
+    index = post_comments.index(self)
+    new_index = index - 1
+    if new_index < 0
+      return nil
+    else
+      return post_comments[new_index]
+    end
+  end
 
 end
