@@ -36,13 +36,13 @@ class Follow < ActiveRecord::Base
 
   after_create  {
     self.followee.with_lock do
-      self.followee.update_attribute("popularity", self.followee.popularity.to_f + 150)
+      self.followee.update_attribute("popularity", self.followee.popularity.to_f + 150.0)
     end
   }
 
   before_destroy {
     self.followee.with_lock do
-      self.followee.update_attribute("popularity", self.followee.popularity.to_f - 150)
+      self.followee.update_attribute("popularity", self.followee.popularity.to_f - 150.0)
     end
   }
   
