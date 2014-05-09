@@ -43,6 +43,14 @@ group :development, :test do
 	gem 'sqlite3'
 end
 
+# DO NOT ADD THIS LINE!
+#gem 'activerecord-mysql2-adapter'
+
+# NOR THIS LINE!
+#gem 'activerecord-mysql-adapter'
+
+gem 'mysql2'
+
 gem 'devise', "~> 3.0.0"
 
 gem 'aws-sdk'
