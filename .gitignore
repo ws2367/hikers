@@ -18,6 +18,7 @@ config/database.yml
 config/photo_bucket_name
 config/apple_push_notification.pem
 config/app_credentials
+config/ssl/*
 
 # Ignore all logfiles and tempfiles.
 log/

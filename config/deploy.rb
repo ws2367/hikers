@@ -22,7 +22,9 @@ set :forward_agent, true
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
 # They will be linked in the 'deploy:link_shared_paths' step.
-set :shared_paths, ['config/database.yml', 'log', 'config/apple_push_notification.pem', 'config/app_credentials', 'config/photo_bucket_name']
+set :shared_paths, ['config/database.yml', 'log', 'config/apple_push_notification.pem', 
+                    'config/app_credentials', 'config/photo_bucket_name', 'config/ssl/server.crt',
+                    'config/ssl/server.key']
 
 set :rails_env, 'development'
 set :term_mode, :nil 
@@ -110,16 +112,16 @@ task :deploy => :environment do
     
     to :launch do
       queue "touch #{deploy_to}/tmp/restart.txt"
-      queue! "#{rails} s -d -e #{rails_env}"
+      queue! %[cd #{deploy_to}/current; RAILS_ENV=#{rails_env} thin start --ssl --ssl-key-file config/ssl/server.key --ssl-cert-file config/ssl/server.crt -d]
     end
   end
 end
 
 
 
-task :logs do
+task :log do
   queue 'echo "Contents of the log file are as follows:"'
-  queue %[cd #{deploy_to!}/current && tail -f log/development.log]
+  queue %[cd #{deploy_to!}/current && tail -f log/thin.log]
 end
 
 
