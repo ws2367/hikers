@@ -3,8 +3,8 @@ desc "Rebuild database, create a photo bucket and source credentials"
 task :reset, [] => :environment do
 
   puts "[DEBUG] Will drop existing database!"
-  Rake::Task['db:drop'].execute
   Rake::Task['db:create'].execute
+  Rake::Task['db:schema:load'].execute
   Rake::Task['db:migrate'].execute
   puts "[DEBUG] New DB created and migrated."
   
