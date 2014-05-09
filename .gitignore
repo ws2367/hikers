@@ -20,7 +20,7 @@ config/apple_push_notification.pem
 config/app_credentials
 
 # Ignore all logfiles and tempfiles.
-/log/*.log
+log/
 /tmp
 doc/
 *.swp
