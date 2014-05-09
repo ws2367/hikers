@@ -11,6 +11,9 @@
 /db/*.sqlite3
 /db/*.sqlite3-journal
 config/photo_bucket_name
+config/app_credentials
+config/apple_push_notification.pem
+config/ssl/*
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
