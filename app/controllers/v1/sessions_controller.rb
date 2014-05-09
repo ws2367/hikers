@@ -88,6 +88,9 @@ class V1::SessionsController < ApplicationController
       logger.info("Token not found.")
       render :status=>404, :json=>{:message=>"Invalid token."}
     else
+      @user.device_token = nil # the next line will save the change, no worries
+      # With the exclamation mark, it does not only generate new authentication token 
+      # but also save the record.
       @user.reset_authentication_token!
       render :status=>200, :json=>{}
     end
