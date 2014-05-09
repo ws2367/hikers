@@ -28,9 +28,12 @@ class Comment < ActiveRecord::Base
 
   validates_associated :post, :user
 
+  # We don't need to substract POPULARITY_BASE here because to minus a timstamp 
+  # and to add another timestamp cancel out POPULARITY_BASE. Thus, it only 
+  # shows the difference.
   after_create  {
-    subtrahend = self.prev ? self.prev.created_at.to_f : self.post.created_at.to_f
-    new_popularity = self.post.popularity.to_f - subtrahend + self.created_at.to_f + 300
+    subtrahend = (self.prev ? self.prev.created_at.to_f : self.post.created_at.to_f)
+    new_popularity = self.post.popularity.to_f - subtrahend + self.created_at.to_f + 300.0
 
     self.post.with_lock do
       self.post.update_attribute("popularity", new_popularity)
@@ -39,7 +42,7 @@ class Comment < ActiveRecord::Base
 
   before_destroy {
     addend = self.prev ? selfself.prev.created_at.to_f : self.post.created_at.to_f
-    new_popularity = self.post.popularity.to_f - self.created_at.to_f + addend - 300
+    new_popularity = self.post.popularity.to_f - self.created_at.to_f + addend - 300.0
 
     self.post.with_lock do
       self.post.update_attribute("popularity", new_popularity)
