@@ -11,10 +11,10 @@ require 'mina/rvm'    # for rvm support. (http://rvm.io)
 #   branch       - Branch name to deploy. (needed by mina/git)
 
 set :domain, '107.170.193.248'
-set :deploy_to, '/home/yours/staging'
+set :deploy_to, '/home/yours'
 set :repository, 'git@github.com:ws2367/xoxo.git'
 #set :repository, 'https://github.com/ws2367/xoxo.git'
-set :branch, 'microbuild'
+set :branch, 'sys/SSL'
 
 # Optional SSH settings:
 # SSH forward agent to ensure that credentials are passed through for git operations

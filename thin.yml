@@ -1,8 +1,8 @@
 ---
-chdir: /home/yours/staging/current
+chdir: /home/yours/current
 environment: development
 timeout: 30
-log: /home/yours/staging/current/log/thin.log
+log: /home/yours/current/log/thin.log
 pid: tmp/pids/thin.pid
 max_conns: 1024
 max_persistent_conns: 100
