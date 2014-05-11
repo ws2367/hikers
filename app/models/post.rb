@@ -69,7 +69,7 @@ class Post < ActiveRecord::Base
         start_index += 1
         count = query_result.all.count
         end_index = [(start_index + 4), (count - 1)].min
-        puts "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
+        logger.info "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
         # Note that if a < b, Array.slice(b..a) returns [] which is desired
         posts = query_result.slice(start_index..end_index)
       else

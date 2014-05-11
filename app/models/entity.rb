@@ -59,7 +59,7 @@ class Entity < ActiveRecord::Base
   #   User.all.each do |user|
   #     if user.has_fb_friend_id fb_user_id
   #       Friendship.create(entity_id: id, user_id: user.id)
-  #       puts "Created friendship!"
+  #       logger.info "Created friendship!"
   #     end
   #   end
   # end

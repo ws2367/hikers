@@ -25,7 +25,7 @@ class V1::PostsController < ApplicationController
 
         notification.content_available = true
         notification.custom_data = {post_id: post.id}
-        #puts "Notification is sent to user #{user.name}"
+        #logger.info "Notification is sent to user #{user.name}"
         apn.push(notification)  
       end
     end
@@ -95,7 +95,7 @@ class V1::PostsController < ApplicationController
   #POST /posts
   def create
     @error = false
-    # puts params
+    # logger.info params
     
     entitiesToMap = params["Entity"]
     if entitiesToMap
@@ -170,7 +170,7 @@ class V1::PostsController < ApplicationController
       @last_of_previous_post_ids = params[:last_of_previous_post_ids]
     else
       @start_over = true
-      puts "Start over"
+      logger.info "Start over"
     end
 
     # handle different types
@@ -277,7 +277,7 @@ class V1::PostsController < ApplicationController
 
   # POST /posts/:post_id/share
   def share 
-    puts params
+    logger.info params
     post_id = params[:post_id]
     unless post = Post.find_by_id(post_id)
       render :status => 400,

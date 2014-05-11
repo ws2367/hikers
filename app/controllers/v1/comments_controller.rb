@@ -48,7 +48,7 @@ class V1::CommentsController < ApplicationController
       notification.custom_data = {post_id: comment.post.id}
 
       apn.push(notification)  
-      puts "Notification is sent to user #{post_author.name}"
+      logger.info "Notification is sent to user #{post_author.name}"
     end
     
     # notify the followers of the post
@@ -70,7 +70,7 @@ class V1::CommentsController < ApplicationController
         notification.custom_data = {post_id: comment.post.id}
 
         apn.push(notification)  
-        puts "Notification is sent to user #{follower.name}"
+        logger.info "Notification is sent to user #{follower.name}"
       end
     end
 
@@ -95,7 +95,7 @@ class V1::CommentsController < ApplicationController
         notification.content_available = true
         notification.custom_data = {post_id: comment.post.id}
         
-        #puts "Notification is sent to user #{user.name}"
+        #logger.info "Notification is sent to user #{user.name}"
         apn.push(notification)  
       end
     end

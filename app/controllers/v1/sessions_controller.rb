@@ -43,7 +43,7 @@ class V1::SessionsController < ApplicationController
       location = nil
     end
 
-    puts "User (id: %s, name: %s, location: %s) logged in." % [fb_user_id.to_s, name, location]
+    logger.info "User (id: %s, name: %s, location: %s) logged in." % [fb_user_id.to_s, name, location]
 
     @user = User.find_by_fb_user_id(fb_user_id)
     
@@ -59,11 +59,11 @@ class V1::SessionsController < ApplicationController
         response['signup'] = 'true'
 
         #TODO: move the work to background
-        puts "Requesting FB friends"
+        logger.info "Requesting FB friends"
         friends = @graph.get_connections("me", "friends?fields=id")
-        puts "Finished requesting FB friends"
+        logger.info "Finished requesting FB friends"
         count = @user.process_fb_friends_ids friends
-        puts "Number of friendships created for User %s: %s" % [@user.id, count]
+        logger.info "Number of friendships created for User %s: %s" % [@user.id, count]
       else
         render :status=>500, 
                :json=>{:message=>"User cannot be found or created"} 
