@@ -127,7 +127,7 @@ end
 
 task :down do
   invoke :restart
-  invoke :logs
+  invoke :log
 end
 
 task :restart do
