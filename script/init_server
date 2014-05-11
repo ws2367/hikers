@@ -1,0 +1,7 @@
+#!/bin/sh
+read -p "Enter the server ip address: " ip
+echo "OK, starting now..."
+ssh root@$ip <<'ENDSSH'
+mkdir -p "/home/yours"
+chown -R deployer "/home/yours"
+ENDSSH
