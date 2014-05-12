@@ -3,7 +3,7 @@ class V1::CommentsController < ApplicationController
   before_filter :authenticate_v1_user!
 
    
-  MAX_INDEX_OF_ANONYMIZED_USER_ID = 29
+  MAX_INDEX_OF_ANONYMIZED_USER_ID = 59
 
   def anonymize_user_id(post, user_id)
     # if the user has commented before...
