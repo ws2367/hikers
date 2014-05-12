@@ -14,7 +14,7 @@ set :domain, '107.170.193.248'
 set :deploy_to, '/home/yours'
 set :repository, 'git@github.com:ws2367/xoxo.git'
 #set :repository, 'https://github.com/ws2367/xoxo.git'
-set :branch, 'sys/SSL'
+set :branch, 'microbuild'
 
 # Optional SSH settings:
 # SSH forward agent to ensure that credentials are passed through for git operations
@@ -23,10 +23,9 @@ set :forward_agent, true
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
 # They will be linked in the 'deploy:link_shared_paths' step.
 set :shared_paths, ['config/database.yml', 'log', 'config/apple_push_notification.pem', 
-                    'config/app_credentials', 'config/photo_bucket_name', 'config/ssl/server.crt',
-                    'config/ssl/server.key']
+                    'config/app_credentials', 'config/photo_bucket_name']
 
-set :rails_env, 'development'
+set :rails_env, 'production'
 set :term_mode, :nil 
 set :rvm_path, '/usr/local/rvm/scripts/rvm'
 
@@ -112,16 +111,22 @@ task :deploy => :environment do
     
     to :launch do
       queue "touch #{deploy_to}/tmp/restart.txt"
-      queue! %[cd #{deploy_to}/current; RAILS_ENV=#{rails_env} thin start --ssl --ssl-key-file config/ssl/server.key --ssl-cert-file config/ssl/server.crt -d]
+      queue! %[cd #{deploy_to}/current; thin start -C thin.yml]
     end
   end
 end
 
+task :nginx_log do
+  queue %[tail -f /var/log/nginx/access.log]
+end
 
+task :rails_log do
+  queue %[cd #{deploy_to!}/current && tail -f log/#{rails_env}.log]
+end
 
 task :log do
   queue 'echo "Contents of the log file are as follows:"'
-  queue %[cd #{deploy_to!}/current && tail -f log/thin.log]
+  queue %[cd #{deploy_to!}/current && tail -f log/thin.0.log]
 end
 
 

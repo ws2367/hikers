@@ -9,8 +9,8 @@ Bundler.require(:default, Rails.env)
 
 module Moose
   class Application < Rails::Application
-    # force to use https!
-    config.force_ssl = true
+    # we let Nginx to do the SSL handling
+    # config.force_ssl = true
 
     # Load bucket_name from the file config/photo_bucket_name
     is_photo_bucket_name_set = false

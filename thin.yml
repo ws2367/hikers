@@ -1,6 +1,6 @@
 ---
 chdir: /home/yours/current
-environment: development
+environment: production
 timeout: 30
 log: /home/yours/current/log/thin.log
 pid: tmp/pids/thin.pid

@@ -16,7 +16,6 @@
 #
 
 class Post < ActiveRecord::Base
-  ActiveRecord::Base.logger.level = 1
   attr_accessible :content, :user_id, :uuid, :deleted
 
   belongs_to :user
