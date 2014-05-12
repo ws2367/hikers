@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140512192458) do
+ActiveRecord::Schema.define(:version => 20140512192225) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -69,15 +69,6 @@ ActiveRecord::Schema.define(:version => 20140512192458) do
 
   add_index "friendships", ["user_id"], :name => "index_friendships_on_user_id"
 
-  create_table "invitations", :force => true do |t|
-    t.string   "inviter_name"
-    t.string   "inviter_birthday"
-    t.string   "inviter_fb_id"
-    t.integer  "user_id"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
-  end
-
   create_table "posts", :force => true do |t|
     t.text     "content"
     t.datetime "created_at",                         :null => false
@@ -106,7 +97,6 @@ ActiveRecord::Schema.define(:version => 20140512192458) do
     t.string   "sharee_type"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
-    t.text     "content"
   end
 
   create_table "users", :force => true do |t|

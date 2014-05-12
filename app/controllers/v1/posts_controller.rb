@@ -287,8 +287,6 @@ class V1::PostsController < ApplicationController
 
     share = post.shares.new(user_id: current_v1_user.id)
 
-    share.content = params[:content] if params[:content]
-
     if share.save
       render :status => 200, :json => {}
     else
