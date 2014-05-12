@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140506193514) do
+ActiveRecord::Schema.define(:version => 20140512192458) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -104,10 +104,9 @@ ActiveRecord::Schema.define(:version => 20140506193514) do
     t.integer  "user_id"
     t.integer  "sharee_id"
     t.string   "sharee_type"
-    t.text     "numbers"
-    t.datetime "sent_at"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.text     "content"
   end
 
   create_table "users", :force => true do |t|

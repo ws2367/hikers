@@ -83,7 +83,8 @@ task :'setup:db:database_yml' => :environment do
   database_yml = <<-DATABASE.dedent
     #{rails_env}:
       adapter: mysql2
-      encoding: utf8
+      encoding: utf8mb4
+      collation: utf8mb4_unicode_ci
       database: #{db_name}
       pool: 5
       username: root
@@ -105,9 +106,9 @@ task :deploy => :environment do
     invoke :'git:clone'
     invoke :'deploy:link_shared_paths'
     invoke :'bundle:install'
-    queue  %[cd #{deploy_to}/current; RAILS_ENV=#{rails_env} rake db:create]
-    invoke :'rails:db_migrate'
-    # invoke :'rails:db_migrate:force'
+    # queue  %[cd #{deploy_to}/current; RAILS_ENV=#{rails_env} rake db:create]
+    # invoke :'rails:db_migrate'
+    invoke :'rails:db_migrate:force'
     
     to :launch do
       queue "touch #{deploy_to}/tmp/restart.txt"

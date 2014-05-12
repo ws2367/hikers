@@ -287,15 +287,7 @@ class V1::PostsController < ApplicationController
 
     share = post.shares.new(user_id: current_v1_user.id)
 
-    numbers = params["numbers"]
-
-    if numbers.class == Array
-      numbers.each do |number|
-        share.add_number(number.to_i)
-      end
-    else
-      share.add_number(numbers.to_i)
-    end
+    share.content = params[:content] if params[:content]
 
     if share.save
       render :status => 200, :json => {}
