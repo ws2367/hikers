@@ -26,6 +26,7 @@ namespace :v1  do
   post 'users/set_badge' => 'users#set_badge'
   post 'users/set_device_token' => 'users#set_device_token'
 
+  get 'letters/check' => 'letters#check'
 end
 
   #root :to => "pins#index"
