@@ -138,7 +138,7 @@ has_many :entities,    inverse_of: :user
 has_many :posts,       inverse_of: :user
 has_many :comments,    inverse_of: :user
 
-has_one :invitation
+#has_one :invitation
 
 has_many :reports, dependent: :destroy
 has_many :follows, inverse_of: :user, dependent: :destroy
