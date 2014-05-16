@@ -17,6 +17,7 @@ config/database.yml
 # Ignore credentials 
 config/photo_bucket_name
 config/apple_push_notification.pem
+config/APN_production.pem
 config/app_credentials
 config/ssl/*
 
