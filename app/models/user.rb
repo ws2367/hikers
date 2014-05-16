@@ -14,8 +14,9 @@
 #  name                 :string(255)
 #  fb_user_id           :integer
 #  fb_access_token      :string(255)
-#  fb_friends_ids       :text
 #  location             :string(255)
+#  device_token         :string(255)
+#  badge_number         :integer          default(0)
 #
 
 class User < ActiveRecord::Base
@@ -29,8 +30,8 @@ class User < ActiveRecord::Base
 
   # Seems like we don't need to do it in Rails 4 since it's all strong params
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :fb_user_id, :fb_access_token, :login, :fb_friends_ids, :name, :location
-  serialize(:fb_friends_ids, Array)
+  attr_accessible :fb_user_id, :fb_access_token, :login, :name, :location, :device_token
+
 
   # Virtual attribute for authenticating by either user_name or device_token
   # This is in addition to a real persisted field like 'user_name'
@@ -53,43 +54,56 @@ class User < ActiveRecord::Base
 # CAUTION!!
 # you can't even write 'if fb_friends_ids == nil' 
 # since it will treat fb_friends_ids as nil all the way
-def add_a_fb_friend_id fb_friend_id
-  fb_friends_ids.push(fb_friend_id)
-  update_attribute(:fb_friends_ids, fb_friends_ids)
-end
+# def add_a_fb_friend_id fb_friend_id
+#   fb_friends_ids.push(fb_friend_id)
+#   update_attribute(:fb_friends_ids, fb_friends_ids)
+# end
 
-def remove_a_fb_friend_id fb_friend_id
-  return false unless fb_friends_ids
+# def remove_a_fb_friend_id fb_friend_id
+#   return false unless fb_friends_ids
 
-  if fb_friends_ids.delete(fb_friend_id) != nil
-    update_attribute(:fb_friends_ids, fb_friends_ids)
-    return true
-  else
-    return false
-  end
-end
+#   if fb_friends_ids.delete(fb_friend_id) != nil
+#     update_attribute(:fb_friends_ids, fb_friends_ids)
+#     return true
+#   else
+#     return false
+#   end
+# end
 
-def has_fb_friend_id fb_friend_id
-  return fb_friends_ids.find_index(fb_friend_id) != nil
-end
+# def has_fb_friend_id fb_friend_id
+#   return fb_friends_ids.find_index(fb_friend_id) != nil
+# end
 
 # return the number of friendships created
 def process_fb_friends_ids friends
-  ids = friends.collect{|frd| frd['id'].to_i}
-  fb_friends_ids = ids
-  puts id
-  update_attribute(:fb_friends_ids, fb_friends_ids)
+  fb_ids = friends.collect{|frd| frd['id'].to_i}
 
-  count = 0
-  Entity.all.each do |entity|
-    if has_fb_friend_id(entity.fb_user_id)
-      Friendship.create(entity_id: entity.id, user_id: id)
-      count += 1
-    end
+  friendships = Array.new
+  fb_ids.each do |fb_id|
+    friendships << Friendship.new(entity_fb_user_id: fb_id, user_id: self.id)
   end
 
-  return count
+  # use activerecord-import gem to do batch insert!
+  Friendship.import friendships, :validate => true
 end
+
+#TODO: make it faster by using joins
+# return the users that are referred in the posts (the entities of the post)
+def self.users_as_entities_of_post post
+  unless post
+    logger.info("[ERROR] Invalid post while querying users as entities of a post")
+    return nil
+  end
+  result = Array.new
+  post.entities.each do |entity|
+    fb_user_id = entity.fb_user_id
+    user = User.find_by_fb_user_id(fb_user_id)
+    result << user if user
+  end
+
+  return result
+end
+
 
 #rewrite the method so we don't need email
 def password_required?
@@ -124,7 +138,7 @@ has_many :entities,    inverse_of: :user
 has_many :posts,       inverse_of: :user
 has_many :comments,    inverse_of: :user
 
-has_one :invitation
+#has_one :invitation
 
 has_many :reports, dependent: :destroy
 has_many :follows, inverse_of: :user, dependent: :destroy
@@ -134,7 +148,7 @@ has_many :follows, inverse_of: :user, dependent: :destroy
 has_many :shares,  inverse_of: :user
 
 has_many :friendships, dependent: :destroy
-has_many :friends, through: :friendships
+has_many :friends, through: :friendships, :source => 'entity'
 
 has_many :followedEntities, through: :follows, 
                             source: "followee",

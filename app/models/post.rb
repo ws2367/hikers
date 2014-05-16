@@ -16,7 +16,6 @@
 #
 
 class Post < ActiveRecord::Base
-  ActiveRecord::Base.logger.level = 1
   attr_accessible :content, :user_id, :uuid, :deleted
 
   belongs_to :user
@@ -28,33 +27,40 @@ class Post < ActiveRecord::Base
 
   has_many :befriended_users, through: :entities
   has_many :following_users, through: :follows, source: :user
-
-  # has_many :pictures, inverse_of: :post
   
   has_many :follows,   as: :followee, dependent: :destroy
   has_many :followers, through: :follows, 
                        source: :user
  
-
-  # has_many :likes,  as: :likee
-  # has_many :likers, through: :likes, 
-  #                   source: :user                      
-  
-  # has_many :hates,  as: :hatee
-  # has_many :haters, through: :hates, 
-  #                   source: :user         
-
-  # has_many :views,   as: :viewee, dependent: :destroy
-  # has_many :viewers, through: :views, 
-  #                    source: :user
- 
   has_many :shares,  as: :sharee, dependent: :destroy
   has_many :sharers, through: :shares, 
                      source: :user
 
+  validates :content, :connection, :user, presence: true
+  validates_associated :user
   
+  validates :uuid, uniqueness: true
+
+  # popularity = tc + tp + nc*300 + nf*150
+  # tc: creation time of the last comment
+  # tp: creation time of the post
+  # nc: # of comments
+  # nf: # of follows
+  # POPULARITY_BASE: Tue, 01 Apr 2014 00:00:00 GMT
+  POPULARITY_BASE = 1396310400.0
+  
+  after_create {
+    self.with_lock do
+      self.update_attribute("popularity", (self.created_at.to_f - POPULARITY_BASE) * 2)
+    end
+  }
+
   def updated_at_in_float
     updated_at.to_f
+  end
+
+  def created_at_in_float
+    created_at.to_f
   end
 
   def self.fetch_segment(query_result, start_over, last_of_previous_post_ids)
@@ -66,7 +72,7 @@ class Post < ActiveRecord::Base
         start_index += 1
         count = query_result.all.count
         end_index = [(start_index + 4), (count - 1)].min
-        puts "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
+        logger.info "start_index: " + start_index.to_s + " end_index: " + end_index.to_s
         # Note that if a < b, Array.slice(b..a) returns [] which is desired
         posts = query_result.slice(start_index..end_index)
       else
@@ -129,6 +135,7 @@ class Post < ActiveRecord::Base
     includes(:befriended_users).where("friendships.user_id = ?", user_id)
   end
 
+  #TODO: here it should be rewritten using joins, not where which is slower
   def self.about_user(user_id)
     user = User.find_by_id(user_id)
     unless user 
@@ -153,15 +160,15 @@ class Post < ActiveRecord::Base
   
   scope :most_followed,
     joins('LEFT OUTER JOIN follows ON follows.followee_id = posts.id AND followee_type = "Post"').
-    select("posts.*, count(follows.id) as popularity").
+    select("posts.*, count(follows.id) as follow_count").
     group("posts.id").
-    order("popularity desc, updated_at desc")
+    order("follow_count desc, updated_at desc")
 
   scope :most_commented,
     joins('LEFT OUTER JOIN comments ON comments.post_id = posts.id').
-    select("posts.*, count(comments.id) as popularity").
+    select("posts.*, count(comments.id) as comment_count").
     group("posts.id").
-    order("popularity desc, updated_at desc")
+    order("comment_count desc, updated_at desc")
 
   # validates :content, length: {
   #   minimum: 1,
@@ -171,8 +178,5 @@ class Post < ActiveRecord::Base
   #   too_long: "must have at most %{count} words"
   # }
   
-  validates :content, :connection, :user, presence: true
-  validates_associated :user
-  
-  validates :uuid, uniqueness: true
+
 end

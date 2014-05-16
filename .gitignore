@@ -10,10 +10,19 @@
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
+
+# Ignore database.yml since it is platform-specific
+config/database.yml
+
+# Ignore credentials 
 config/photo_bucket_name
+config/apple_push_notification.pem
+config/APN_production.pem
+config/app_credentials
+config/ssl/*
 
 # Ignore all logfiles and tempfiles.
-/log/*.log
+log/
 /tmp
 doc/
 *.swp
@@ -25,6 +34,3 @@ doc/
 
 #Ignore Paperclip uploaded files
 /public/system
-
-#Ignore AWS credentials
-script/setenv.sh

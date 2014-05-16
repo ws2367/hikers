@@ -2,15 +2,14 @@
 #
 # Table name: entities
 #
-#  id              :integer          not null, primary key
-#  name            :string(255)
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  user_id         :integer
-#  followers_count :integer          default(0)
-#  fb_user_id      :integer
-#  institution     :string(255)
-#  location        :string(255)
+#  id          :integer          not null, primary key
+#  name        :string(255)
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  user_id     :integer
+#  fb_user_id  :integer
+#  institution :string(255)
+#  location    :string(255)
 #
 
 class Entity < ActiveRecord::Base
@@ -21,7 +20,7 @@ class Entity < ActiveRecord::Base
   has_many :connections, dependent: :destroy
   has_many :posts,     through: :connections
 
-  has_many :friendships, dependent: :destroy
+  has_many :friendships, primary_key: :fb_user_id, foreign_key: :entity_fb_user_id
   has_many :befriended_users, through: :friendships, source: :user
 
 
@@ -54,20 +53,24 @@ class Entity < ActiveRecord::Base
 
   
   # only run when creating
-  after_create :find_user_friends, on: :create
+  # after_create :find_user_friends, on: :create
  
-  def find_user_friends
-    User.all.each do |user|
-      if user.has_fb_friend_id fb_user_id
-        Friendship.create(entity_id: id, user_id: user.id)
-        puts "Created friendship!"
-      end
-    end
-  end
-  protected :find_user_friends
+  # def find_user_friends
+  #   User.all.each do |user|
+  #     if user.has_fb_friend_id fb_user_id
+  #       Friendship.create(entity_id: id, user_id: user.id)
+  #       logger.info "Created friendship!"
+  #     end
+  #   end
+  # end
+  # protected :find_user_friends
 
   def updated_at_in_float
     updated_at.to_f
+  end
+
+  def created_at_in_float
+    created_at.to_f
   end
 
 

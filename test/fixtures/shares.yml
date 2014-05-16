@@ -6,10 +6,9 @@
 #  user_id     :integer
 #  sharee_id   :integer
 #  sharee_type :string(255)
-#  numbers     :text
-#  sent_at     :datetime
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  content     :text
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html

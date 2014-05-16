@@ -2,6 +2,35 @@ class V1::PostsController < ApplicationController
   
   before_filter :authenticate_v1_user!
 
+  #TODO: this should be done in the background
+  def send_push_notification post
+    # notify the entities of the post
+    users = User.users_as_entities_of_post(post)
+    post_author = post.user
+    logger.info("#{users.count} users referred in the post are found. Will try to send notification to them")
+    # notify the entities of the post
+    users.each do |user|
+      if ((user.id != post_author.id) and 
+          (user.device_token != nil)
+         )
+
+        # increment their badge numbers
+        user.update_attribute("badge_number", (user.badge_number + 1))
+        # send out notification
+        apn = Houston::Client.development
+        apn.certificate = File.read("config/apple_push_notification.pem")
+        notification = Houston::Notification.new(device: user.device_token)
+        notification.alert = "Someone wrote a post about you!"
+        notification.badge = user.badge_number
+
+        notification.content_available = true
+        notification.custom_data = {post_id: post.id}
+        #logger.info "Notification is sent to user #{user.name}"
+        apn.push(notification)  
+      end
+    end
+  end
+
   def map_an_entity hash
     # In a request, the fb_user_id should not be 0 or nil.
     # It sends back id, fb_user_id and updated_at. 
@@ -20,13 +49,7 @@ class V1::PostsController < ApplicationController
         entity.location = hash["location"] if hash["location"]
         
         if entity.save
-          puts "is_your_friend: " + hash['is_your_friend']
-          if hash['is_your_friend'] == '1' or hash['is_your_friend'] == 'true'
-            Friendship.create(user_id: current_v1_user.id, 
-                              entity_id: entity.id) 
-          end
           return entity
-
         else
           logger.info("[ERROR] Failed to create entity.")
           @error = true
@@ -72,7 +95,7 @@ class V1::PostsController < ApplicationController
   #POST /posts
   def create
     @error = false
-    puts params
+    # logger.info params
     
     entitiesToMap = params["Entity"]
     if entitiesToMap
@@ -81,7 +104,6 @@ class V1::PostsController < ApplicationController
       else
         @entities = [map_an_entity(entitiesToMap)] # make sure it is an array
       end
-      puts "entity"
     end
 
     if @error
@@ -103,80 +125,8 @@ class V1::PostsController < ApplicationController
       return
     end
 
-    puts @entities
-    puts @posts
     render "posts/create"
   end
-
-=begin
-  def add_entities_against_client_matched_entities(post, entity_ids)
-    if entity_ids 
-      @result["entities"] = post.entities.collect { |ent| ent
-        hash = Hash.new
-        if entity_ids.find_index(ent.id)
-          hash = {:id => ent.id}
-        else
-          hash = {
-            :id => ent.id,
-            :uuid => ent.uuid,
-            :name => ent.name, 
-            :updated_at => ent.updated_at.to_f,
-
-            #meta attributes
-            :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
-            :fb_user_id => ent.fb_user_id
-          }
-          
-          hash[:institution] = ent.institution if ent.institution 
-          #hash[:location] = ent.location if ent.location
-        end
-        hash
-      }
-    else
-      @result["entities"] = post.entities.collect { |ent| ent
-        hash = {
-          :id => ent.id,
-          :uuid => ent.uuid,
-          :name => ent.name, 
-          :updated_at => ent.updated_at.to_f,
-
-          #meta attributes
-          :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
-          :fb_user_id => ent.fb_user_id
-        }
-
-        hash[:institution] = ent.institution if ent.institution 
-        #hash[:location] = ent.location if ent.location
-                                         
-        hash
-      }
-    end
-  end
-
-  def add_entities post
-    @result["entities"] = post.entities.collect { |ent| ent
-        hash = {
-          :id => ent.id,
-          :name => ent.name, 
-          :updated_at => ent.updated_at.to_f,
-
-          #meta attributes
-          :is_your_friend => ent.is_friend_of_user(current_v1_user.id),
-          :fb_user_id => ent.fb_user_id
-        }
-
-        hash[:institution] = ent.institution if ent.institution 
-        #hash[:location] = ent.location if ent.location
-                                         
-        hash
-      }
-  end
-
-  def remove_client_matched_posts(client_posts_ids)
-    puts client_posts_ids
-    @posts.select {|post| !client_posts_ids.find_index(post.id) } if client_posts_ids
-  end
-=end
 
   def query_posts_for_entity entity
     query_result = entity.posts.active.order("updated_at desc")
@@ -196,16 +146,31 @@ class V1::PostsController < ApplicationController
   end
 
   # GET /posts or GET /entities/:id/posts
-  def index
-    
+  def index    
     @posts = Array.new #prevent @posts from being null
+
+    # if it just wants a single post
+    if params[:post_id]
+      post_id = params[:post_id]
+      post = Post.find_by_id(post_id)
+      unless post
+        render :status => 400,
+               :json => {:message => "Post #{post_id} does not exist." }
+        return
+      end
+
+      @posts << post
+      @user_id = current_v1_user.id # for view template's information
+      render 'posts/index'
+      return # we've done the business here
+    end
 
     @start_over = false
     if params[:last_of_previous_post_ids]
       @last_of_previous_post_ids = params[:last_of_previous_post_ids]
     else
       @start_over = true
-      puts "Start over"
+      logger.info "Start over"
     end
 
     # handle different types
@@ -246,42 +211,11 @@ class V1::PostsController < ApplicationController
     else
       logger.info("Post#index: Missing either entity_id or type in parameters")
     end
-
-    #remove_client_matched_posts(params[:Post]) #@posts cannot be null!
-
-    # @results = Array.new
-    # TODO: Query in batch
-    # this is bad because it queries the DB as many times as the number of posts
-    # @posts.each_with_index {|post, i|
-    #   @result = {
-    #     :id => post.id,
-    #     :uuid => post.uuid,
-    #     :content => post.content,
-    #     :updated_at => post.updated_at.to_f, #TODO: limit to 3-digit precision
-
-    #     # meta attributes
-    #     :is_yours => (current_v1_user.id == post.user_id), #TODO: compare current user and this user id
-    #     :following => post.is_followed_by(current_v1_user.id),
-    #     :popularity => post.popularity  
-    #   }
-      
-      # association
-      # this method checks the nullity of param[:Entity]
-      # TODO: remove @results[i] from arguments since it is accessible in the method
-      # add_entities_against_client_matched_entities(post, params[:Entity])
-      # add_entities(post)
-
-    #   @results << @result
-    # }
-
-    # @response = Hash.new
-    # @response["Post"] = @results
-
-    #puts @response
-    #render json: @response 
+    
     @user_id = current_v1_user.id # for view template's information
     render "posts/index"
   end
+
 
   # POST /posts/:id/follow
   def follow
@@ -343,7 +277,7 @@ class V1::PostsController < ApplicationController
 
   # POST /posts/:post_id/share
   def share 
-    puts params
+    logger.info params
     post_id = params[:post_id]
     unless post = Post.find_by_id(post_id)
       render :status => 400,
@@ -352,16 +286,6 @@ class V1::PostsController < ApplicationController
     end
 
     share = post.shares.new(user_id: current_v1_user.id)
-
-    numbers = params["numbers"]
-
-    if numbers.class == Array
-      numbers.each do |number|
-        share.add_number(number.to_i)
-      end
-    else
-      share.add_number(numbers.to_i)
-    end
 
     if share.save
       render :status => 200, :json => {}
@@ -383,6 +307,7 @@ class V1::PostsController < ApplicationController
 
     post.is_active = true
     if post.save
+      send_push_notification post
       render :status => 200, :json => {}
     else
       render :status => 422,

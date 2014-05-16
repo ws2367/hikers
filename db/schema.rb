@@ -11,16 +11,17 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140418181710) do
+ActiveRecord::Schema.define(:version => 20140512192225) do
 
   create_table "comments", :force => true do |t|
     t.text     "content"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
+    t.datetime "created_at",                            :null => false
+    t.datetime "updated_at",                            :null => false
     t.integer  "post_id"
     t.integer  "user_id"
-    t.boolean  "deleted",    :default => false
+    t.boolean  "deleted",            :default => false
     t.string   "uuid"
+    t.integer  "anonymized_user_id"
   end
 
   add_index "comments", ["post_id"], :name => "index_comments_on_post_id"
@@ -38,11 +39,10 @@ ActiveRecord::Schema.define(:version => 20140418181710) do
 
   create_table "entities", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",                                  :null => false
-    t.datetime "updated_at",                                  :null => false
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
     t.integer  "user_id"
-    t.integer  "followers_count",              :default => 0
-    t.integer  "fb_user_id",      :limit => 8
+    t.integer  "fb_user_id",  :limit => 8
     t.string   "institution"
     t.string   "location"
   end
@@ -61,23 +61,13 @@ ActiveRecord::Schema.define(:version => 20140418181710) do
   add_index "follows", ["user_id"], :name => "index_follows_on_user_id"
 
   create_table "friendships", :force => true do |t|
-    t.integer  "entity_id"
     t.integer  "user_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+    t.integer  "entity_fb_user_id", :limit => 8
   end
 
-  add_index "friendships", ["entity_id"], :name => "index_friendships_on_entity_id"
   add_index "friendships", ["user_id"], :name => "index_friendships_on_user_id"
-
-  create_table "invitations", :force => true do |t|
-    t.string   "inviter_name"
-    t.string   "inviter_birthday"
-    t.string   "inviter_fb_id"
-    t.integer  "user_id"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
-  end
 
   create_table "posts", :force => true do |t|
     t.text     "content"
@@ -105,8 +95,6 @@ ActiveRecord::Schema.define(:version => 20140418181710) do
     t.integer  "user_id"
     t.integer  "sharee_id"
     t.string   "sharee_type"
-    t.text     "numbers"
-    t.datetime "sent_at"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
@@ -123,8 +111,9 @@ ActiveRecord::Schema.define(:version => 20140418181710) do
     t.string   "name"
     t.integer  "fb_user_id",           :limit => 8
     t.string   "fb_access_token"
-    t.text     "fb_friends_ids"
     t.string   "location"
+    t.string   "device_token"
+    t.integer  "badge_number",                      :default => 0
   end
 
   add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true

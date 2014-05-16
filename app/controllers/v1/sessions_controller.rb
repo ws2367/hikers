@@ -5,6 +5,7 @@ class V1::SessionsController < ApplicationController
   # POST users/sign_in
   def create 
     fb_access_token = params[:fb_access_token]
+
     app_id = ENV['FB_APP_ID']
     app_secret = ENV['FB_APP_SECRET']
 
@@ -42,7 +43,7 @@ class V1::SessionsController < ApplicationController
       location = nil
     end
 
-    puts "User (id: %s, name: %s, location: %s) logged in." % [fb_user_id.to_s, name, location]
+    logger.info "User (id: %s, name: %s, location: %s) logged in." % [fb_user_id.to_s, name, location]
 
     @user = User.find_by_fb_user_id(fb_user_id)
     
@@ -58,16 +59,17 @@ class V1::SessionsController < ApplicationController
         response['signup'] = 'true'
 
         #TODO: move the work to background
-        puts "Requesting FB friends"
+        logger.info "Requesting FB friends"
         friends = @graph.get_connections("me", "friends?fields=id")
-        puts "Finished requesting FB friends"
+        logger.info "Finished requesting FB friends"
         count = @user.process_fb_friends_ids friends
-        puts "Number of friendships created for User %s: %s" % [@user.id, count]
+        logger.info "Number of friendships created for User %s: %s" % [@user.id, count]
       else
         render :status=>500, 
                :json=>{:message=>"User cannot be found or created"} 
       end
     else
+
       response['signup'] = 'false'
     end
 
@@ -86,6 +88,9 @@ class V1::SessionsController < ApplicationController
       logger.info("Token not found.")
       render :status=>404, :json=>{:message=>"Invalid token."}
     else
+      @user.device_token = nil # the next line will save the change, no worries
+      # With the exclamation mark, it does not only generate new authentication token 
+      # but also save the record.
       @user.reset_authentication_token!
       render :status=>200, :json=>{}
     end

@@ -1,21 +1,12 @@
-
+# initializers are called because the rake task depends on environment
 desc "Rebuild database, create a photo bucket and source credentials"
 task :reset, [] => :environment do
 
   puts "[DEBUG] Will drop existing database!"
-  Rake::Task['db:drop'].execute
   Rake::Task['db:create'].execute
+  Rake::Task['db:schema:load'].execute
   Rake::Task['db:migrate'].execute
   puts "[DEBUG] New DB created and migrated."
-
-  # String format in script/setenv.sh has to be 
-  # export [var name]=[value]
-  File.readlines("script/setenv.sh").each do |line|
-    values = line.split("=")
-    var_name = values[0].split(" ")[1]
-    ENV[var_name] = values[1].chomp
-    puts "[DEBUG] Env variable %s is set." % var_name
-  end
   
   s3 = AWS::S3.new(:access_key_id => ENV['AWS_ACCESS_KEY_ID'],
                    :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY'])

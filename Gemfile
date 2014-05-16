@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-
-gem 'unicorn'
 gem 'json'
 
 # Rendering json
@@ -9,8 +7,11 @@ gem 'rabl'
 # Also add either `oj` or `yajl-ruby` as the JSON parser
 gem 'oj'
 
-# for a rake task
-gem 'uuidtools'
+# for push notification
+gem 'houston'
+
+# bulk insert! import in batch
+gem "activerecord-import", ">= 0.2.0"
 
 # reduce the redundancy and make the action controller faster 
 gem 'rails-api'
@@ -28,23 +29,35 @@ gem 'annotate', ">=2.5.0"
 # Because Heroku ask us to do so
 # ruby '1.9.3'
 
-# Use sqlite3 as the database for Active Record in developement 
-# and test, pg for production
-group :production, :staging do
-	gem 'pg'
-end
-group :development, :test do
+
+group :test do
 	gem 'sqlite3'
 end
+
+gem 'mysql2'
+
+# DO NOT ADD THIS LINE!
+#gem 'activerecord-mysql2-adapter'
+
+# NOR THIS LINE!
+#gem 'activerecord-mysql-adapter'
 
 gem 'devise', "~> 3.0.0"
 
 gem 'aws-sdk'
 
+# Use thin as the app server
 gem 'thin'
 
-gem 'faker', '1.1.2'
+# Use mina for deployment
+gem 'mina'
 
+# for rake tasks
+gem 'faker', '1.1.2'
+gem 'uuidtools'
+
+# Help boot the application
+gem 'foreman'
 
 
 group :doc do

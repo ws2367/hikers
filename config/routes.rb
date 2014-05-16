@@ -1,9 +1,6 @@
 Moose::Application.routes.draw do
 
 namespace :v1  do
-  get 'locations', to: "locations#index"
-
-  #resources :posts, only: [:index, :create]
   resources :comments, only: [:create]
 
   resources :posts , only: [:index, :create] do
@@ -23,10 +20,13 @@ namespace :v1  do
   post 'posts/:post_id/share' => 'posts#share'
   post 'posts/:post_id/activate' => 'posts#activate'
 
-  post 'invitations/inviter' => 'invitations#inviter'
   # Custom controller for API token access
   devise_for :users, only: :sessions, :controllers => {sessions:'v1/sessions'} 
 
+  post 'users/set_badge' => 'users#set_badge'
+  post 'users/set_device_token' => 'users#set_device_token'
+
+  get 'letters/check' => 'letters#check'
 end
 
   #root :to => "pins#index"
