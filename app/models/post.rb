@@ -59,6 +59,10 @@ class Post < ActiveRecord::Base
     updated_at.to_f
   end
 
+  def created_at_in_float
+    created_at.to_f
+  end
+
   def self.fetch_segment(query_result, start_over, last_of_previous_post_ids)
     if start_over
       posts = query_result.limit(5)

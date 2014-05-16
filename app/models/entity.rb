@@ -69,6 +69,10 @@ class Entity < ActiveRecord::Base
     updated_at.to_f
   end
 
+  def created_at_in_float
+    created_at.to_f
+  end
+
 
   def is_friend_of_user user_id
     return ((user_id) and (self.befriended_users.exists?(user_id)))

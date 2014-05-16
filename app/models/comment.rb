@@ -52,6 +52,10 @@ class Comment < ActiveRecord::Base
   def updated_at_in_float
     updated_at.to_f
   end
+  
+  def created_at_in_float
+    created_at.to_f
+  end
 
   def post_uuid
     self.post.uuid
