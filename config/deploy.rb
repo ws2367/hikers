@@ -14,7 +14,7 @@ set :domain, '107.170.193.248'
 set :deploy_to, '/home/yours'
 set :repository, 'git@github.com:ws2367/xoxo.git'
 #set :repository, 'https://github.com/ws2367/xoxo.git'
-set :branch, 'microbuild'
+set :branch, 'master'
 
 # Optional SSH settings:
 # SSH forward agent to ensure that credentials are passed through for git operations
