@@ -17,7 +17,7 @@ class V1::PostsController < ApplicationController
         # increment their badge numbers
         user.update_attribute("badge_number", (user.badge_number + 1))
         # send out notification
-        apn = Houston::Client.development
+        apn = Houston::Client.production
         apn.certificate = File.read("config/apple_push_notification.pem")
         notification = Houston::Notification.new(device: user.device_token)
         notification.alert = "Someone wrote a post about you!"

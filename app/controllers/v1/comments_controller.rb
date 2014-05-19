@@ -39,7 +39,7 @@ class V1::CommentsController < ApplicationController
       # increment their badge numbers
       post_author.update_attribute("badge_number", (post_author.badge_number + 1))
       # send out notification
-      apn = Houston::Client.development
+      apn = Houston::Client.production
       apn.certificate = File.read("config/apple_push_notification.pem")
       notification = Houston::Notification.new(device: post_author.device_token)
       notification.alert = "Someone wrote a comment on your post!"
@@ -61,7 +61,7 @@ class V1::CommentsController < ApplicationController
         # increment their badge numbers
         follower.update_attribute("badge_number", (follower.badge_number + 1))
         # send out notification
-        apn = Houston::Client.development
+        apn = Houston::Client.production
         apn.certificate = File.read("config/apple_push_notification.pem")
         notification = Houston::Notification.new(device: follower.device_token)
         notification.alert = "Someone wrote a comment on the post you favorited!"
@@ -87,7 +87,7 @@ class V1::CommentsController < ApplicationController
         # increment their badge numbers
         user.update_attribute("badge_number", (user.badge_number + 1))
         # send out notification
-        apn = Houston::Client.development
+        apn = Houston::Client.production
         apn.certificate = File.read("config/apple_push_notification.pem")
         notification = Houston::Notification.new(device: user.device_token)
         notification.alert = "Someone wrote a comment on a post about you!"
